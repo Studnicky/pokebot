@@ -33,21 +33,20 @@ module.exports = function dbInitManual(robot) {
 };
 
 function dbInitPokemon(robot, res){
+	robot.messageRoom(res.message.user.name, "Storing pokemon in database...");
 
-		robot.messageRoom(res.message.user.name, "Storing pokemon in database...");
-
-		//	Bulk create is undocumented, iterating array for now
-		pokemon_list.forEach(function(this_pokemon){			
-			Pokemon.create(this_pokemon)
-			.then(function(){
-				robot.messageRoom(res.message.user.name, "Stored: " + this_pokemon.name);
-			})
-			.catch(function(error){
-				robot.messageRoom(res.message.user.name, + this_pokemon.name + "\n" + error);
-			});
+	//	Bulk create is undocumented, iterating array for now
+	pokemon_list.forEach(function(this_pokemon){			
+		Pokemon.create(this_pokemon)
+		.then(function(){
+			console.log("Stored: " + this_pokemon.name);
+		})
+		.catch(function(error){
+			console.log("Failed to store: " + this_pokemon.name + "\n" + error);
 		});
+	});
 
-	}
+}
 
 function dbInitUsers(robot, res){
 	robot.messageRoom(res.message.user.name, "Fetching user data...");
@@ -64,8 +63,7 @@ function dbInitUsers(robot, res){
 			robot.messageRoom(res.message.user.name, 'Failed to retrieve users from slack API\n' + error);
 		} else {
 
-			robot.messageRoom(res.message.user.name, 'Data retrieved from API. Parsing...');
-
+			robot.messageRoom(res.message.user.name, 'User data retrieved from API. Parsing...');
 			//	Get user list! Save them.
 			data.members.map(function(o){
 
@@ -104,10 +102,10 @@ function dbInitUsers(robot, res){
 					credits: 0
 				})
 				.then(function(){
-					robot.messageRoom(res.message.user.name, "Saved user " + o.id + " as " + o.name);
+					console.log("Saved user " + o.id + " as " + o.name);
 				})
 				.catch(function(error){
-					robot.messageRoom(res.message.user.name, "Failed to save user " + o.id + " as " + o.name + "\n" + error);
+					console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
 				});
 
 			});
