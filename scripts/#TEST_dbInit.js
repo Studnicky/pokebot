@@ -45,7 +45,7 @@ function dbInitPokemon(){
 				console.log("Stored: " + this_pokemon.name);
 			})
 			.catch(function(error){
-				console.log("Failed: " + this_pokemon.name);
+				console.log("Failed: " + this_pokemon.name + "\n" + error);
 			});
 		});
 
@@ -53,7 +53,9 @@ function dbInitPokemon(){
 
 function dbInitUsers(robot){
 
-	var options = {token: process.env.HUBOT_SLACK_TOKEN};
+	var options = {
+		token: process.env.HUBOT_SLACK_TOKEN
+	};
 
 	//	Get full user profile and slack permissions
 	robot.http("https://slack.com/api/users.list?token=" + options.token).get()(function(err, res, body){
@@ -122,6 +124,7 @@ var pokemon_list = [
 		catch_rate: 0,
 		defense: 0,
 		evolutions: [{}],
+		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {},
 		hp: 33,
@@ -153,6 +156,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Raichu", national_id: "26", method: "thunderstone"}
 		],
+		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium fast"},
 		hp: 35,
@@ -191,6 +195,7 @@ var pokemon_list = [
 			{name: "Flareon", national_id: "136", method: "firestone"},
 			{name: "Espeon", national_id: "197", method: "happiness"}
 		],
+		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium fast"},
 		hp: 55,
@@ -222,6 +227,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Azumarill", national_id:"184", method:"level_up"}
 		],
+		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate:"fast"},
 		hp: 70,
@@ -254,6 +260,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Kirlia", national_id: "281", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "slow"},
 		hp: 40,
@@ -285,6 +292,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Ivysaur", national_id: "2", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
@@ -316,6 +324,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Charmeleon", national_id: "5", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
 		hp: 39,
@@ -346,6 +355,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Wartortle", national_id: "8", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
 		hp: 44,
@@ -376,6 +386,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Bayleef", national_id: "153", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
@@ -406,6 +417,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Quilava", national_id: "156", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
 		hp: 39,
@@ -436,6 +448,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Croconaw", national_id: "159", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
 		hp: 50,
@@ -466,6 +479,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Grovyle", national_id: "253", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
 		hp: 40,
@@ -496,6 +510,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Combusken", national_id: "256", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
@@ -526,6 +541,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Marshtomp", national_id: "259", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
 		hp: 50,
@@ -556,6 +572,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Grotle", national_id: "388", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
 		hp: 55,
@@ -586,6 +603,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Monferno", national_id: "391", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
 		hp: 44,
@@ -616,6 +634,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Prinplup", national_id: "394", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
 		hp: 53,
@@ -646,6 +665,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Servine", national_id: "496", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
@@ -676,6 +696,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Pignite", national_id: "499", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
 		hp: 65,
@@ -706,6 +727,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Dewott", national_id: "502", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
 		hp: 55,
@@ -736,6 +758,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Quilladin", national_id: "651", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
 		hp: 56,
@@ -766,6 +789,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Braixen", national_id: "654", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
 		hp: 40,
@@ -796,6 +820,7 @@ var pokemon_list = [
 		evolutions: [
 			{name: "Frogadier", national_id: "657", method: "level_up"}
 		],
+		ev_yield: [{}],
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
 		hp: 41,
@@ -831,6 +856,7 @@ var pokemon_list = [
 // 	evolutions: [
 // 		{name: "", national_id: "", method: ""}
 // 	],
+//	ev_yield: [{}],
 // 	gen: ,
 // 	growth_rate: {rate: ""},
 // 	hp: ,

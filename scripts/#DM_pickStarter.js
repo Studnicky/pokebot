@@ -65,14 +65,13 @@ module.exports = function starter (robot) {
 					getAllStarters(res);
 					break;
 
-				case (/(gen|list\s*(generations)?)/ig).test(userQuery):
+				case (/(gen|list\s*(generations)?)/ig.test(userQuery)):
 					//	Get a list of generations
 					getGenList(res);
 					break;
 
-				case (/(pick|select)\s*(.*)/ig.test(userQuery)):
-					//	Query DB to see if the user picked a valid starter
-					var pick = userQuery.match[2].trim();
+				case (/(pick)\s*(.*)/ig.test(userQuery)):
+					var pick = userQuery.substring(4).trim();
 					pickStarter(res, pick);
 					break;
 
@@ -151,6 +150,8 @@ module.exports = function starter (robot) {
 	}
 
 	function pickStarter(res, pick){
+
+		console.log(pick);
 
 		Pokemon.findOne({
 			where:{
