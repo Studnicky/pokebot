@@ -37,30 +37,30 @@ module.exports = function dbInitManual(robot) {
 };
 
 function dbInitPokemon(){
+
 		//	Bulk create is undocumented, iterating array for now
-		pokemon_list.forEach(function(this_pokemon){
-			// console.log("Building: " + this_pokemon.name);
-			
+		pokemon_list.forEach(function(this_pokemon){			
 			Pokemon.create(this_pokemon)
 			.then(function(){
-				// console.log("Stored: " + this_pokemon.name);
+				console.log("Stored: " + this_pokemon.name);
 			})
 			.catch(function(error){
-				// console.log("Failed: " + this_pokemon.name);
+				console.log("Failed: " + this_pokemon.name);
 			});
 		});
+
 	}
 
-	function dbInitUsers(robot){
+function dbInitUsers(robot){
 
-		var options = {token: process.env.HUBOT_SLACK_TOKEN};
+	var options = {token: process.env.HUBOT_SLACK_TOKEN};
 
 	//	Get full user profile and slack permissions
 	robot.http("https://slack.com/api/users.list?token=" + options.token).get()(function(err, res, body){
 		data = JSON.parse(body);
 
 		if(data.ok !== true){
-			console.log('Failed to retrieve users');
+			console.log('Failed to retrieve users from slack API\n' + err);
 		} else {
 			//	Get user list! Save them.
 			data.members.map(function(o){
@@ -113,7 +113,7 @@ function dbInitPokemon(){
 }
 
 
-	var pokemon_list = [
+var pokemon_list = [
 	{
 		abilities: [
 			{"name": "glitch"}
@@ -125,6 +125,8 @@ function dbInitPokemon(){
 		gen: 1,
 		growth_rate: {},
 		hp: 33,
+		is_legendary: false,
+		is_mythical: true,
 		is_starter: false,
 		is_wild: false,
 		male_female_ratio: 0,
@@ -154,6 +156,8 @@ function dbInitPokemon(){
 		gen: 1,
 		growth_rate: {rate: "medium fast"},
 		hp: 35,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -190,6 +194,8 @@ function dbInitPokemon(){
 		gen: 1,
 		growth_rate: {rate: "medium fast"},
 		hp: 55,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -219,6 +225,8 @@ function dbInitPokemon(){
 		gen: 2,
 		growth_rate: {rate:"fast"},
 		hp: 70,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -249,6 +257,8 @@ function dbInitPokemon(){
 		gen: 3,
 		growth_rate: {rate: "slow"},
 		hp: 40,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -278,6 +288,8 @@ function dbInitPokemon(){
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -307,6 +319,8 @@ function dbInitPokemon(){
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
 		hp: 39,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -335,6 +349,8 @@ function dbInitPokemon(){
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
 		hp: 44,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -363,6 +379,8 @@ function dbInitPokemon(){
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -391,6 +409,8 @@ function dbInitPokemon(){
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
 		hp: 39,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -419,6 +439,8 @@ function dbInitPokemon(){
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
 		hp: 50,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -447,6 +469,8 @@ function dbInitPokemon(){
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
 		hp: 40,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -475,6 +499,8 @@ function dbInitPokemon(){
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -503,6 +529,8 @@ function dbInitPokemon(){
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
 		hp: 50,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -531,6 +559,8 @@ function dbInitPokemon(){
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
 		hp: 55,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -559,6 +589,8 @@ function dbInitPokemon(){
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
 		hp: 44,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -587,6 +619,8 @@ function dbInitPokemon(){
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
 		hp: 53,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -615,6 +649,8 @@ function dbInitPokemon(){
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
 		hp: 45,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -643,6 +679,8 @@ function dbInitPokemon(){
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
 		hp: 65,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -671,6 +709,8 @@ function dbInitPokemon(){
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
 		hp: 55,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -699,6 +739,8 @@ function dbInitPokemon(){
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
 		hp: 56,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -727,6 +769,8 @@ function dbInitPokemon(){
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
 		hp: 40,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -741,7 +785,7 @@ function dbInitPokemon(){
 		]
 	},
 	
-	{	
+	{
 		abilities: [
 			{name: "torrent"},
 			{name: "protean"}
@@ -755,6 +799,8 @@ function dbInitPokemon(){
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
 		hp: 41,
+		is_legendary: false,
+		is_mythical: false,
 		is_starter: true,
 		is_wild: true,
 		male_female_ratio: 1/7,
@@ -768,7 +814,7 @@ function dbInitPokemon(){
 			{name: "water"}
 		]
 	}
-	];
+];
 
 
 //	Template for new pokemon object
@@ -788,6 +834,8 @@ function dbInitPokemon(){
 // 	gen: ,
 // 	growth_rate: {rate: ""},
 // 	hp: ,
+//	is_legendary: false,
+//	is_mythical: false,
 // 	is_starter: true,
 // 	is_wild: true,
 // 	male_female_ratio: ,

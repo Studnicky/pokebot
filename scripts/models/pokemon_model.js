@@ -26,9 +26,15 @@ module.exports = function(sequelize, Sequelize) {
 		},
 		evolutions: {
 			type: Sequelize.JSON,
-			allowNull: true,
+			allowNull: false,
 			hasComment: {type: Sequelize.STRING, field: "Possible evolutions as JSON object"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "evolutions_json" }
+		},
+		ev_yield: {
+			type: Sequelize.JSON,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Effort values yield when defeated"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "ev_yield" }
 		},
 		gen: {
 			type: Sequelize.INTEGER,
@@ -45,6 +51,18 @@ module.exports = function(sequelize, Sequelize) {
 			type: Sequelize.INTEGER,
 			allowNull: false,
 			hasComment: {type: Sequelize.STRING, field: "Health Points"}
+		},
+		is_legendary: {
+			type: Sequelize.BOOLEAN,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Is this pokemon considered legendary?"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "is_legendary" }
+		},
+		is_mythical: {
+			type: Sequelize.BOOLEAN,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Is this pokemon considered mythical?"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "is_mythical" }
 		},
 		is_starter: {
 			type: Sequelize.BOOLEAN,
