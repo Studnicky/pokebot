@@ -53,18 +53,18 @@ module.exports = function usersActive (robot) {
 			} else {
 
 				var active_users = [];
-				var replyMessage = "The following users are currently active:";
+				var replyMessage = "The following users are currently active:\n";
 
 				//	Find present users
 				data.members.map(function(o){
-					if (o.presence == 'active'){
+					if (o.presence == 'active' && is_bot != 'true'){
 						active_users.push({id: o.id, name: o.name});
-						replyMessage += "•\t:" + o.name + " \n";
+						replyMessage += "•\t" + o.name + " \n";
 					}
 				});
 				//	Are you forever alone?
 				if (active_users.length > 1){
-					res.reply(replyMessage);
+					res.send(replyMessage);
 				} else {
 					res.reply("You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
 				}
@@ -92,11 +92,11 @@ module.exports = function usersActive (robot) {
 					if(data.ok !== true){
 						res.reply("Sorry, I wasn\'t able to find information on that user.\n");
 					} else {
-						res.reply(Utilities.proper_capitalize(userQuery) + " is currently " + data.presence + ".");
+						res.send(Utilities.proper_capitalize(userQuery) + " is currently " + data.presence + ".");
 					}
 				});
 			} else {	//	We got nothing.
-				res.reply("Sorry, I don\'t know a user named " + userQuery);
+				res.send("Sorry, I don\'t know a user named " + userQuery);
 			}
 		});
 	}
