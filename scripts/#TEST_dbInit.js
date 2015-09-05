@@ -18,29 +18,99 @@ var Sequelize = require('sequelize');
 
 //	Define requires data models
 var Models = require('./models'),
+	User = Models.User,
 	Pokemon = Models.Pokemon;
 
-module.exports = function dbInit (robot) {
+module.exports = function dbInitManual(robot) {
 
 	//	Manual db init invokation
 	robot.respond(/db\s*init?$/i, {id: 'admin.db.init.manual'}, function dbInitManual (res) {
 
+		dbInitPokemon();
+		robot.messageRoom(res.message.user.name, "Pokemon DB init complete. Check data integrity.");
+
+		dbInitUsers(robot);
+		robot.messageRoom(res.message.user.name, "Fetching user data...");
+
+
+	});
+};
+
+function dbInitPokemon(){
 		//	Bulk create is undocumented, iterating array for now
 		pokemon_list.forEach(function(this_pokemon){
-			console.log("Building: " + this_pokemon.name);
+			// console.log("Building: " + this_pokemon.name);
 			
 			Pokemon.create(this_pokemon)
 			.then(function(){
-				console.log("Stored: " + this_pokemon.name);
+				// console.log("Stored: " + this_pokemon.name);
 			})
 			.catch(function(error){
-				console.log("Failed: " + this_pokemon.name);
+				// console.log("Failed: " + this_pokemon.name);
 			});
 		});
+	}
 
-		robot.messageRoom(res.message.user.name, "DB init complete. Check data integrity.");
+	function dbInitUsers(robot){
 
+		var options = {token: process.env.HUBOT_SLACK_TOKEN};
+
+	//	Get full user profile and slack permissions
+	robot.http("https://slack.com/api/users.list?token=" + options.token).get()(function(err, res, body){
+		data = JSON.parse(body);
+
+		if(data.ok !== true){
+			console.log('Failed to retrieve users');
+		} else {
+			//	Get user list! Save them.
+			data.members.map(function(o){
+
+				var permission_level = 0;
+				//	Permissions level
+				switch(true){
+					case (o.is_primary_owner === true):
+						permission_level = 6;
+						break;
+					case (o.is_owner === true):
+						permission_level = 5;
+						break;
+					case (o.is_bot === true):
+						permission_level = 4;
+						break;
+					case (o.is_admin === true):
+						permission_level = 3;
+						break;
+					case (o.is_restricted === true):
+						permission_level = 1;
+						break;
+					case (o.is_ultra_restricted === true):
+						permission_level = 0;
+						break;
+					default:
+						permission_level = 2;
+						break;
+				}
+
+				//	Instantiate a new user
+				var this_user = User.create({
+					slack_id: o.id,
+					slack_name: o.name,
+					tz_offset: o.tz_offset.toString(),	//	Force this in as a string for now
+					permissions_level: permission_level,
+					credits: 0
+				})
+				.then(function(){
+					console.log("Saving user " + o.id + " as " + o.name);
+				})
+				.catch(function(error){
+					console.log("Failed to save user " + o.id + " as " + o.name);
+					console.log(error);
+				});
+
+			});
+		}
 	});
+}
 
 
 	var pokemon_list = [
@@ -698,10 +768,8 @@ module.exports = function dbInit (robot) {
 			{name: "water"}
 		]
 	}
-
 	];
 
-};
 
 //	Template for new pokemon object
 

@@ -18,8 +18,8 @@
 //	https://api.slack.com/docs/attachments
 
 
-	//	Get the utility functions
-	var Utilities = require('./utility');
+//	Get the utility functions
+var Utilities = require('./utility');
 
 module.exports = function pokedex(robot) {
 
@@ -31,8 +31,6 @@ module.exports = function pokedex(robot) {
 
 			//	Get the user query, strip colons if they exist so people can use the emotes for fun
 			var pokemon = res.match[1].replace(/:$/,'').toLowerCase().trim();
-
-			console.log(pokemon);
 
 			if (pokemon.length > 0) {
 

@@ -16,9 +16,22 @@ module.exports = function(sequelize, Sequelize) {
 			hasComment: {type: Sequelize.STRING, field: "Username registered in Slack"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "slack_name" }
 		},
-		slack_role: {
+		tz_offset: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "User home timezone"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "tz_offset" }
+		},
+		permissions_level: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "User permissions level"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "permissions_level" }
+		},
+		credits: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "User credit balance"}
 		}
 	},
 	{

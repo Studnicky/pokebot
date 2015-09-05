@@ -31,7 +31,7 @@ var Sequelize = require('sequelize');
 
 //	Define requires data models
 var Models = require('./models'),
-User = Models.User;
+	User = Models.User;
 
 module.exports = function getUserInfo (robot) {
 
@@ -43,25 +43,26 @@ module.exports = function getUserInfo (robot) {
 		} else {
 
 		//	TODO::
-		//	Refer for how to get user info + role:
-		//	https://api.slack.com/methods/users.info
-		//	Why is this failing on auth?
 
-		//	Instantiate a new user
-		var this_user = User.build({
-			slack_id: res.message.user.id.toString(),
-			slack_name: res.message.user.name,
-			slack_role: "user"
+		var options = {
+		  token: process.env.HUBOT_SLACK_TOKEN,
+		  user: ''
+		};
+
+		//	Get info and active presence of all users
+		robot.http("https://slack.com/api/users.list?token=" + options.token + "&presence=1").get()(function(err, res, body){
+			console.log(body);
 		});
 
-		//	Save the instance to the database
-		this_user.save()
-		.then(function(){
-			robot.messageRoom(res.message.user.name, "User saves as: " + this_user);
-		})
-		.catch(function(error){
-			robot.messageRoom(res.message.user.name, "Hmm... ask a dev about this?\n" + error);
-			robot.messageRoom(this_user);
+		//	Get active presence of a specific user by id
+		robot.http("https://slack.com/api/users.getPresence?token=" + options.token + "&user=" + options.user).get()(function(err, res, body) {
+			console.log(body);
+		});
+
+
+		//	Get full user profile and slack permissions
+		robot.http("https://slack.com/api/users.info?token=" + options.token + "&user=" + options.user).get()(function(err, res, body) {
+			console.log(body);
 		});
 
 	}

@@ -50,7 +50,6 @@ module.exports = function starter (robot) {
 
 			//	Get what the user gave us - capture group 2 is the important part. If it doesn't exist, pretend it's empty.
 			var userQuery = res.match[1].trim() || null;
-			console.log(userQuery);
 
 			//	Play regex-plinko with the response to figure out what to do...
 			switch (true) {
@@ -164,10 +163,11 @@ module.exports = function starter (robot) {
 				replyMessage += "I\'m sorry, " + Utilities.proper_capitalize(res.message.user.name) + ", but " + pick + " is not available as a starter pokemon.";
 			} else {
 				replyMessage += "You\'ve chosen :" + starter.name.toLowerCase() + ": " + starter.name + "!\n";
-				replyMessage += "Great choice, " + Utilities.proper_capitalize(res.message.user.name) + "!";
 
 				//	TODO:: Store into pokemon_instance table
+				
 
+				replyMessage += "Great choice, " + Utilities.proper_capitalize(res.message.user.name) + "!";
 			}
 			res.send(replyMessage);
 			return;
