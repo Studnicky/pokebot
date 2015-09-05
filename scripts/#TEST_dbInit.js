@@ -26,44 +26,46 @@ module.exports = function dbInitManual(robot) {
 	//	Manual db init invokation
 	robot.respond(/db\s*init?$/i, {id: 'admin.db.init.manual'}, function dbInitManual (res) {
 
-		dbInitPokemon();
-		robot.messageRoom(res.message.user.name, "Pokemon DB init complete. Check data integrity.");
-
-		dbInitUsers(robot);
-		robot.messageRoom(res.message.user.name, "Fetching user data...");
-
+		dbInitPokemon(robot, res);
+		dbInitUsers(robot, res);
 
 	});
 };
 
-function dbInitPokemon(){
+function dbInitPokemon(robot, res){
+
+		robot.messageRoom(res.message.user.name, "Storing pokemon in database...");
 
 		//	Bulk create is undocumented, iterating array for now
 		pokemon_list.forEach(function(this_pokemon){			
 			Pokemon.create(this_pokemon)
 			.then(function(){
-				console.log("Stored: " + this_pokemon.name);
+				robot.messageRoom(res.message.user.name, "Stored: " + this_pokemon.name);
 			})
 			.catch(function(error){
-				console.log("Failed: " + this_pokemon.name + "\n" + error);
+				robot.messageRoom(res.message.user.name, + this_pokemon.name + "\n" + error);
 			});
 		});
 
 	}
 
-function dbInitUsers(robot){
+function dbInitUsers(robot, res){
+	robot.messageRoom(res.message.user.name, "Fetching user data...");
 
 	var options = {
 		token: process.env.HUBOT_SLACK_TOKEN
 	};
 
 	//	Get full user profile and slack permissions
-	robot.http("https://slack.com/api/users.list?token=" + options.token).get()(function(err, res, body){
+	robot.http("https://slack.com/api/users.list?token=" + options.token).get()(function(error, response, body){
 		data = JSON.parse(body);
 
 		if(data.ok !== true){
-			console.log('Failed to retrieve users from slack API\n' + err);
+			robot.messageRoom(res.message.user.name, 'Failed to retrieve users from slack API\n' + error);
 		} else {
+
+			robot.messageRoom(res.message.user.name, 'Data retrieved from API. Parsing...');
+
 			//	Get user list! Save them.
 			data.members.map(function(o){
 
@@ -102,11 +104,10 @@ function dbInitUsers(robot){
 					credits: 0
 				})
 				.then(function(){
-					console.log("Saving user " + o.id + " as " + o.name);
+					robot.messageRoom(res.message.user.name, "Saved user " + o.id + " as " + o.name);
 				})
 				.catch(function(error){
-					console.log("Failed to save user " + o.id + " as " + o.name);
-					console.log(error);
+					robot.messageRoom(res.message.user.name, "Failed to save user " + o.id + " as " + o.name + "\n" + error);
 				});
 
 			});
