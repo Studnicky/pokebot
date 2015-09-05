@@ -57,7 +57,7 @@ module.exports = function usersActive (robot) {
 
 				//	Find present users
 				data.members.map(function(o){
-					if (o.presence == 'active' && is_bot != 'true'){
+					if (o.presence == 'active' && o.is_bot != 'true'){
 						active_users.push({id: o.id, name: o.name});
 						replyMessage += "•\t" + o.name + " \n";
 					}
