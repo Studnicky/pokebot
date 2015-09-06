@@ -37,7 +37,7 @@ function dbInitPokemon(robot, res){
 
 	//	Bulk create is undocumented, iterating array for now
 	pokemon_list.forEach(function(this_pokemon){			
-		Pokemon.create(this_pokemon)
+		Pokemon.upsert(this_pokemon)
 		.then(function(){
 			console.log("Stored: " + this_pokemon.name);
 		})
@@ -70,22 +70,22 @@ function dbInitUsers(robot, res){
 				var permission_level = 0;
 				//	Permissions level
 				switch(true){
-					case (o.is_primary_owner === true):
+					case (o.is_primary_owner == 'true'):
 						permission_level = 6;
 						break;
-					case (o.is_owner === true):
+					case (o.is_owner == 'true'):
 						permission_level = 5;
 						break;
-					case (o.is_bot === true):
+					case (o.is_bot == 'true'):
 						permission_level = 4;
 						break;
-					case (o.is_admin === true):
+					case (o.is_admin == 'true'):
 						permission_level = 3;
 						break;
-					case (o.is_restricted === true):
+					case (o.is_restricted == 'true'):
 						permission_level = 1;
 						break;
-					case (o.is_ultra_restricted === true):
+					case (o.is_ultra_restricted == 'true'):
 						permission_level = 0;
 						break;
 					default:
@@ -94,7 +94,7 @@ function dbInitUsers(robot, res){
 				}
 
 				//	Instantiate a new user
-				var this_user = User.create({
+				var this_user = User.upsert({
 					slack_id: o.id,
 					slack_name: o.name,
 					tz_offset: o.tz_offset.toString(),	//	Force this in as a string for now

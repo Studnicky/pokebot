@@ -99,7 +99,6 @@ module.exports = function tallGrass(robot) {
 	function wildPokemon(rarity){
 
 		Pokemon.findOne({
-			attributes: [],
 			where:{
 				is_wild: true,
 				catch_rate: {$gte: (255-rarity)},	//	Invert for UX clarity (rarity as ascending numbers instead of descending)
