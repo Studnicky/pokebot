@@ -28,7 +28,7 @@ module.exports = function tallGrass(robot) {
 		Pokemon = Models.Pokemon,
 		Pokemon_Instance = Models.Pokemon_Instance;
 
-	//	Initialize with no spawning enabled
+	//	Initialize with wild pokemon spawning disabled
 	var wild = false;
 
 	//	Leave this command in as restricted for admins once middleware is in place
@@ -65,14 +65,14 @@ module.exports = function tallGrass(robot) {
 
 	//	Randomize timer between 6 and 12 minutes...
 	function setTimer(){
-		//	TODO:: Rewrite as appropriate logarithmic function
-		return Math.floor(Math.random() * 360000 + 360000 - (5000*getUserCount() || 0));
+		//	TODO:: Rewrite as appropriate logarithmic function of user count (promise API return)
+		return Math.floor(Math.random() * 360000 + 360000 );
 	}
-		//	360000^(1/something) = 100
 
-		function setRarity(){
-		//	TODO:: Rewrite as appropriate logarithmic function
-		return 50*getUserCount()+1;
+	//	Set a rarity rating for random pokemon.
+	function setRarity(){
+		//	TODO:: Rewrite as appropriate logarithmic function of user count (promise API return)
+		return Math.floor(Math.random() * 254 + 1 );
 	}
 
 	function getUserCount(){
@@ -88,7 +88,7 @@ module.exports = function tallGrass(robot) {
 
 				//	Find present users
 				data.members.map(function(o){
-					if (o.presence == 'active'){
+					if (o.presence == 'active' && o.is_bot === false){
 						active_count++;
 					}});
 				return active_count;
@@ -99,6 +99,7 @@ module.exports = function tallGrass(robot) {
 	function wildPokemon(rarity){
 
 		Pokemon.findOne({
+			attributes: [],
 			where:{
 				is_wild: true,
 				catch_rate: {$gte: (255-rarity)},	//	Invert for UX clarity (rarity as ascending numbers instead of descending)
@@ -107,15 +108,48 @@ module.exports = function tallGrass(robot) {
 			Sequelize.fn('RANDOM')
 			]
 		})
-		.then(function(this_pokemon){
-			if(this_pokemon){
+		.then(function(pokemon){
+			if(pokemon){
+
+				console.log(pokemon.get({plain:true}));
+
+				var pokemon_instance = Pokemon_Instance.build({
+						caught_by: "wild",
+						current_form: {},
+						effort_values: [{}],
+						exp: 100,		//	bigint calc level
+						gender: 1,
+						happiness: 50,	//	rand range 0-255
+						has_pokerus: 0,	//	rand range 1:21845 true
+						holds_item: {},
+						individual_values: [{}],
+						is_shiny: 0,		//	rand range 1:8192 -> true
+						nature: {},
+						national_id: pokemon.national_id,
+						nickname: null,
+						owner_id: "wild",
+						party_position: 0,
+						for_trade: 0,
+						been_traded: 0,
+						for_sale: 0,
+						been_sold: 0
+				});
+
+				console.log(pokemon_instance.get({plain: true}));
+
+
 				//	Specify target room because this script is non-reply invoked
-				robot.messageRoom('general', "Wild :" + this_pokemon.name.toLowerCase() + ": " + this_pokemon.name + " appeared!");
+				robot.messageRoom('general', "Wild :" + pokemon.name.toLowerCase() + ": " + pokemon.name + " appeared!");
 				//	Set pokemon timeout
 				setTimeout(function escape(){
-					robot.messageRoom('general', "Too slow! :" + this_pokemon.name.toLowerCase() + ": " + this_pokemon.name + " has escaped!");
-				}, Math.floor(Math.random()*15000+20000-55*this_pokemon.speed));	//	Faster pokemon have shorter catch timers! :P
+					robot.messageRoom('general', "Too slow! :" + pokemon.name.toLowerCase() + ": " + pokemon.name + " has escaped!");
+				}, Math.floor(Math.random()*15000+20000-55*pokemon.speed));	//	Faster pokemon have shorter catch timers! :P
+
+
+			} else {
+				robot.messageRoom('general', "Rarity too low, no pokemon found");
 			}
+
 		});
 
 	}

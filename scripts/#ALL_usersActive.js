@@ -29,7 +29,7 @@ var options = {
 
 module.exports = function usersActive (robot) {
 
-	robot.respond(/users?\s*(here|present|active|awake)\s*(.*)$/i, function (res) {
+	robot.respond(/users?\s*(here|present|active|awake)\s*(.*)$/i, {id: 'users.active'}, function (res) {
 
 		//	Find out what they asked us
 		var userQuery = res.match[2].replace(/@/, "").trim() || "";
@@ -49,7 +49,7 @@ module.exports = function usersActive (robot) {
 			data = JSON.parse(body);
 
 			if (data.ok !== true){
-				console.log('Failed to retrieve users from slack API\n' + error);
+				console.log('Failed to retrieve users list from slack API\n' + error);
 			} else {
 
 				var active_users = [];
@@ -57,7 +57,7 @@ module.exports = function usersActive (robot) {
 
 				//	Find present users
 				data.members.map(function(o){
-					if (o.presence == 'active' && o.is_bot != 'true'){
+					if (o.presence == 'active' && o.is_bot === false){
 						active_users.push({id: o.id, name: o.name});
 						replyMessage += "•\t" + o.name + " \n";
 					}
@@ -77,14 +77,15 @@ module.exports = function usersActive (robot) {
 
 		//	Get user ID from database by their name
 		User.findOne({
+			attributes:['slack_name', 'slack_id'],
 			where:{
-				slack_name: userQuery
+				slack_name: {$iLike: '%' + userQuery + '%'}
 			}
-		}).then(function(o){
+		}).then(function(user){
 			//	Did we get something?
-			if(o){
+			if(user){
 				//	Set the user's slack_id as the user option for the API call
-				options.user = o.slack_id;
+				options.user = user.slack_id;
 				//	Make the API call to get the user's current presence
 				robot.http("https://slack.com/api/users.getPresence?token=" + options.token + "&user=" + options.user).get()(function(error, response, body) {
 					//	Parse reply
@@ -92,7 +93,7 @@ module.exports = function usersActive (robot) {
 					if(data.ok !== true){
 						res.reply("Sorry, I wasn\'t able to find information on that user.\n");
 					} else {
-						res.send(Utilities.proper_capitalize(userQuery) + " is currently " + data.presence + ".");
+						res.send(Utilities.proper_capitalize(user.slack_name) + " is currently " + data.presence + ".");
 					}
 				});
 			} else {	//	We got nothing.

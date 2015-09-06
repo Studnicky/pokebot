@@ -24,7 +24,7 @@ var Utilities = require('./utility');
 module.exports = function pokedex(robot) {
 
 	//	Build return request
-	return robot.respond(/pokedex(.*)/i, function(res) {
+	return robot.respond(/pokedex(.*)/i, {id: 'pokedex.callAPI'}, function(res) {
 
 		//	Only do this in the pokedex channel or DM
 		if (res.message.room == "pokedex" || res.message.room == res.message.user.name) {
