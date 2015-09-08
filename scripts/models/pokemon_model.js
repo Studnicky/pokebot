@@ -136,7 +136,7 @@ module.exports = function(sequelize, Sequelize) {
 		underscoredAll: true,
 		classMethods: {
 			associate: function(models) {
-				Pokemon.hasMany(models.Pokemon_Instance, {foreignKey: 'national_id', targetKey: 'national_id', as: 'pokedex_id'});
+				Pokemon.hasMany(models.Pokemon_Instance, {foreignKey: 'national_id', targetKey: 'national_id'});
 			},
 		}
 	});

@@ -43,8 +43,8 @@ module.exports = function(sequelize, Sequelize) {
 		underscoredAll: true,
 		classMethods: {
 			associate: function(models) {
-				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'owner_id', as: 'current_owner'});
-				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'caught_by', as: 'original_owner'});
+				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'owner_id'});
+				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'caught_by'});
 			}
 		}
 	});

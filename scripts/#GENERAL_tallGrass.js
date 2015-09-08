@@ -104,37 +104,56 @@ module.exports = function tallGrass(robot) {
 				catch_rate: {$gte: (255-rarity)},	//	Invert for UX clarity (rarity as ascending numbers instead of descending)
 			},
 			order: [
-			Sequelize.fn('RANDOM')
+				Sequelize.fn('RANDOM')
 			]
 		})
 		.then(function(pokemon){
 			if(pokemon){
 
-				console.log(pokemon.get({plain:true}));
-
 				var pokemon_instance = Pokemon_Instance.build({
-						caught_by: "wild",
-						current_form: {},
-						effort_values: [{}],
-						exp: 100,		//	bigint calc level
-						gender: 1,
-						happiness: 50,	//	rand range 0-255
-						has_pokerus: 0,	//	rand range 1:21845 true
-						holds_item: {},
-						individual_values: [{}],
-						is_shiny: 0,		//	rand range 1:8192 -> true
-						nature: {},
-						national_id: pokemon.national_id,
-						nickname: null,
-						owner_id: "wild",
-						party_position: 0,
-						for_trade: 0,
-						been_traded: 0,
-						for_sale: 0,
-						been_sold: 0
+					caught_by: "wild",
+					current_form: {},
+					effort_values: [{}],
+					exp: 100,		//	bigint calc level?
+					gender: 1,
+					happiness: 50,	//	rand range 0-100 -> 255 max
+					has_pokerus: 0,	//	rand range 1:21845 -> true
+					holds_item: {},
+					individual_values: [{}],
+					is_shiny: 0,		//	rand range 1:8192 -> true
+					nature: {},
+					national_id: pokemon.national_id,
+					nickname: null,
+					owner_id: "wild",
+					party_position: 0,
+					for_trade: 0,
+					been_traded: 0,
+					for_sale: 0,
+					been_sold: 0
+				},
+				{
+					includeKey: pokemon.national_id,
+					include: [{
+						model: Pokemon,
+  						as: 'Pokemon'
+  					}]
 				});
 
-				console.log(pokemon_instance.get({plain: true}));
+
+				console.log('*---------------------pokemon-------------------*');
+				console.log(pokemon);
+				console.log('*---------------pokemon_instance----------------*');
+				console.log(pokemon_instance);
+				console.log('*-------pokemon_instance.options.includeMap-----*');
+				console.log(pokemon_instance.options.includeMap);
+				console.log('*--pokemon_instance.options.includeMap.Pokemon--*');
+				console.log(pokemon_instance.options.includeMap.Pokemon);
+				console.log('*-----------------------------------------------*');
+				console.log(pokemon_instance.options.includeMap.Pokemon.attributes);
+
+
+				console.log('*---------------pokemon_instance----------------*');
+				console.log(pokemon_instance.get(Pokemon.name));
 
 
 				//	Specify target room because this script is non-reply invoked
