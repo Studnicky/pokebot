@@ -116,11 +116,11 @@ module.exports = function tallGrass(robot) {
 					effort_values: [{}],
 					exp: 100,		//	bigint calc level?
 					gender: 1,
-					happiness: 50,	//	rand range 0-100 -> 255 max
-					has_pokerus: 0,	//	rand range 1:21845 -> true
+					current_happiness: 50,	//	rand range 0-100 -> 255 max
+					has_pokerus: false,
 					holds_item: {},
 					individual_values: [{}],
-					is_shiny: 0,		//	rand range 1:8192 -> true
+					is_shiny: false,		//	rand range 1:8192 -> true
 					nature: {},
 					national_id: pokemon.national_id,
 					nickname: null,
@@ -130,31 +130,11 @@ module.exports = function tallGrass(robot) {
 					been_traded: 0,
 					for_sale: 0,
 					been_sold: 0
-				},
-				{
-					includeKey: pokemon.national_id,
-					include: [{
-						model: Pokemon,
-  						as: 'Pokemon'
-  					}]
 				});
 
-
-				console.log('*---------------------pokemon-------------------*');
-				console.log(pokemon);
-				console.log('*---------------pokemon_instance----------------*');
-				console.log(pokemon_instance);
-				console.log('*-------pokemon_instance.options.includeMap-----*');
-				console.log(pokemon_instance.options.includeMap);
-				console.log('*--pokemon_instance.options.includeMap.Pokemon--*');
-				console.log(pokemon_instance.options.includeMap.Pokemon);
-				console.log('*-----------------------------------------------*');
-				console.log(pokemon_instance.options.includeMap.Pokemon.attributes);
-
-
-				console.log('*---------------pokemon_instance----------------*');
-				console.log(pokemon_instance.get(Pokemon.name));
-
+				//	Battle stats in pokemon.get()
+				pokemon_instance.initialize_new();
+				console.log(pokemon_instance.get());
 
 				//	Specify target room because this script is non-reply invoked
 				robot.messageRoom('general', "Wild :" + pokemon.name.toLowerCase() + ": " + pokemon.name + " appeared!");

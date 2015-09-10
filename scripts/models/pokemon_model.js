@@ -47,6 +47,11 @@ module.exports = function(sequelize, Sequelize) {
 			hasComment: {type: Sequelize.STRING, field: "Pokemon growth rate formula"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "growth_rate" }
 		},
+		happiness: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Pokemon base happiness rating"},
+		},
 		hp: {
 			type: Sequelize.INTEGER,
 			allowNull: false,

@@ -20,6 +20,11 @@ module.exports = function(sequelize, Sequelize) {
 			hasComment: {type: Sequelize.STRING, field: "Pokemon current level"},
 			fieldWithUnderscores: {type: Sequelize.STRING, field: "current_level"}
 		},
+		current_happiness: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Pokemon current happiness rating"},
+		},
 		effort_values: {
 			type: Sequelize.JSON,
 			allowNull: false,
@@ -35,11 +40,6 @@ module.exports = function(sequelize, Sequelize) {
 			type: Sequelize.INTEGER,
 			allowNull: true,
 			hasComment: {type: Sequelize.STRING, field: "Pokemon Gender (NULL=null 0=F 1=M)"}
-		},
-		happiness: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Pokemon happiness rating"},
 		},
 		has_pokerus: {
 			type: Sequelize.BOOLEAN,
@@ -129,7 +129,39 @@ module.exports = function(sequelize, Sequelize) {
 			}
 		},
 		instanceMethods: {
-			getLevel: function() {return '5';}
+			//	Set stats for a new pokemon instance
+			initialize_new: function() {
+
+				//	Set IV's
+				this.individual_values = [
+					{name: 'attack', value: Math.floor(Math.random()*31)},
+					{name: 'defense', value: Math.floor(Math.random()*31)},
+					{name: 'hp', value: Math.floor(Math.random()*31)},
+					{name: 'sp_atk', value: Math.floor(Math.random()*31)},
+					{name: 'sp_def', value: Math.floor(Math.random()*31)},
+					{name: 'speed', value: Math.floor(Math.random()*31)}
+				]
+
+				//	Toggle flipping...
+				if(Math.floor(Math.random()*8192) <= 1) {
+					this.is_shiny = true;
+				}
+				if(Math.floor(Math.random()*21845) <= 1) {
+					this.has_pokerus = true;
+				}
+
+				//	TODO::
+				//	EXP & current_level require math based on growth rate type
+				//	Happiness requires math based on base happiness value
+				//	Gender requires Pokemon base class
+				//	Nature requires load from separate DB list
+				//	Item held requires load from separate DB list
+
+			},
+			//	Aggregate IV and nature stats with base stats
+			battle_stats: function() {
+
+			}
 		},
 		tableName: 'pokemon_instance',
 		deletedAt: 'deleted_at',

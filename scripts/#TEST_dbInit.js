@@ -94,11 +94,12 @@ function dbInitUsers(robot, res){
 				}
 
 				//	Instantiate a new user
-				var this_user = User.upsert({
+				User.upsert({
 					slack_id: o.id,
 					slack_name: o.name,
 					tz_offset: o.tz_offset.toString(),	//	Force this in as a string for now
 					permissions_level: permission_level,
+					position_cap: 15 * permission_level,
 					credits: 0
 				})
 				.then(function(){
@@ -108,6 +109,19 @@ function dbInitUsers(robot, res){
 					console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
 				});
 
+			});
+
+			//	Testing properly on console requires a shell user 
+			User.upsert({
+				slack_id: '1',
+				slack_name: 'Shell',
+				tz_offset: '-14400',
+				permissions_level: 6,
+				position_cap: 800,
+				credits: 5000000
+			})
+			.then(function(){
+				console.log("Saved shell user as superadmin");
 			});
 		}
 	});
@@ -126,6 +140,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {},
+		happiness: 50,
 		hp: 33,
 		is_legendary: false,
 		is_mythical: true,
@@ -158,6 +173,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium fast"},
+		happiness: 50,
 		hp: 35,
 		is_legendary: false,
 		is_mythical: false,
@@ -197,6 +213,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium fast"},
+		happiness: 50,
 		hp: 55,
 		is_legendary: false,
 		is_mythical: false,
@@ -229,6 +246,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate:"fast"},
+		happiness: 50,
 		hp: 70,
 		is_legendary: false,
 		is_mythical: false,
@@ -262,6 +280,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "slow"},
+		happiness: 50,
 		hp: 40,
 		is_legendary: false,
 		is_mythical: false,
@@ -294,6 +313,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 45,
 		is_legendary: false,
 		is_mythical: false,
@@ -326,6 +346,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 39,
 		is_legendary: false,
 		is_mythical: false,
@@ -357,6 +378,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 1,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 44,
 		is_legendary: false,
 		is_mythical: false,
@@ -388,6 +410,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 45,
 		is_legendary: false,
 		is_mythical: false,
@@ -419,6 +442,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 39,
 		is_legendary: false,
 		is_mythical: false,
@@ -450,6 +474,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 2,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 50,
 		is_legendary: false,
 		is_mythical: false,
@@ -481,6 +506,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 40,
 		is_legendary: false,
 		is_mythical: false,
@@ -512,6 +538,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 45,
 		is_legendary: false,
 		is_mythical: false,
@@ -543,6 +570,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 3,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 50,
 		is_legendary: false,
 		is_mythical: false,
@@ -574,6 +602,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 55,
 		is_legendary: false,
 		is_mythical: false,
@@ -605,6 +634,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 44,
 		is_legendary: false,
 		is_mythical: false,
@@ -636,6 +666,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 4,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 53,
 		is_legendary: false,
 		is_mythical: false,
@@ -667,6 +698,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 45,
 		is_legendary: false,
 		is_mythical: false,
@@ -698,6 +730,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 65,
 		is_legendary: false,
 		is_mythical: false,
@@ -729,6 +762,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 5,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 55,
 		is_legendary: false,
 		is_mythical: false,
@@ -760,6 +794,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 56,
 		is_legendary: false,
 		is_mythical: false,
@@ -791,6 +826,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 40,
 		is_legendary: false,
 		is_mythical: false,
@@ -822,6 +858,7 @@ var pokemon_list = [
 		ev_yield: [{}],
 		gen: 6,
 		growth_rate: {rate: "medium slow"},
+		happiness: 50,
 		hp: 41,
 		is_legendary: false,
 		is_mythical: false,
@@ -858,6 +895,7 @@ var pokemon_list = [
 //	ev_yield: [{}],
 // 	gen: ,
 // 	growth_rate: {rate: ""},
+//	happiness: ,
 // 	hp: ,
 //	is_legendary: false,
 //	is_mythical: false,

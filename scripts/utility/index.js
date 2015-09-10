@@ -36,6 +36,6 @@ module.exports = {
 	//	Helper function to capitalize first letter of a proper name
 	proper_capitalize: function(name) {
 		return name.charAt(0).toUpperCase() + name.slice(1);
-	}
+	},
 
 }

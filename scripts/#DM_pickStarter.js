@@ -50,6 +50,7 @@ module.exports = function starter (robot) {
 
 			//	Get what the user gave us - capture group 2 is the important part. If it doesn't exist, pretend it's empty.
 			var userQuery = res.match[1].trim() || null;
+			var replyMessage = '';
 
 			//	Play regex-plinko with the response to figure out what to do...
 			switch (true) {
@@ -72,13 +73,28 @@ module.exports = function starter (robot) {
 
 				case (/(pick)\s*(.*)/ig.test(userQuery)):
 					var pick = userQuery.substring(4).trim();
-					pickStarter(res, pick);
+
+					Pokemon_Instance.count({
+						where:{
+							owner_id: String(res.message.user.id)
+						}
+					})
+					.then(function(count){
+						if (!count){
+							saveStarter(res, pick);
+						} else {
+							res.send("You've already got a Pokemon, " + Utilities.proper_capitalize(res.message.user.name)  + "!");
+						}
+					})
+					.catch(function(error){
+							res.send("I\'m afraid I can\'t give you a Pokemon right now, " + Utilities.proper_capitalize(res.message.user.name)  + ".");
+					});
 					break;
 
 				default:
 					//	Base command or not understood. The user needs help, so send a help message.
 					var commands = ["starter generations", "starters <generation number or 'all'>", "starters pick <pokemon>"];
-					var replyMessage = "Use the following commands to pick your starter pokemon.\n";
+					replyMessage += "Use the following commands to pick your starter pokemon.\n";
 					commands.forEach(function(element){
 						replyMessage += "•\t" + element + "\n";
 					});
@@ -149,9 +165,7 @@ module.exports = function starter (robot) {
 
 	}
 
-	function pickStarter(res, pick){
-
-		console.log(pick);
+	function saveStarter(res, pick){
 
 		Pokemon.findOne({
 			where:{
@@ -165,13 +179,41 @@ module.exports = function starter (robot) {
 			} else {
 				replyMessage += "You\'ve chosen :" + starter.name.toLowerCase() + ": " + starter.name + "!\n";
 
-				//	TODO:: Store into pokemon_instance table
-				
+				//	Build the instance first, we have to set stats!
+				var pokemon_instance = Pokemon_Instance.build({
+					caught_by: String(res.message.user.id),
+					current_form: {},
+					current_level: 5,
+					current_happiness: 100,
+					effort_values: [{}],
+					exp: 100,
+					gender: 1,
+					has_pokerus: false,
+					holds_item: {},
+					individual_values: [{}],
+					is_shiny: false,
+					nature: {},
+					national_id: starter.national_id,
+					nickname: null,
+					owner_id: String(res.message.user.id),
+					party_position: 0,
+					for_trade: 0,
+					been_traded: 0,
+					for_sale: 0,
+					been_sold: 0
+				});
+				//	Set random stats
+				pokemon_instance.initialize_new();
 
-				replyMessage += "Great choice, " + Utilities.proper_capitalize(res.message.user.name) + "!";
+				pokemon_instance.save()
+				.then(function(){
+					replyMessage += "Great choice, " + Utilities.proper_capitalize(res.message.user.name) + "!";
+					res.send(replyMessage);
+				}).catch(function(error){
+					replyMessage += "Unfortunately, you cannot have that Pokemon, " + Utilities.proper_capitalize(res.message.user.name) + "!";
+					res.send(replyMessage);
+				});
 			}
-			res.send(replyMessage);
-			return;
 		});
 
 	}

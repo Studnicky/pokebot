@@ -28,6 +28,12 @@ module.exports = function(sequelize, Sequelize) {
 			hasComment: {type: Sequelize.STRING, field: "User permissions level"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "permissions_level" }
 		},
+		position_cap: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "User pokemon max count"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "permissions_level" }
+		},
 		credits: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
@@ -46,6 +52,9 @@ module.exports = function(sequelize, Sequelize) {
 				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'owner_id'});
 				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'caught_by'});
 			}
+		},
+		instanceMethods: {
+			//	TODO: Method to find open party positions, reads from pokemon_instance table
 		}
 	});
 

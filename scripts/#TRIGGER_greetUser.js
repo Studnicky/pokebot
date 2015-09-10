@@ -13,31 +13,38 @@
 //	Author:
 //		Andrew Studnicky
 
+//	Define required data models
+var Models = require('./models'),
+	User = Models.User,
+	Pokemon_Instance = Models.Pokemon_Instance;
+
+//	Get the utility functions
+var Utilities = require('./utility');
+
+
 module.exports = function greetUser (robot) {
 
-
-	//	Get the utility functions
-	var Utilities = require('./utility');
-
 	robot.enter({id: 'user.greet'}, function (res) {
-		//	TODO:
 
-		//	This will run every time a user joins a channel. No harm in running it multiple times.
-		saveUserInfo(res);
-
-		//	Users may have left channels and rejoined.  Check if user owns a pokemon. Skip script if they do.
-
-
-
-		//	Greet new channel users.
 		robot.send('Hello, ' + Utilities.proper_capitalize(res.message.user.name) + '!\nSend me a private message me to get started on your adventure!');
 
-		//	Refer here for how to force open an IM
-		//	https://api.slack.com/methods/im.open
-		//	DM the user to start the initialization script
-		robot.messageRoom(res.message.user.name, "Let's get started, " + Utilities.proper_capitalize(res.message.user.name) + "!\nUse the \`\`\`starter\`\`\` command to pick your first pokemon!");
 
-
+		//	Users may have left channels and rejoined.  Check if user owns a pokemon. Skip script if they do.
+		Pokemon_Instance.count({
+			where:{
+				owner_id: String(res.message.user.id)
+			}
+		})
+		.then(function(count){
+			if (!count){
+				//	User has no pokemon. They might be new, or have released all their pokemon. Remind them to pick a starter.
+				saveUserInfo(res);
+				robot.messageRoom(res.message.user.name, "Let's get started, " + Utilities.proper_capitalize(res.message.user.name) + "!\nUse the \`\`\`starter\`\`\` command to pick your first pokemon!");
+			}
+		})
+		.catch(function(error){
+			//	...not sure what could go wrong here, honestly.
+		});
 	});
 
 
