@@ -125,7 +125,7 @@ module.exports = function(sequelize, Sequelize) {
 			associate: function(models) {
 				Pokemon_Instance.belongsTo(models.User, {foreignKey: 'owner_id', targetKey: 'slack_id'});
 				Pokemon_Instance.belongsTo(models.User, {foreignKey: 'caught_by', targetKey: 'slack_id'});
-				Pokemon_Instance.hasOne(models.Pokemon, {foreignKey: 'national_id', targetKey: 'national_id'});
+				Pokemon_Instance.belongsTo(models.Pokemon, {foreignKey: 'national_id', targetKey: 'national_id'});
 			}
 		},
 		instanceMethods: {

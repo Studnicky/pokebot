@@ -39,7 +39,6 @@ postgres = {
 //	Create table associations from models
 Object.keys(postgres).forEach(function(modelName) {
   if ('associate' in postgres[modelName]) {
-  	console.log(modelName);
     postgres[modelName].associate(postgres);
   }
 });

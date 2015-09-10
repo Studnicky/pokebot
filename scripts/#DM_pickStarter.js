@@ -40,12 +40,6 @@ module.exports = function starter (robot) {
 			res.reply("Please private message me!");
 			return;
 
-		// } else if {
-
-		//	After user_pokemon table is created, add a check here for the user already has a pokemon.
-		//	If they do, tell them no more and skip the entire script.
-		//	return;
-
 		} else {
 
 			//	Get what the user gave us - capture group 2 is the important part. If it doesn't exist, pretend it's empty.
@@ -179,7 +173,7 @@ module.exports = function starter (robot) {
 			} else {
 				replyMessage += "You\'ve chosen :" + starter.name.toLowerCase() + ": " + starter.name + "!\n";
 
-				//	Build the instance first, we have to set stats!
+				//	Build the instance first, we have to set stats before we save!
 				var pokemon_instance = Pokemon_Instance.build({
 					caught_by: String(res.message.user.id),
 					current_form: {},
@@ -196,13 +190,13 @@ module.exports = function starter (robot) {
 					national_id: starter.national_id,
 					nickname: null,
 					owner_id: String(res.message.user.id),
-					party_position: 0,
+					party_position: 1,
 					for_trade: 0,
 					been_traded: 0,
 					for_sale: 0,
 					been_sold: 0
 				});
-				//	Set random stats
+				//	Set toggles and stats!
 				pokemon_instance.initialize_new();
 
 				pokemon_instance.save()

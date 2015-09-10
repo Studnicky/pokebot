@@ -33,34 +33,35 @@ module.exports = function pokedex(robot) {
 			var pokemon = res.match[1].replace(/:$/,'').toLowerCase().trim();
 
 			if (pokemon.length > 0) {
+				console.log(pokemon);
+				console.log('http://pokeapi.co/api/v1/pokemon/' + pokemon);
 
 				//	TODO:: We should have these all in our database, so change these to internal sequelize calls.
-				//	Maybe leave the picture get?
 
-				var api_end_point = 'http://pokeapi.co/api/v1/pokemon/';
-				robot.http(api_end_point).header('Accept', 'application/json').get(pokemon)(function(err, reponse, body) {
+				robot.http('http://pokeapi.co/api/v1/pokemon/' + pokemon).get()(function(error, response, body){
+					console.log(JSON.parse(body));
 
-				//	Base the reply on the response status code...
+					//	Base the reply on the response status code...
 					switch(true){
 						
 						//	Good reply
-						case (reponse.statusCode == 200):
+						case (response.statusCode == 200):
 							reply_message = parseReply(body); 
 							res.send(reply_message);
 							break;
 						
 						//	Server offline?
-						case (reponse.statusCode >= 300 && res.statusCode < 400):
+						case (response.statusCode >= 300 && res.statusCode < 400):
 							res.reply('I\'m sorry, I seem to have misplaced that message.');
 							break;
 						
 						//	Unrecognized request
-						case (reponse.statusCode >= 400 && res.statusCode < 500):
+						case (response.statusCode >= 400 && res.statusCode < 500):
 							res.reply('I didn\'t understand you, did you spell that right?');
 							break;
 						
 						//	Internal error
-						case(reponse.statusCode>=500):
+						case(response.statusCode>=500):
 							res.reply('It seems I\'ve forgotten that.');
 							break;
 						
@@ -68,6 +69,7 @@ module.exports = function pokedex(robot) {
 						case 'default':
 							res.reply('Hmm, try asking again later.');
 					}
+
 				});
 
 			} else {
