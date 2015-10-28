@@ -55,9 +55,19 @@ module.exports = function showParty (robot) {
 					getPartyRoster(res);
 					break;
 
-				// TODO::  party swap + party members (@username) + party box [0-?]
-				// case (/()/ig.test(userQuery)):
-				// 	break;
+				// TODO:: party swap
+				case (/^swap\s*(\w+)\s+(\w+)/ig.test(userQuery)):
+					var pokemon_one = userQuery.match(/^swap\s*(\w+)\s+(\w+)/)[1];
+					var pokemon_two = userQuery.match(/^swap\s*(\w+)\s+(\w+)/)[2];
+
+					//	How to pre-populate?
+					console.log(pokemon_one);
+					console.log(pokemon_two);
+					break;
+
+ 				//	TODO:: party members (@username) + party box [0-?]
+ 				
+
 
 				default:
 					//	Base command or not understood. The user needs help, so send a help message.

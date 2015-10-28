@@ -4,19 +4,12 @@ url = require('url');
 querystring = require('querystring');
 
 module.exports = function(robot) {
-  return robot.router.get("/hubot/message", function(req, res) {
-    var error, query, user;
-    query = querystring.parse(url.parse(req.url).query);
-    user = {};
-    if (query.room) {
-      user.room = query.room;
-    }
-    try {
-      robot.send(user, "INCOMING MESSAGE: " + query.message);
-      return res.end("message sent: " + query.message);
-    } catch (_error) {
-      error = _error;
-      return console.log("message-listner error: " + error + ".");
-    }
+  var message;
+  robot.router.post('/hubot/notify/:room', function(req, res) {
+    var room;
+    return room = req.params.room;
   });
+  message = req.body.message;
+  robot.messageRoom(room, message);
+  return res.end();
 };
