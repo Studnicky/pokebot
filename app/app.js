@@ -26,8 +26,9 @@ function newServer (req, res) {
 
 //	Example socket script
 io.on('connection', function (socket) {
+	console.log('Connection made.');
 	
-	socket.emit('outgoing', { SLACK_TOKEN: process.env.SLACK_TOKEN });
+	socket.emit('outgoing', {outgoing: "sample outoging data"});
 
 	socket.on('incoming', function (data) {
 		console.log(data);
