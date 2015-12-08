@@ -1,11 +1,8 @@
 define([
-	'jquery',
-	'underscore',
-	'backbone',
 	//	Views files
 	'views/main',
 	'views/topbar'
-], function($, _, Backbone, MainView, TopbarView){
+], function(MainView, TopbarView){
 	var MainRouter = Backbone.Router.extend({
 		routes: {
 			// Define some URL routes

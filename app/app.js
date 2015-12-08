@@ -1,3 +1,4 @@
+//	Primary dependencies
 var app = require('http').createServer(newServer)
 var io = require('socket.io')(app);
 var fs = require('fs');
@@ -6,6 +7,12 @@ var fs = require('fs');
 var env = require('node-env-file');
 env(__dirname + '/../.env');
 
+//	Call in the slackHandler
+var slackHandler = require('./slack');
+	//	Instantiate a slack handler
+	slackHandler();
+
+//	Instantiate webserver
 function newServer (req, res) {
 
 	//	Serve index for single page app
@@ -38,5 +45,5 @@ io.on('connection', function (socket) {
 
 //	Create server
 app.listen(process.env.PORT, function(){
-	console.log('Server listening on: ' + process.env.PORT );
+	console.log('Werbserver listening on: ' + process.env.PORT );
 });

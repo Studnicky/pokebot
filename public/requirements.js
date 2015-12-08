@@ -31,11 +31,15 @@ require.config({
 });
 
 require([
-
-  // Load our app module and pass it to our definition function
-  'init',
-  ], function(init){
+	//	Require main front-end dependencies in global scope
+	'jquery',
+	'underscore',
+	'backbone',
+	'socketio',
+	// Load our app module
+	'init'
+	], function($, _, Backbone, io, init){
   	console.log('Require configuration set...');
-  // The "app" dependency is passed in as "App"
-  init.initialize();
+  	// The "app" dependency is passed in as "App"
+	init.initialize();
 });

@@ -1,13 +1,9 @@
 define([
-	//	Main dependencies
-	'jquery',
-	'underscore',
-	'backbone',
 	//	View dependencies
 	'foundation',
 	//	Template load via text plugin
 	'require-text!/../../templates/main/topbar.html'
-], function($, _, Backbone, Foundation, TopbarTemplate){
+], function(Foundation, TopbarTemplate){
 	var TopbarView = Backbone.View.extend({
 
 		el: $('#main-nav'),
