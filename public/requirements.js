@@ -14,9 +14,9 @@ require.config({
 
 	},
 	shim: {
-		// 'socketio': {
-		// 	exports: 'io'
-		// },
+		'socketio': {
+			exports: 'io'
+		},
 		'underscore': {
 			exports: '_'
 		},
@@ -45,9 +45,6 @@ require([
 	// Load our app module
 	'init'
 	], function($, _, Backbone, io, init){
-
-
 		console.log('Require configuration set...');
-  		// The "app" dependency is passed in as "App"
-  	init.initialize();
+  		init.initialize();
   });

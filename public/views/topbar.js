@@ -6,7 +6,7 @@ define([
 ], function(Foundation, TopbarTemplate){
 	var TopbarView = Backbone.View.extend({
 
-		el: $('#main-nav'),
+		el: $("#main-nav"),
 
 		initialize: function(){
 			console.log("Topbar Initialize...");
@@ -15,7 +15,7 @@ define([
 			var data = {};
 			var compiledTemplate = _.template( TopbarTemplate, data );
 			this.$el.append( compiledTemplate );
-			this.$el.foundation();
+			// this.$el.foundation();
 
 			console.log("Topbar Rendered!");
 		},

@@ -23,7 +23,7 @@ define([
 			var data = {};
 			var compiledTemplate = _.template( MainTemplate, data );
 			this.$el.append( compiledTemplate );
-			this.$el.foundation();
+			// this.$el.foundation();
 
 			console.log("MainView Rendered!");
 		},
