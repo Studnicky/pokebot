@@ -8,12 +8,12 @@ module.exports = function SlackHandler(){
 
 	var slack = new Slack(slackToken, autoReconnect, autoMark);
 
-	//	Event: Connection Opened
+	//	Event listener: connection started
 	slack.on('open', function(){
 		return console.log("Connected to " + slack.team.name + " as @" + slack.self.name);
 	});
 
-	// Event: Message recieved in any room or DM the bot is present
+	// Event listener: Message recieved
 	slack.on('message', function(message) {
 
 		if(!message.text) return false;
@@ -25,7 +25,7 @@ module.exports = function SlackHandler(){
 		console.log('Slack message error: ' + err);
 	});
 
-	// Event: Error
+	// Event listener: Error
 	slack.on('error', function(err) {
 		return console.error("Slack Connection Error: ", err);
 	});
@@ -33,3 +33,4 @@ module.exports = function SlackHandler(){
 	slack.login();
 
 };
+

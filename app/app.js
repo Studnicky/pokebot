@@ -7,6 +7,10 @@ var fs = require('fs');
 var env = require('node-env-file');
 env(__dirname + '/../.env');
 
+
+//	Connect to postgres and run init
+var sequelize = require ('./models');
+
 //	Call in the slackHandler
 var slackHandler = require('./slack');
 	//	Instantiate a slack handler
@@ -45,5 +49,5 @@ io.on('connection', function (socket) {
 
 //	Create server
 app.listen(process.env.PORT, function(){
-	console.log('Werbserver listening on: ' + process.env.PORT );
+	console.log('Webserver listening on: ' + process.env.PORT );
 });

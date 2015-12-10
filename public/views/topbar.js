@@ -15,6 +15,8 @@ define([
 			var data = {};
 			var compiledTemplate = _.template( TopbarTemplate, data );
 			this.$el.append( compiledTemplate );
+			this.$el.foundation();
+
 			console.log("Topbar Rendered!");
 		},
 		events: {
