@@ -10,6 +10,7 @@ env(__dirname + '/../.env');
 
 //	Connect to postgres and run init
 var sequelize = require ('./models');
+console.log(sequelize);
 
 //	Call in the slackHandler
 var slackHandler = require('./slack');

@@ -1,10 +1,10 @@
-module.exports = function SlackHandler(){
+//	Local variables
+var Slack = require('slack-client'),
+	autoMark = true,
+	autoReconnect = true,
+	slackToken = process.env.REALTIME_SLACK_TOKEN;
 
-	//	Slack config
-	var Slack = require('slack-client');
-	var autoMark = true;
-	var autoReconnect = true;
-	var slackToken = process.env.REALTIME_SLACK_TOKEN;
+SlackHandler = function(){
 
 	var slack = new Slack(slackToken, autoReconnect, autoMark);
 
@@ -16,10 +16,12 @@ module.exports = function SlackHandler(){
 	// Event listener: Message recieved
 	slack.on('message', function(message) {
 
-		if(!message.text) return false;
+		console.log(message);
 
-		var data = message.text;
-		console.log(data);
+		// if(!message.text) return false;
+
+		// var data = message.text;
+		// console.log(data);
 
 	}, function(err){
 		console.log('Slack message error: ' + err);
@@ -33,4 +35,6 @@ module.exports = function SlackHandler(){
 	slack.login();
 
 };
+
+module.exports = SlackHandler;
 

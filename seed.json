@@ -1,4 +1,4 @@
-
+[
 	{
 		"abilities": [
 			{"name": "glitch"}
@@ -745,40 +745,4 @@
 			{"name": "water"}
 		]
 	}
-
-
-//	Template for new pokemon object
-
-// {	
-// 	"abilities": [
-// 		{"name": ""},
-// 		{"name": ""},
-// 		{"name": ""}
-// 	],
-// 	"attack": ,
-// 	"catch_rate": ,
-// 	"defense": ,
-// 	"evolutions": [
-// 		{"name": "", "national_id": "", "method": ""}
-// 	],
-//	"ev_yield": [{}],
-// 	"gen": ,
-// 	"growth_rate": {"rate": ""},
-//	"happiness": ,
-// 	"hp": ,
-//	"is_legendary": false,
-//	"is_mythical": false,
-// 	"is_starter": true,
-// 	"is_wild": true,
-// 	"male_female_ratio": ,
-// 	"movelist": {},
-// 	"name": "",
-// 	"national_id": ,
-// 	"sp_atk": ,
-// 	"sp_def": ,
-// 	"speed": ,
-// 	"types": [
-// 		{"name": ""},
-// 		{"name": ""}
-// 	]
-// },
+]

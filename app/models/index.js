@@ -1,3 +1,4 @@
+//	Local variables
 var Sequelize = require('sequelize'),	//	require node module
 	sequelize = null,					//	create an empty class reference
 	postgres = {};						//	create empty DB object
@@ -21,6 +22,8 @@ postgres = {
 	Pokemon_Instance:	sequelize.import(__dirname + '/pokemon_instance_model.js')
 };
 
+//	Run on initialize
+
 //	Create table associations from models
 Object.keys(postgres).forEach(function(modelName) {
   if ('associate' in postgres[modelName]) {
@@ -36,5 +39,6 @@ postgres.sequelize.sync({force: true}, function(err){
 }).then(function () {
 	console.log("\nSequelize successfully created tables\n");
 });
+
 
 module.exports = postgres;
