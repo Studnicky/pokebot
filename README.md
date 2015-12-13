@@ -8,6 +8,8 @@ Running Pokebot will require a configured slack bot integration.
 
 Pokebot relies on [postgres](http://www.postgresql.org/) and several environment variables to run properly.
 
+#####Run ```npm install``` first to get the latest dependency packages.#####
+
 ###Environment Variables###
 
 Before you can run Pokebot locally, you must create an `.env` file at the root directory to contain the following:
@@ -69,4 +71,3 @@ postgres=#	\q
 ```
 node app/app.js
 ```
-#####Don't forget to ```npm install``` before trying to run!#####
