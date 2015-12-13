@@ -10,12 +10,12 @@ if(!process.env.DATABASE_URL){
 }
 
 //	Connect to postgres and run init
-var sequelize = require ('./models');
+var postgres = require ('./models');
+	postgres.initialize();
 
 //	Call in the slackHandler
 var slackHandler = require('./slack');
-	//	Instantiate a slack handler
-	slackHandler();
+	slackHandler.initialize();
 
 //	Instantiate webserver
 function newServer (req, res) {

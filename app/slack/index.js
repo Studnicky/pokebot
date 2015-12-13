@@ -4,38 +4,39 @@ var Slack = require('slack-client'),
 	autoReconnect = true,
 	slackToken = process.env.REALTIME_SLACK_TOKEN;
 
-SlackHandler = function(){
+//	Global ref for slack client
+slack = new Slack(slackToken, autoReconnect, autoMark);
 
-	var slack = new Slack(slackToken, autoReconnect, autoMark);
+//	Global ref for slack handler
+slackHandler = {
+	slack: slack,
+	initialize: function(){
+		console.log('Slack adapter initialize...');
+		this.connect();
+		this.dispatch_events();
+	},
+	connect: function(){
+		slack.login();
+		slack.on('open', function(){
+			return console.log("Connected to " + slack.team.name + " as @" + slack.self.name);
+		});
+	},
+	dispatch_events: function(){
+		slack.on('message', function(message) {
+			
+			//	Dispatch events from here
+			console.log("Message event: " + message.type + " heard at " + message.ts);
+			console.log("User: " + message.user + " on " + message.team + " in channel " + message.channel);
+			console.log(message.text);
 
-	//	Event listener: connection started
-	slack.on('open', function(){
-		return console.log("Connected to " + slack.team.name + " as @" + slack.self.name);
-	});
-
-	// Event listener: Message recieved
-	slack.on('message', function(message) {
-		console.log(message);
-		
-		//	Important information
-		// console.log(message.type);
-		// console.log(message.channel);
-		// console.log(message.ts);
-		// console.log(message.user);
-		// console.log(message.text);
-
-	}, function(err){
-		console.log('Slack message error: ' + err);
-	});
-
-	// Event listener: Error
-	slack.on('error', function(err) {
-		return console.error("Slack Connection Error: ", err);
-	});
-
-	slack.login();
-
+		}, function(err){
+			console.log('Slack message error: ' + err);
+		});
+		// Event listener: Error
+		slack.on('error', function(err) {
+			return console.error("Slack Connection Error: ", err);
+		});
+	}
 };
 
-module.exports = SlackHandler;
-
+module.exports = slackHandler;
