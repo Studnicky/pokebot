@@ -6,17 +6,17 @@ Running Pokebot will require a configured slack bot integration.
 
 ##Running locally##
 
-Pokebot relies on [postgres] and several environment variables to run properly.
+Pokebot relies on [postgres](http://www.postgresql.org/) and several environment variables to run properly.
 
 ###Environment Variables###
 
-Before you can run, create an `.env` file at the root directory to contain the following:
+Before you can run Pokebot locally, you must create an `.env` file at the root directory to contain the following:
 
 #####(This should be in the same directory as .gitignore)#####
 
     PORT=((the port you wish to deliver on))
     
-    DATABASE_URL=((your local postgres usl))
+    DATABASE_URL=((your local postgres url))
     
     REALTIME_SLACK_TOKEN=((your bot slack token))
 
@@ -24,8 +24,10 @@ Before you can run, create an `.env` file at the root directory to contain the f
 
 * [Install postgres](http://www.postgresql.org/download/)
 
-* Log in to posegres as it's default superuser
-```sudo -u postgres psql```
+* Log in to postgres as it's default superuser
+```
+$ sudo -u postgres psql
+```
 
 * Make a new user named pokebot with database creation privileges
 ```
@@ -61,3 +63,10 @@ postgres=#	\q
 ```
 
 > If that's not what you see, consult the [postgres manual](http://www.postgresql.org/docs/).
+
+* You should now be able to start the application and begin using Pokebot!
+
+```
+node app/app.js
+```
+#####Don't forget to ```npm install``` before trying to run!#####
