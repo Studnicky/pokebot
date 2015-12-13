@@ -4,8 +4,10 @@ var io = require('socket.io')(app);
 var fs = require('fs');
 
 //  Environment variables for local testing
-var env = require('node-env-file');
-env(__dirname + '/../.env');
+if(!process.env.DATABASE_URL){
+	var env = require('node-env-file');
+	env(__dirname + '/../.env');
+}
 
 //	Connect to postgres and run init
 var sequelize = require ('./models');
