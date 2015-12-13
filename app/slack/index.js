@@ -15,13 +15,14 @@ SlackHandler = function(){
 
 	// Event listener: Message recieved
 	slack.on('message', function(message) {
-
 		console.log(message);
-
-		// if(!message.text) return false;
-
-		// var data = message.text;
-		// console.log(data);
+		
+		//	Important information
+		// console.log(message.type);
+		// console.log(message.channel);
+		// console.log(message.ts);
+		// console.log(message.user);
+		// console.log(message.text);
 
 	}, function(err){
 		console.log('Slack message error: ' + err);
