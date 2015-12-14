@@ -11,7 +11,7 @@ define([
 
 		initialize: function(){
 			// Open socket connection... 
-			var connection = io.connect('http://localhost:3000');
+			var connection = io.connect(window.location.hostname);
 			connection.on('outgoing', function (data) {
 				console.log(data);
 				connection.emit('incoming', { incoming: 'sample incoming data' });
