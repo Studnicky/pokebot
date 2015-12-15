@@ -1,10 +1,10 @@
 //	Local variables
 var Slack = require('slack-client'),
-Sequelize = require('sequelize'),
-request = require('request'),
-autoMark = true,
-autoReconnect = true,
-slackToken = process.env.REALTIME_SLACK_TOKEN;
+	Sequelize = require('sequelize'),
+	request = require('request'),
+	autoMark = true,
+	autoReconnect = true,
+	slackToken = process.env.REALTIME_SLACK_TOKEN;
 
 //	Global ref for slack client
 slack = new Slack(slackToken, autoReconnect, autoMark);
@@ -22,6 +22,8 @@ slackHandler = {
 		this.connect();
 		this.dispatch_events();
 		this.get_users();
+		this.seed_pokemon();
+		this.echo_starters();
 	},
 	connect: function(){
 		slack.login();
@@ -31,7 +33,7 @@ slackHandler = {
 	},
 	dispatch_events: function(){
 		slack.on('message', function(message) {
-			
+
 			//	Dispatch events from here
 			console.log("Message event: " + message.type + " heard at " + message.ts);
 			console.log("User: " + message.user + " on " + message.team + " in channel " + message.channel);
@@ -97,6 +99,41 @@ slackHandler = {
 
 			});
 		})
+	},
+	//	These only exist to prove sequelize is using and will go away when db import is done
+	seed_pokemon: function(){
+		var pokemon_list = require(__dirname + '/../../seed.json');
+
+		// Bulk create is undocumented, iterating array for now
+		pokemon_list.forEach(function(this_pokemon){			
+			Pokemon.upsert(this_pokemon)
+			.then(function(){
+				console.log("Stored: " + this_pokemon.name);
+			})
+			.catch(function(error){
+				console.log("Failed to store: " + this_pokemon.name + "\n" + error);
+			});
+		});
+
+	},
+	echo_starters: function(){
+
+		Pokemon.findAll({
+			attributes: ['name'],
+			order: [['gen', 'ASC'],['name', 'ASC']],
+			where:{
+				is_starter: true,
+			}
+		}).then(function(starters){
+			
+			var replyMessage = "All starter pokemon available are: \n";
+			starters.map(function(pokemon){
+				replyMessage += "•\t:" + pokemon.name.toLowerCase() + ": " + pokemon.name + " \n";
+			});
+			console.log(replyMessage);
+			return;
+		});
+
 	}
 };
 

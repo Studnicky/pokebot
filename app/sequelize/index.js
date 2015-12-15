@@ -5,7 +5,8 @@ var Sequelize = require('sequelize'),	//	require node module
 //	Global ref for sequelize instance
 sequelize = new Sequelize(database_uri, {
 	dialect:  'postgres',
-	protocol: 'postgres'
+	protocol: 'postgres',
+	logging: false
 });
 
 //	Global ref for postgres handler
