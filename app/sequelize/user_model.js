@@ -19,7 +19,7 @@ module.exports = function(sequelize, Sequelize) {
 		},
 		tz_offset: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: true,	//	Bot users do not always have tx_offset
 			hasComment: {type: Sequelize.STRING, field: "User home timezone"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "tz_offset" }
 		},
