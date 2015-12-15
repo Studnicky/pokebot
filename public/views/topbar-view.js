@@ -2,16 +2,16 @@ define([
 	//	View dependencies
 	'foundation',
 	//	Template load via text plugin
-	'require-text!/../../templates/main/topbar.html'
+	'require-text!templates/topbar-template.html'
 ], function(Foundation, TopbarTemplate){
 	var TopbarView = Backbone.View.extend({
 
 		el: $("#main-nav"),
 
 		initialize: function(){
-			console.log("Topbar Initialize...");
 		},
 		render: function(){
+			console.log("Topbar Initialize...");
 			var data = {};
 			var compiledTemplate = _.template( TopbarTemplate, data );
 			this.$el.append( compiledTemplate );

@@ -3,7 +3,7 @@ define([
 	'foundation',
 	'socketio',
 	//	Template load via text plugin
-	'require-text!/../../templates/main/main.html'
+	'require-text!templates/main-template.html'
 ], function(Foundation, io, MainTemplate){
 	var MainView = Backbone.View.extend({
 
@@ -11,15 +11,16 @@ define([
 
 		initialize: function(){
 			// Open socket connection... 
-			var connection = io.connect(window.location.hostname);
-			connection.on('outgoing', function (data) {
-				console.log(data);
-				connection.emit('incoming', { incoming: 'sample incoming data' });
-			});
+			var socket = io.connect(window.location.hostname + ":3000");
+			console.log('Socket connected!');
+			socket.emit('ping-incoming', {incoming: 'Ping!'});
 
-			console.log("MainView Initialize...");
+			socket.on('ping-outgoing', function (data) {
+				console.log(data);
+			});
 		},
 		render: function(){
+			console.log("MainView Initialize...");
 			var data = {};
 			var compiledTemplate = _.template( MainTemplate, data );
 			this.$el.append( compiledTemplate );

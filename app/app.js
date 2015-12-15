@@ -10,12 +10,44 @@ if(!process.env.DATABASE_URL){
 }
 
 //	Connect to postgres and run init
-var postgres = require ('./models');
+var postgres = require ('./sequelize');
 	postgres.initialize();
 
 //	Call in the slackHandler
 var slackHandler = require('./slack');
 	slackHandler.initialize();
+
+//	Example socket script
+io.on('connection', function (socket) {
+	console.log('Socket Connected!');
+
+	// var socketHandlers = {
+	// 	socketEvents: {
+	// 		userListener: new UserListener();
+	// 	},
+	// 	initialize: function(){
+
+	// 	},
+	// 	dispatch_events: function(){
+	// 		for (var event in socketEvents){
+	// 			var handler = socketEvents[event]
+	// 		}
+	// 	}
+	// };
+
+	socket.on('ping-incoming', function (data) {
+		console.log(data);
+		socket.emit('ping-outgoing', {outgoing: "Pong!"});
+	});
+	
+});
+
+//	Create server
+app.listen(process.env.PORT, function(){
+	console.log('Webserver listening on: ' + process.env.PORT );
+});
+
+
 
 //	Instantiate webserver
 function newServer (req, res) {
@@ -35,20 +67,3 @@ function newServer (req, res) {
 		res.end(data);
 	});
 }
-
-//	Example socket script
-io.on('connection', function (socket) {
-	console.log('Connection made.');
-	
-	socket.emit('outgoing', {outgoing: "sample outoging data"});
-
-	socket.on('incoming', function (data) {
-		console.log(data);
-	});
-	
-});
-
-//	Create server
-app.listen(process.env.PORT, function(){
-	console.log('Webserver listening on: ' + process.env.PORT );
-});

@@ -1,14 +1,17 @@
 define([
 	//	Views files
-	'views/main',
-	'views/topbar'
+	'views/main-view',
+	'views/topbar-view'
 ], function(MainView, TopbarView){
 	var MainRouter = Backbone.Router.extend({
 		routes: {
 			// Define some URL routes
 			'': 'index',
+			'members': 'members',
+			'members/:id': 'members_id',
 			'pokedex': 'pokedex',
 			'pokedex/:id': 'pokedex_id',
+			'request': 'request_invite',
 			// Default
 			'*path': 'unhandled'
 		},
@@ -21,11 +24,20 @@ define([
 			
 			console.log("Route: Index");
 		},
+		members: function(){
+			console.log("Route: Members ");
+		},
+		members_id: function(id){
+			console.log("Route: Members " + id);
+		},
 		pokedex: function(){
 			console.log("Route: Pokedex ");
 		},
 		pokedex_id: function(id){
 			console.log("Route: Pokedex " + id);
+		},
+		request_invite: function(){
+			console.log("Route: Request invite ");
 		},
 		unhandled: function(){
 			console.log("derp");

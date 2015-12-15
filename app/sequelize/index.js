@@ -1,7 +1,5 @@
 //	Local variables
 var Sequelize = require('sequelize'),	//	require node module
-	sequelize = null,					//	create an empty class reference
-	postgres = {},						//	create empty DB object
 	database_uri = process.env.DATABASE_URL;	//	Get DB location
 
 //	Global ref for sequelize instance

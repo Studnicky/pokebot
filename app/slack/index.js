@@ -1,5 +1,6 @@
 //	Local variables
 var Slack = require('slack-client'),
+	Sequelize = require('sequelize'),
 	autoMark = true,
 	autoReconnect = true,
 	slackToken = process.env.REALTIME_SLACK_TOKEN;
@@ -18,7 +19,7 @@ slackHandler = {
 	connect: function(){
 		slack.login();
 		slack.on('open', function(){
-			return console.log("Connected to " + slack.team.name + " as @" + slack.self.name);
+			return console.log("Slack connected to " + slack.team.name + " as @" + slack.self.name + "!");
 		});
 	},
 	dispatch_events: function(){
