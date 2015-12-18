@@ -11,8 +11,8 @@ slack = new Slack(slackToken, autoReconnect, autoMark);
 
 // //	Define requires data models
 var Models = require(__dirname + '/../sequelize'),
-User = Models.User,
-Pokemon = Models.Pokemon;
+	User = Models.User,
+	Pokemon = Models.Pokemon;
 
 //	Global ref for slack handler
 slackHandler = {
@@ -91,7 +91,7 @@ slackHandler = {
 					credits: 0
 				})
 				.then(function(){
-					console.log("Saved user " + o.id + " as " + o.name);
+					// console.log("Saved user " + o.id + " as " + o.name);
 				})
 				.catch(function(error){
 					console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
@@ -100,15 +100,49 @@ slackHandler = {
 			});
 		})
 	},
+	get_active_users: function(callback){
+
+		request.get('https://slack.com/api/users.list', {
+			json: true,
+			qs: {token: slackToken, presence: 1}
+		}, function(error, response, data) {
+
+			if (data.ok !== true){
+				console.log('Failed to retrieve users list from slack API\n' + error);
+			} else {
+
+				var active_users = [];
+				var replyMessage = "The following users are currently active:\n";
+
+				//	Find present users
+				data.members.map(function(o){
+					if (o.presence == 'active'){
+						active_users.push({slack_id: o.id, slack_name: o.name});
+						replyMessage += "•\t" + o.name + " \n";
+					}
+				});
+				//	Are you forever alone?
+				if (active_users.length > 1){
+					console.log(replyMessage);
+				} else {
+					console.log("You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
+				}
+			}
+
+			return callback(active_users);
+
+		})
+
+	},
 	//	These only exist to prove sequelize is using and will go away when db import is done
 	seed_pokemon: function(){
 		var pokemon_list = require(__dirname + '/../../seed.json');
 
 		// Bulk create is undocumented, iterating array for now
-		pokemon_list.forEach(function(this_pokemon){			
+		pokemon_list.forEach(function(this_pokemon){
 			Pokemon.upsert(this_pokemon)
 			.then(function(){
-				console.log("Stored: " + this_pokemon.name);
+				// console.log("Stored: " + this_pokemon.name);
 			})
 			.catch(function(error){
 				console.log("Failed to store: " + this_pokemon.name + "\n" + error);
@@ -135,6 +169,7 @@ slackHandler = {
 		});
 
 	}
+
 };
 
 module.exports = slackHandler;

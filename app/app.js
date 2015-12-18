@@ -35,11 +35,14 @@ io.on('connection', function (socket) {
 	// 	}
 	// };
 
-	socket.on('ping-incoming', function (data) {
+	socket.on('get-user-presence', function (data) {
 		console.log(data);
-		socket.emit('ping-outgoing', {outgoing: "Pong!"});
+		slackHandler.get_active_users(function(active_users){
+			socket.emit('return-user-presence', {outgoing: active_users});
+		})
+		
 	});
-	
+
 });
 
 //	Create server

@@ -1,8 +1,9 @@
 define([
 	//	Views files
 	'views/main-view',
-	'views/topbar-view'
-], function(MainView, TopbarView){
+	'views/topbar-view',
+	'views/sidebar-view'
+], function(MainView, TopbarView, SideBarView){
 	var MainRouter = Backbone.Router.extend({
 		routes: {
 			// Define some URL routes
@@ -21,6 +22,11 @@ define([
 
 			var mainView = new MainView();
       		mainView.render();
+
+			var sideBarView = new SideBarView();
+      		sideBarView.render();
+
+      		$(document).foundation();
 			
 			console.log("Route: Index");
 		},
