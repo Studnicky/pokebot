@@ -19,11 +19,6 @@ postgres = {
 	Pokemon:			sequelize.import(__dirname + '/pokemon_model.js'),
 	Pokemon_Instance:	sequelize.import(__dirname + '/pokemon_instance_model.js'),
 
-	initialize: function(){
-		console.log('Sequelize initialize...');
-		this.associate();
-		this.sync();
-	},
 	associate: function(){ 	//	Create associations
 		Object.keys(postgres).forEach(function(modelName) {
 			if ('associate' in postgres[modelName]) {

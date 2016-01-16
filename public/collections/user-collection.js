@@ -15,6 +15,7 @@ define([
 			socket.emit('incoming-user-presence', {incoming: ''});
 			//	When we get the data back...
 			socket.on('outgoing-user-presence', function (data) {
+				console.log(data);
 				this.process_data(data);
 			}.bind(this));
 		},

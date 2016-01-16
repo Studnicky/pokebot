@@ -9,19 +9,18 @@ if(!process.env.DATABASE_URL){
 	env(__dirname + '/../.env');
 }
 
-//	Connect to postgres and run init
-var db = require ('./sequelize');
+//	DB handler uses sequelize to connect to postgres and run init
+var db = require ('./db');
 	db.initialize();
 
-//	Call in the slackHandler
+//	slackHandler responds to slack events
 var slack = require('./slack');
 	slack.initialize();
 
-//	Call in socketHandler
+//	sockethandler responds to web server events
 var socket = require('./socket');
 	socket.initialize(io);
 
-//	Create server
 app.listen(process.env.PORT, function(){
 	console.log('Webserver listening on: ' + process.env.PORT );
 });
