@@ -1,27 +1,25 @@
 //	Local variables
 var Slack = require('slack-client'),
-	Sequelize = require('sequelize'),
-	request = require('request'),
-	autoMark = true,
-	autoReconnect = true,
-	slackToken = process.env.REALTIME_SLACK_TOKEN;
+Sequelize = require('sequelize'),
+request = require('request'),
+autoMark = true,
+autoReconnect = true,
+slackToken = process.env.REALTIME_SLACK_TOKEN;
 
-//	Global ref for slack client
-slack = new Slack(slackToken, autoReconnect, autoMark);
-
-// //	Define requires data models
+//	Define requires data models
 var Models = require(__dirname + '/../sequelize'),
-	User = Models.User,
-	Pokemon = Models.Pokemon;
+User = Models.User,
+Pokemon = Models.Pokemon;
 
 //	Global ref for slack handler
 slackHandler = {
-	slack: slack,
 	initialize: function(){
+		slack = new Slack(slackToken, autoReconnect, autoMark);
 		console.log('Slack adapter initialize...');
 		this.connect();
 		this.dispatch_events();
-		this.get_users();
+		this.web.user.list.get();
+		this.web.user.list.presence();
 		this.seed_pokemon();
 		this.echo_starters();
 	},
@@ -32,8 +30,8 @@ slackHandler = {
 		});
 	},
 	dispatch_events: function(){
-		slack.on('message', function(message) {
 
+		slack.on('message', function(message) {
 			//	Dispatch events from here
 			console.log("Message event: " + message.type + " heard at " + message.ts);
 			console.log("User: " + message.user + " on " + message.team + " in channel " + message.channel);
@@ -47,94 +45,102 @@ slackHandler = {
 			return console.error("Slack Connection Error: ", err);
 		});
 	},
-	get_users: function(){
-		request.get('https://slack.com/api/users.list', {
-			json: true,
-			qs: {token: slackToken}
-		}, function(error, response, data) {
-			// Should have error handling for fail to connect...
-			data.members.map(function(o){
+	web: {
+		user: {
+			list: {
+				get: function(){
+					request.get('https://slack.com/api/users.list', {
+						json: true,
+						qs: {token: slackToken}
+					}, function(error, response, data) {
+						// Should have error handling for fail to connect...
+						data.members.map(function(o){
 
-				var permission_level = 0;
-				//	Permissions level
-				switch(true){
-					case (o.is_primary_owner == true):
-						permission_level = 6;
-						break;
-					case (o.is_owner == true):
-						permission_level = 5;
-						break;
-					case (o.is_bot == true):
-						permission_level = 4;
-						break;
-					case (o.is_admin == true):
-						permission_level = 3;
-						break;
-					case (o.is_restricted == true):
-						permission_level = 1;
-						break;
-					case (o.is_ultra_restricted == true):
-						permission_level = 0;
-						break;
-					default:
-						permission_level = 2;
-						break;
-				}
+							var permission_level = 0;
+							//	Permissions level
+							switch(true){
+								case (o.is_primary_owner == true):
+								permission_level = 6;
+								break;
+								case (o.is_owner == true):
+								permission_level = 5;
+								break;
+								case (o.is_bot == true):
+								permission_level = 4;
+								break;
+								case (o.is_admin == true):
+								permission_level = 3;
+								break;
+								case (o.is_restricted == true):
+								permission_level = 1;
+								break;
+								case (o.is_ultra_restricted == true):
+								permission_level = 0;
+								break;
+								default:
+								permission_level = 2;
+								break;
+							}
 
-				//	Instantiate a new user
-				User.upsert({
-					slack_id: o.id,
-					slack_name: o.name,
-					tz_offset: o.tz_offset,	//	Force this in as a string for now
-					permissions_level: permission_level,
-					position_cap: 15 * permission_level,
-					credits: 0
-				})
-				.then(function(){
-					// console.log("Saved user " + o.id + " as " + o.name);
-				})
-				.catch(function(error){
-					console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
-				});
+							//	Instantiate a new user
+							User.upsert({
+								slack_id: o.id,
+								slack_name: o.name,
+								tz_offset: o.tz_offset,	//	Force this in as a string for now
+								permissions_level: permission_level,
+								position_cap: 15 * permission_level,
+								credits: 0
+							})
+							.then(function(){
+								console.log("Saved user " + o.id + " as " + o.name);
+							})
+							.catch(function(error){
+								console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
+							});
 
-			});
-		})
-	},
-	get_active_users: function(callback){
+						});
+						
+						//	return callback(data.members);
 
-		request.get('https://slack.com/api/users.list', {
-			json: true,
-			qs: {token: slackToken, presence: 1}
-		}, function(error, response, data) {
+					})
+				},
+				presence: function(){
+					request.get('https://slack.com/api/users.list', {
+						json: true,
+						qs: {token: slackToken, presence: 1}
+					}, function(error, response, data) {
 
-			if (data.ok !== true){
-				console.log('Failed to retrieve users list from slack API\n' + error);
-			} else {
+						if (data.ok !== true){
+							console.log('Failed to retrieve users list from slack API\n' + error);
+						} else {
+							var active_users = [];
+							var replyMessage = "The following users are currently active:\n";
 
-				var active_users = [];
-				var replyMessage = "The following users are currently active:\n";
+							//	Find present users
+							data.members.map(function(o){
+								if (o.presence == 'active'){
+									active_users.push({slack_id: o.id, slack_name: o.name});
+									replyMessage += "•\t" + o.name + " \n";
+								}
+							});
+							//	Are you forever alone?
+							if (active_users.length > 1){
+								console.log(replyMessage);
+							} else {
+								console.log("You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
+							}
+						}
 
-				//	Find present users
-				data.members.map(function(o){
-					if (o.presence == 'active'){
-						active_users.push({slack_id: o.id, slack_name: o.name});
-						replyMessage += "•\t" + o.name + " \n";
-					}
-				});
-				//	Are you forever alone?
-				if (active_users.length > 1){
-					console.log(replyMessage);
-				} else {
-					console.log("You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
-				}
+						// return callback(active_users);
+					})
+				}	
 			}
-
-			return callback(active_users);
-
-		})
+		}
+	},
+	rtm: {
 
 	},
-	//	These only exist to prove sequelize is using and will go away when db import is done
+	//	These only exist to prove sequelize is working and will go away when db import is done
 	seed_pokemon: function(){
 		var pokemon_list = require(__dirname + '/../../seed.json');
 

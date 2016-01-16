@@ -1,5 +1,5 @@
 //	Primary dependencies
-var app = require('http').createServer(newServer)
+var app = require('http').createServer(webServer)
 var io = require('socket.io')(app);
 var fs = require('fs');
 
@@ -10,50 +10,24 @@ if(!process.env.DATABASE_URL){
 }
 
 //	Connect to postgres and run init
-var postgres = require ('./sequelize');
-	postgres.initialize();
+var db = require ('./sequelize');
+	db.initialize();
 
 //	Call in the slackHandler
-var slackHandler = require('./slack');
-	slackHandler.initialize();
+var slack = require('./slack');
+	slack.initialize();
 
-//	Example socket script
-io.on('connection', function (socket) {
-	console.log('Socket Connected!');
-
-	// var socketHandlers = {
-	// 	socketEvents: {
-	// 		userListener: new UserListener();
-	// 	},
-	// 	initialize: function(){
-
-	// 	},
-	// 	dispatch_events: function(){
-	// 		for (var event in socketEvents){
-	// 			var handler = socketEvents[event]
-	// 		}
-	// 	}
-	// };
-
-	socket.on('get-user-presence', function (data) {
-		console.log(data);
-		slackHandler.get_active_users(function(active_users){
-			socket.emit('return-user-presence', {outgoing: active_users});
-		})
-		
-	});
-
-});
+//	Call in socketHandler
+var socket = require('./socket');
+	socket.initialize(io);
 
 //	Create server
 app.listen(process.env.PORT, function(){
 	console.log('Webserver listening on: ' + process.env.PORT );
 });
 
-
-
 //	Instantiate webserver
-function newServer (req, res) {
+function webServer (req, res) {
 
 	//	Serve index for single page app
 	var statics = req.url;

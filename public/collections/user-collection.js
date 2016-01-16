@@ -12,9 +12,9 @@ define([
 			// Open socket connection... 
 			var socket = io.connect(window.location.hostname + ":3000");
 			//	Tell the server we want some data...
-			socket.emit('get-user-presence', {incoming: 'get-user-presence'});
+			socket.emit('incoming-user-presence', {incoming: ''});
 			//	When we get the data back...
-			socket.on('return-user-presence', function (data) {
+			socket.on('outgoing-user-presence', function (data) {
 				this.process_data(data);
 			}.bind(this));
 		},
