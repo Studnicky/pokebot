@@ -1,63 +1,73 @@
+var socketio = require('socket.io');
+var db = require(__dirname + '/../db');
+
 //	Global ref for socket handler
-socketHandler = {
-	io: null,
-	initialize: function(io){
-		this.io = io;	//	Local io ref
+module.exports.listen = function(app){
+	io = socketio.listen(app);
+
 		console.log('Socket Handler initialize...');
-		this.connect();
-	},
-
-	connect: function(){
-
-		this.io.on('connection', function(socket) {
+		io.on('connection', function(socket){
 			console.log('Socket connected!');
-			this.dispatch_events(socket);
-		}.bind(this));
+		});
 
-	},
+		//	Define namespaces
+		user = io.of('/user');
+		pokemon = io.of('/pokemon');
+		pokedex = io.of('/pokedex');
 
-	dispatch_events: function(socket){
-		pokedex: {
-			pokemon: {
-				get: socket.on('incoming-pokedex-pokemon', function(data){
-					console.log(data);
+		user.on('connection', function(user_socket){
+			console.log('User connected!');
+
+			user_socket.on('get-presence', function(){
+				console.log('Get user presence');
+				db.user.list.get(function(users){
+					user_socket.emit('user-list', {data: users});
 				});
-				emit: socket.emit('outgoing-pokedex-pokemon', {data: ''})
-			}
-		}
-		user: {
-			list: {
-				get: socket.on('incoming-user-list', function(data){
-					console.log(data);
-				});
-				emit: socket.emit('outgoing-user-list', {data: ''})
-			}
-			presence: {
-				get: socket.on('incoming-user-presence', function(data){
-					console.log(data);
-				});
-				emit: socket.emit('outgoing-user-presence', {data: ''})
-			}
-			info: {
-				get: socket.on('incoming-user-info', function(data){
-					console.log(data);
-				});
-				emit: socket.emit('outgoing-user-info', {data: ''})
-			}
-			party: {
-				get: socket.on('incoming-user-party', function(data){
-					console.log(data);
-				});
-				emit: socket.emit('outgoing-user-party', {data: ''})
-			}
-			pokemon: {
-				get: socket.on('incoming-user-pokemon', function(data){
-					console.log(data);
-				});
-				emit: socket.emit('outgoing-user-pokemon', {data: ''})
-			}
-		}
-	}
+			});
+
+
+		});
+
+		// pokedex: {
+		// 	pokemon: {
+		// 		get: socket.on('incoming-pokedex-pokemon', function(data){
+		// 			console.log(data);
+		// 		});
+		// 		emit: socket.emit('outgoing-pokedex-pokemon', {data: ''})
+		// 	}
+		// }
+		// user: {
+		// 	list: {
+		// 		get: socket.on('incoming-user-list', function(data){
+		// 			console.log(data);
+		// 		});
+		// 		emit: socket.emit('outgoing-user-list', {data: ''})
+		// 	}
+		// 	presence: {
+		// 		get: socket.on('incoming-user-presence', function(data){
+		// 			var userlist = db.user.list.get(function(userlist){return userlist;});
+		// 		});
+		// 		emit: socket.emit('outgoing-user-presence', {data: ''})
+		// 	}
+		// 	info: {
+		// 		get: socket.on('incoming-user-info', function(data){
+		// 			console.log(data);
+		// 		});
+		// 		emit: socket.emit('outgoing-user-info', {data: ''})
+		// 	}
+		// 	party: {
+		// 		get: socket.on('incoming-user-party', function(data){
+		// 			console.log(data);
+		// 		});
+		// 		emit: socket.emit('outgoing-user-party', {data: ''})
+		// 	}
+		// 	pokemon: {
+		// 		get: socket.on('incoming-user-pokemon', function(data){
+		// 			console.log(data);
+		// 		});
+		// 		emit: socket.emit('outgoing-user-pokemon', {data: ''})
+		// 	}
+		// }
+
+		return io;
 };
-
-module.exports = socketHandler;

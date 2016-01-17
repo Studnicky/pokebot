@@ -1,13 +1,15 @@
-//	Primary dependencies
-var app = require('http').createServer(webServer)
-var io = require('socket.io')(app);
-var fs = require('fs');
-
 //  Environment variables for local testing
 if(!process.env.DATABASE_URL){
 	var env = require('node-env-file');
 	env(__dirname + '/../.env');
-}
+};
+
+//	Primary dependencies
+var app = require('http').createServer(webServer);
+var fs = require('fs');
+
+//	sockethandler responds to web server events
+var io = require('./socket').listen(app);
 
 //	DB handler uses sequelize to connect to postgres and run init
 var db = require ('./db');
@@ -16,10 +18,6 @@ var db = require ('./db');
 //	slackHandler responds to slack events
 var slack = require('./slack');
 	slack.initialize();
-
-//	sockethandler responds to web server events
-var socket = require('./socket');
-	socket.initialize(io);
 
 app.listen(process.env.PORT, function(){
 	console.log('Webserver listening on: ' + process.env.PORT );

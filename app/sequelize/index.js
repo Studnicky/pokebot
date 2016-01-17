@@ -30,13 +30,14 @@ postgres = {
 		postgres.sequelize.sync({force: true}, function(err){
 			if(err){
 				console.error(err);
-				return process.exit(1); 
-			}
+				return process.exit(1);			}
 		}).then(function () {
 			console.log("Sequelize successfully created tables!");
 		});
 	}
-
 };
+
+postgres.associate();
+postgres.sync();
 
 module.exports = postgres;

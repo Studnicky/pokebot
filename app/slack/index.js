@@ -6,7 +6,8 @@ var Slack = require('slack-client'),
 //	Config vars
 	var autoMark = true,
 		autoReconnect = true,
-		slackToken = process.env.REALTIME_SLACK_TOKEN;
+		slackToken = process.env.REALTIME_SLACK_TOKEN,
+		slackEndpoint = 'https://slack.com/api/';
 
 //	Global ref for slack handler
 slackHandler = {
@@ -44,17 +45,16 @@ slackHandler = {
 		user: {
 			list: {
 				get: function(){
-					request.get('https://slack.com/api/users.list', {
+					request.get(slackEndpoint + 'users.list', {
 						json: true,
 						qs: {token: slackToken}
 					}, function(error, response, data) {
 						// Should have error handling for fail to connect...
 						db.user.list.set(data);
-
-					})
+					});
 				},
 				presence: function(){
-					request.get('https://slack.com/api/users.list', {
+					request.get(slackEndpoint + 'users.list', {
 						json: true,
 						qs: {token: slackToken, presence: 1}
 					}, function(error, response, data) {
@@ -81,7 +81,7 @@ slackHandler = {
 						}
 
 						// return callback(active_users);
-					})
+					});
 				}	
 			}
 		}

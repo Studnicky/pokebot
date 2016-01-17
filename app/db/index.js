@@ -1,26 +1,24 @@
-var Sequelize = require('sequelize');
-
-//	Get all the data models
-var Models = require(__dirname + '/../sequelize'),
+//	Need sequelize ref and data models
+var Sequelize = require('sequelize'),
+	Models = require(__dirname + '/../sequelize'),
 	User = Models.User,
 	Pokemon = Models.Pokemon;
 
 dbHandler = {
 	initialize: function(){
 		console.log('Sequelize initialize...');
-		postgres.associate();
-		postgres.sync();
-		this.seed_pokemon();	//	Temporary
+		setTimeout(this.seed_pokemon(),10000);	//	Temporary
 	},
 
 	seed_pokemon: function(){	//	Temporary method
+		console.log('Seeding database...');
 		var pokemon_list = require(__dirname + '/../../seed.json');
 
 		// Bulk create is undocumented, iterating array for now
 		pokemon_list.forEach(function(this_pokemon){
 			Pokemon.upsert(this_pokemon)
 			.then(function(){
-				// console.log("Stored: " + this_pokemon.name);
+				console.log("Stored:\t" + this_pokemon.name);
 			})
 			.catch(function(error){
 				console.log("Failed to store: " + this_pokemon.name + "\n" + error);
@@ -46,10 +44,18 @@ dbHandler = {
 			return userid;
 		},
 		list: {
-			get: function(userid){
-				var user = null;
+			get: function(return_users_callback){
+				var users = null;
 
-				return user;
+				User.findAll({
+
+				}).then(function(users){
+					return_users_callback(users);
+				}).catch(function(error){
+					console.log(error);
+				});
+
+
 			},
 			set: function(data){
 				var userlist = null;
@@ -92,7 +98,7 @@ dbHandler = {
 								credits: 0
 							})
 							.then(function(){
-								console.log("Saved user " + o.id + " as " + o.name);
+								console.log("Saved:\t" + o.id + " as " + o.name);
 							})
 							.catch(function(error){
 								console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
