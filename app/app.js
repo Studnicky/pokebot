@@ -4,40 +4,56 @@ if(!process.env.DATABASE_URL){
 	env(__dirname + '/../.env');
 };
 
-//	Primary dependencies
-var app = require('http').createServer(webServer);
-var fs = require('fs');
+//	Initialize connection to database...
+var postgres = require('./sequelize');
 
-//	sockethandler responds to web server events
-var io = require('./socket').listen(app);
+postgres.sequelize.sync({force: true}, function(err){
+	if(err){	//	No database? No app.
+		console.error(err);
+		return process.exit(1);
+	}
+}).then(function(){
 
-//	DB handler uses sequelize to connect to postgres and run init
-var db = require ('./db');
-	db.initialize();
+	//	Temporary seeding...
+	var seeds = require(__dirname + '/../seed.json');
+	seeds.map(function(o){
+		postgres.Pokemon.upsert(o)
+		.then(function(){
+			console.log("Stored:\t" + o.name);
+		})
+		.catch(function(error){
+			console.log("Failed to store: " + o.name + "\n" + error);
+		});
+	});
 
-//	slackHandler responds to slack events
-var slack = require('./slack');
+	var app = require('http').createServer(fileServer);	//	File server
+	var io = require('./socket').listen(app);			//	Socket server
+	var db = require ('./db');							//	Database wrapper
+
+	//	slackHandler responds to slack events
+	var slack = require('./slack');
 	slack.initialize();
 
-app.listen(process.env.PORT, function(){
-	console.log('Webserver listening on: ' + process.env.PORT );
+	app.listen(process.env.PORT, function(){
+		console.log('Webserver listening on: ' + process.env.PORT );
+	});
+
 });
 
 //	Instantiate webserver
-function webServer (req, res) {
+function fileServer (request, response) {
+	var path = require('path');
+	var fs = require('fs');
 
-	//	Serve index for single page app
-	var statics = req.url;
-	if (req.url == '/') {
-		statics = 'index.html'
-	}
-	//	Fetch the requested file
-	fs.readFile(__dirname + '/../public/' + statics, function (err, data) {
+	//	Serve index for root and other files on request
+	var url = request.url == '/' ? 'index.html' : request.url;
+
+	fs.readFile(path.join(__dirname, '/../public/', url), function (err, data) {
 		if (err) {
-			res.writeHead(500);
-			return res.end('Unable to load ' + statics);
+			response.writeHead(500);
+			return response.end('Unable to load ' + url);
 		}
-		res.writeHead(200);
-		res.end(data);
+		response.writeHead(200);
+		response.end(data);
 	});
 }

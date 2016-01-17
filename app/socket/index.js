@@ -21,10 +21,10 @@ module.exports.listen = function(app){
 			user_socket.on('get-presence', function(){
 				console.log('Get user presence');
 				db.user.list.get(function(users){
+					//	Any preprocessing of data...
 					user_socket.emit('user-list', {data: users});
 				});
 			});
-
 
 		});
 

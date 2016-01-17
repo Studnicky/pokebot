@@ -1,43 +1,27 @@
-//	Local variables
-var Sequelize = require('sequelize'),	//	require node module
-	database_uri = process.env.DATABASE_URL;	//	Get DB location
+var path = require('path');
+var fs = require('fs');
 
-//	Global ref for sequelize instance
-sequelize = new Sequelize(database_uri, {
+var postgres = {};
+postgres.Sequelize = require('sequelize');
+postgres.sequelize = new postgres.Sequelize(process.env.DATABASE_URL, {
 	dialect:  'postgres',
 	protocol: 'postgres',
 	logging: false
 });
 
-//	Global ref for postgres handler
-postgres = {
-	sequelize: sequelize,
-	Sequelize: Sequelize,
+//	Get all the non-system files in this directory...
+fs.readdirSync(__dirname).filter(function(file){
+	return (file.indexOf(".") !== 0) && (file !== "index.js");
+}).map(function(file){	//	Import them into sequelize as models.
+	var model = postgres.sequelize.import(path.join(__dirname, file));
+	postgres[model.name] = model;
+});
 
-	//  Define models as attributes from script files
-	User: 				sequelize.import(__dirname + '/user_model.js'),
-	Pokemon:			sequelize.import(__dirname + '/pokemon_model.js'),
-	Pokemon_Instance:	sequelize.import(__dirname + '/pokemon_instance_model.js'),
-
-	associate: function(){ 	//	Create associations
-		Object.keys(postgres).forEach(function(modelName) {
-			if ('associate' in postgres[modelName]) {
-				postgres[modelName].associate(postgres);
-			}
-		});
-	},
-	sync: function(){	//	Write schema to database
-		postgres.sequelize.sync({force: true}, function(err){
-			if(err){
-				console.error(err);
-				return process.exit(1);			}
-		}).then(function () {
-			console.log("Sequelize successfully created tables!");
-		});
+//	Go back through those models and run the associate method if they have one.
+Object.keys(postgres).map(function(attribute) {
+	if ('associate' in postgres[attribute]) {
+		postgres[attribute].associate(postgres);
 	}
-};
-
-postgres.associate();
-postgres.sync();
+});
 
 module.exports = postgres;

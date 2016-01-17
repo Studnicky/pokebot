@@ -3,19 +3,21 @@ var Slack = require('slack-client'),
 	request = require('request'),
 	db = require(__dirname + '/../db');
 
-//	Config vars
-	var autoMark = true,
-		autoReconnect = true,
-		slackToken = process.env.REALTIME_SLACK_TOKEN,
-		slackEndpoint = 'https://slack.com/api/';
+//	Slack config vars
+var autoMark = true,
+	autoReconnect = true,
+	slackToken = process.env.REALTIME_SLACK_TOKEN,
+	slackEndpoint = 'https://slack.com/api/';
+
+slack = new Slack(slackToken, autoReconnect, autoMark);
 
 //	Global ref for slack handler
 slackHandler = {
+	Slack: Slack,
+	slack: slack,
 	initialize: function(){
-		slack = new Slack(slackToken, autoReconnect, autoMark);
-		console.log('Slack adapter initialize...');
+		console.log('Slack Adapter initialize...');		
 		this.connect();
-		this.dispatch_events();
 		this.web.user.list.get();
 		this.web.user.list.presence();
 	},

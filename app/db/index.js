@@ -4,29 +4,9 @@ var Sequelize = require('sequelize'),
 	User = Models.User,
 	Pokemon = Models.Pokemon;
 
-dbHandler = {
-	initialize: function(){
-		console.log('Sequelize initialize...');
-		setTimeout(this.seed_pokemon(),10000);	//	Temporary
-	},
+	console.log('Sequelize initialize...');
 
-	seed_pokemon: function(){	//	Temporary method
-		console.log('Seeding database...');
-		var pokemon_list = require(__dirname + '/../../seed.json');
-
-		// Bulk create is undocumented, iterating array for now
-		pokemon_list.forEach(function(this_pokemon){
-			Pokemon.upsert(this_pokemon)
-			.then(function(){
-				console.log("Stored:\t" + this_pokemon.name);
-			})
-			.catch(function(error){
-				console.log("Failed to store: " + this_pokemon.name + "\n" + error);
-			});
-		});
-
-	},
-
+var db = {
 	user: {
 		find_open_position: function(userid){
 			var position = null;
@@ -156,4 +136,4 @@ dbHandler = {
 
 }
 
-module.exports = dbHandler;
+module.exports = db;
