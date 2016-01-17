@@ -1,0 +1,13 @@
+{
+  "name": "pokebotv2",
+  "scripts": {
+  },
+  "env": {
+    "REALTIME_SLACK_TOKEN": {
+      "required": true
+    }
+  },
+  "addons": [
+    "heroku-postgresql"
+  ]
+}
