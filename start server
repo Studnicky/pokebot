@@ -1,0 +1,245 @@
+
+
+	io.incoming::
+		io.incoming.user.list.get({active=1}) -> app.user.list.get -> io.emit.user.list
+		io.incoming.user.info.get ({userid}) -> app.user.info.get -> io.emit.user.info
+		io.incoming.user.party.get ({userid}) -> app.user.party.get -> io.emit.user.party
+		io.incoming.user.pokemon.get (position, {userid}) -> app.user.pokemon.get -> io.emit.user.pokemon
+		io.incoming.pokedex.get (national_id) -> app.pokedex.get -> io.emit.pokedex
+
+	io.emit::
+		io.emit.user.list
+		io.emit.user.info
+		io.emit.user.party
+		io.emit.user.pokemon
+		io.emit.pokedex
+
+
+
+	slack.web methods::
+		slack.web.user.list.request ({active=1}) -> db.set-user-list -> io.emit-user-list
+		slack.web.message.post (message.json)
+
+	slack incoming events::
+		slack.rtm.im_open
+		slack.rtm.im_created
+		slack.rtm.presence_change
+		slack.rtm.manual_presence_change
+		slack.rtm.team_join
+		slack.rtm.message
+
+	slack.rtm (type, subtype) -> slack.rtm.event.delegate
+
+		slack.rtm.team_join(slack_id, slack_name) -> db.user_create
+
+		slack.rtm.user_presence -> io.emit-user-list
+
+		slack.rtm.message.parse(message.json) -> slack.rtm.message.delegate
+
+		slack.rtm.event.delegate(subtype, message.json) -> {{???}}
+
+		slack.rtm.mesage.delegate -> 
+			slack.rtm.subtype.delegate -> app.delegate ???
+
+
+
+
+
+
+	app methods::
+
+		user = {
+			list = {
+				set: function(){	//	initialize on start
+					slack.web.user.list.requst
+					db.user.list.set
+					io.user.list.emit
+				}
+				get: function(){	//	callback
+					db.user.list.get
+				}
+			}
+			info = {
+				get: function(){	//	callback
+					db.user.info.get
+				}
+				set: function(){
+					db.user.info.set
+					io.user.info.emit
+				}
+			}
+			party = {
+				get: function(){	//	callback
+					db.user.party.get
+				}
+				swap: function(){
+					db.user.pokemon.swap
+					io.emit.user.party
+				}
+			}
+			pokemon = {
+				get: function(){	//	callback
+					db.user.pokemon.get ({userid}, pos=pos)
+				}
+				save: function(){
+					db.user.find_open_position (userid)
+					db.user.pokemon.save ({userid}, pos=pos)
+					io.emit.user.party
+				}
+				update: function(){
+					db.user.pokemon.update ({userid}, pos=pos)
+					io.emit.user.party
+				}
+				release: function(){
+					db.user.pokemon.release ({userid}, pos=pos)
+					io.emit.user.party
+				}
+				swap: function(){
+					db.user.pokemon.swap (userid, pos1=pos1, pos2=pos2) -> io.emit.user.party
+					io.emit.user.party
+				}
+				trade: function(){
+					db.user.pokemon.trade (userid_1, pos_1, userid_2, pos_2)
+					io.emit.user.party
+				}
+				sell: function(){
+					db.user.pokemon.sell (userid_1, pos_1, userid_2)
+					io.emit.user.party
+				}
+			}
+		}
+
+		pokedex = {
+			get: function(){	//	callback
+				db.pokedex.get
+			}
+		}
+
+		starter = {
+			list: function(){
+				db.pokemon.get({starter=1})
+			}
+			pick: function(){
+				db.pokemon.get(national_id)
+				db.user.pokemon.save()
+				io.emit.user.party()
+			}
+		}
+
+		tallgrass = {
+			spawn: function(){
+				db.pokemon.get()
+			}
+			catch: function(){
+				app.pokemon.save()
+			}
+		}
+
+		battle = {
+			initialize: function(userid_1, userid_2){
+				user_1_party = db.user.party.get (userid_1)
+				user_2_party = db.user.party.get (userid_2)
+
+				//	Set active pokemon position
+				app.battle.pokemon.select(user_1_party[0])
+				app.battle.pokemon.select(user_2_party[0])
+
+
+				slack.web.group.create() // bot user?
+			}
+			turn:  function(user_1_active, user_2_active){
+				//	Compare speed to get who moves first
+				
+				//	Listen for move inputs
+
+				//	Call used moves
+
+			}
+
+			pokemon = {
+				select: function(){
+					db.user.pokemon.get(userid_1)
+				}
+				swap: function(){
+					app.battle.pokemon.select(user_1_party[0])
+				}
+				move = {
+					list: function(){
+						db.pokemon.movelist.get(){}
+					}
+					use: function(){
+						//	If in movelist
+
+						//	Calculate values
+
+						//	Return calcs
+					}
+					hit: function() {
+						//	Get hit ratio
+
+						//	Compare offense to defense
+
+						//	Apply hit
+
+						//	Store updated stats to active pokemon array
+					
+						//	Did someone get knocked out? Who?
+							//	Add EXP
+
+							//	Add EV points
+
+						//	Is the battle over?
+					}
+
+				}
+			}
+
+			quit: function(){
+				app.battle.end()
+			},
+			end: function(){
+				db.user.info.get(userid_1)
+				db.user.info.get(userid_2)
+
+				db.user.pokemon.save()
+			}
+
+		}
+
+
+	db methods::
+
+		db.pokemon.get.name_by_id ()
+		db.pokemon.get.id_by_name ()
+
+		db.user.get.name_by_id (slack_id)
+		db.user.get.id_by_name (slack_name)
+
+		db.pokedex.get (national_id)
+
+		db.user.create (slack_id, slack_name) -> io.emit.user.list
+
+		db.user.list.get () -> io.emit.user.list
+		db.user.list.set () -> io.emit.user.list
+
+		db.user.credits.get (userid)
+		db.user.credits.set (userid, credits) -> io.emit.user.info
+		db.user.credits.update (userid, credits) -> io.emit.user.info
+
+		db.user.info.get (userid)
+		db.user.party.get (userid, {box})
+
+		db.user.find_open_position (userid)
+
+		db.user.pokemon.get ({userid}, pos=pos) -> io.emit.user.party
+		db.user.pokemon.save ({userid}, pos=pos) -> io.emit.user.party
+		db.user.pokemon.update ({userid}, pos=pos) -> io.emit.user.party
+		db.user.pokemon.release ({userid}, pos=pos) -> io.emit.user.party
+		db.user.pokemon.swap (userid, pos1=pos1, pos2=pos2) -> io.emit.user.party
+		db.user.pokemon.trade (userid_1, pos_1, userid_2, pos_2)  -> io.emit.user.party
+		db.user.pokemon.sell (userid_1, pos_1, userid_2) -> io.emit.user.party
+
+		db.pokemon.get ({national_id})
+		db.pokemon.movelist.get({national_id})
+
+

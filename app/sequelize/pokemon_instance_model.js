@@ -165,7 +165,7 @@ module.exports = function(sequelize, Sequelize) {
 		},
 		tableName: 'pokemon_instance',
 		deletedAt: 'deleted_at',
-		paranoid: true,
+		paranoid: false,
 		freezeTableName: true,
 		underscored: true,
 		underscoredAll: true

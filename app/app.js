@@ -1,54 +1,94 @@
-//	Primary dependencies
-var app = require('http').createServer(newServer)
-var io = require('socket.io')(app);
-var fs = require('fs');
-
 //  Environment variables for local testing
 if(!process.env.DATABASE_URL){
 	var env = require('node-env-file');
 	env(__dirname + '/../.env');
-}
+};
 
-//	Connect to postgres and run init
-var postgres = require ('./models');
-	postgres.initialize();
+//	Initialize connection to database...
+var postgres = require('./sequelize');
+var db = require ('./db');				//	Database wrapper
 
-//	Call in the slackHandler
-var slackHandler = require('./slack');
-	slackHandler.initialize();
+postgres.sequelize.sync({force: true}, function(err){
+	if(err){	//	No database? No app.
+		console.error(err);
+		return process.exit(1);
+	}
+}).then(function(){
+
+	//	Temporary seeding...
+	var seeds = require(__dirname + '/../seed.json');
+	seeds.map(function(o){
+		postgres.Pokemon.upsert(o)
+		.then(function(){
+			// console.log("Stored:\t" + o.name);
+		})
+		.catch(function(error){
+			// console.log("Failed to store: " + o.name + "\n" + error);
+		});
+	});
+
+	var app = require('http').createServer(fileServer);	//	File server
+	var io = require('./socket').listen(app);			//	Socket server
+
+	//	slackHandler responds to slack events
+	var slack = require('./slack');
+	slack.initialize();
+
+	app.listen(process.env.PORT, function(){
+		console.log('Webserver listening on: ' + process.env.PORT );
+	});
+
+	//	Test DB methods to make sure they work
+
+	// setInterval(function(){
+	// 	db.user.pokemon.save('U09EUDR7G', '0');
+	// }, 2000);
+
+	// setTimeout(function(){
+	// 	db.user.pokemon.get('U09EUDR7G', '1', function(this_pokemon){
+	// 		console.log(this_pokemon.party_position + ': ' + this_pokemon.Pokemon.name);
+	// 	});
+	// }, 5000);
+
+	// setInterval(function(){
+	// 	db.user.pokemon.release('U09EUDR7G', Math.ceil(Math.random()*20), function(this_pokemon){
+	// 		console.log(this_pokemon.party_position + ': ' + this_pokemon.Pokemon.name);
+	// 	});
+	// }, 10000);
+
+	// setTimeout(function(){
+	// 	db.user.party.get('U09EUDR7G', '1', function(party_members){
+	// 		var replyMessage = "Your current party members are: \n";
+	// 		party_members.map(function(member){
+	// 			replyMessage += member.party_position+ ":\t:" + member.Pokemon.name;
+	// 		});
+	// 		console.log(replyMessage);
+	// 	});
+
+	// }, 5000);
+
+	// setInterval(function(){
+	// 	db.pokemon.spawn('255', function(this_pokemon){
+	// 		console.log(this_pokemon.get());
+	// 	});
+	// }, 15000);
+
+});
 
 //	Instantiate webserver
-function newServer (req, res) {
+function fileServer (request, response) {
+	var path = require('path');
+	var fs = require('fs');
 
-	//	Serve index for single page app
-	var statics = req.url;
-	if (req.url == '/') {
-		statics = 'index.html'
-	}
-	//	Fetch the requested file
-	fs.readFile(__dirname + '/../public/' + statics, function (err, data) {
+	//	Serve index for root and other files on request
+	var url = request.url == '/' ? 'index.html' : request.url;
+
+	fs.readFile(path.join(__dirname, '/../public/', url), function (err, data) {
 		if (err) {
-			res.writeHead(500);
-			return res.end('Unable to load ' + statics);
+			response.writeHead(500);
+			return response.end('Unable to load ' + url);
 		}
-		res.writeHead(200);
-		res.end(data);
+		response.writeHead(200);
+		response.end(data);
 	});
 }
-
-//	Example socket script
-io.on('connection', function (socket) {
-	console.log('Connection made.');
-	
-	socket.emit('outgoing', {outgoing: "sample outoging data"});
-
-	socket.on('incoming', function (data) {
-		console.log(data);
-	});
-	
-});
-
-//	Create server
-app.listen(process.env.PORT, function(){
-	console.log('Webserver listening on: ' + process.env.PORT );
-});

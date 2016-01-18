@@ -19,7 +19,7 @@ module.exports = function(sequelize, Sequelize) {
 		},
 		tz_offset: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: true,	//	Bot users do not always have tx_offset
 			hasComment: {type: Sequelize.STRING, field: "User home timezone"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "tz_offset" }
 		},
@@ -50,8 +50,8 @@ module.exports = function(sequelize, Sequelize) {
 		underscoredAll: true,
 		classMethods: {
 			associate: function(models) {
-				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'owner_id'});
-				User.hasMany(models.Pokemon_Instance, {foreignKey: 'slack_id', targetKey: 'caught_by'});
+				User.hasMany(models.Pokemon_Instance, {foreignKey: 'owner_id', targetKey: 'slack_id'});
+				User.hasMany(models.Pokemon_Instance, {foreignKey: 'caught_by', targetKey: 'slack_id'});
 			}
 		},
 		instanceMethods: {
