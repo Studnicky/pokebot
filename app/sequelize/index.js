@@ -2,6 +2,9 @@ var path = require('path');
 var fs = require('fs');
 
 var postgres = {};
+
+console.log('Sequelize initialize...');
+
 postgres.Sequelize = require('sequelize');
 postgres.sequelize = new postgres.Sequelize(process.env.DATABASE_URL, {
 	dialect:  'postgres',

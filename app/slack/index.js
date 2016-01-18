@@ -16,18 +16,16 @@ slackHandler = {
 	Slack: Slack,
 	slack: slack,
 	initialize: function(){
-		console.log('Slack Adapter initialize...');		
-		this.connect();
-		this.web.user.list.get();
-		this.web.user.list.presence();
-	},
-	connect: function(){
+		console.log('Slack Adapter initialize...');
 		slack.login();
+		this.events();
+		this.web.user.list.get();
+	},
+	events: function(){
+
 		slack.on('open', function(){
 			return console.log("Slack connected to " + slack.team.name + " as @" + slack.self.name + "!");
 		});
-	},
-	dispatch_events: function(){
 
 		slack.on('message', function(message) {
 			//	Dispatch events from here
@@ -46,16 +44,21 @@ slackHandler = {
 	web: {
 		user: {
 			list: {
-				get: function(){
+				get: function(callback){
 					request.get(slackEndpoint + 'users.list', {
 						json: true,
 						qs: {token: slackToken}
 					}, function(error, response, data) {
-						// Should have error handling for fail to connect...
+						// If we fetched the list, might as well update it
 						db.user.list.set(data);
+
+						if(typeof(callback) == 'function'){
+							callback(data.members);
+						}
+
 					});
 				},
-				presence: function(){
+				presence: function(callback){
 					request.get(slackEndpoint + 'users.list', {
 						json: true,
 						qs: {token: slackToken, presence: 1}
@@ -65,24 +68,12 @@ slackHandler = {
 							console.log('Failed to retrieve users list from slack API\n' + error);
 						} else {
 							var active_users = [];
-							var replyMessage = "The following users are currently active:\n";
 
-							//	Find present users
-							data.members.map(function(o){
-								if (o.presence == 'active'){
-									active_users.push({slack_id: o.id, slack_name: o.name});
-									replyMessage += "•\t" + o.name + " \n";
-								}
-							});
-							//	Are you forever alone?
-							if (active_users.length > 1){
-								console.log(replyMessage);
-							} else {
-								console.log("You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
+							if(typeof(callback) == 'function'){
+								callback(data.members);
 							}
-						}
 
-						// return callback(active_users);
+						}
 					});
 				}	
 			}

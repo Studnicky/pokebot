@@ -14,7 +14,7 @@ define([
 			//	Tell the server we want some data...
 			user_socket.emit('get-presence');
 			//	When we get the data back...
-			user_socket.on('user-list', function (data) {
+			user_socket.on('user-presence', function (data) {
 				this.process_data(data);
 			}.bind(this));
 		},

@@ -1,5 +1,6 @@
 var socketio = require('socket.io');
 var db = require(__dirname + '/../db');
+var slack = require(__dirname + '/../slack');
 
 //	Global ref for socket handler
 module.exports.listen = function(app){
@@ -20,6 +21,14 @@ module.exports.listen = function(app){
 
 			user_socket.on('get-presence', function(){
 				console.log('Get user presence');
+				slack.web.user.list.presence(function(users){
+					//	Any preprocessing of data...
+					user_socket.emit('user-presence', {data: users});
+				});
+			});
+
+			user_socket.on('get-list', function(){
+				console.log('Get user list');
 				db.user.list.get(function(users){
 					//	Any preprocessing of data...
 					user_socket.emit('user-list', {data: users});
@@ -27,47 +36,6 @@ module.exports.listen = function(app){
 			});
 
 		});
-
-		// pokedex: {
-		// 	pokemon: {
-		// 		get: socket.on('incoming-pokedex-pokemon', function(data){
-		// 			console.log(data);
-		// 		});
-		// 		emit: socket.emit('outgoing-pokedex-pokemon', {data: ''})
-		// 	}
-		// }
-		// user: {
-		// 	list: {
-		// 		get: socket.on('incoming-user-list', function(data){
-		// 			console.log(data);
-		// 		});
-		// 		emit: socket.emit('outgoing-user-list', {data: ''})
-		// 	}
-		// 	presence: {
-		// 		get: socket.on('incoming-user-presence', function(data){
-		// 			var userlist = db.user.list.get(function(userlist){return userlist;});
-		// 		});
-		// 		emit: socket.emit('outgoing-user-presence', {data: ''})
-		// 	}
-		// 	info: {
-		// 		get: socket.on('incoming-user-info', function(data){
-		// 			console.log(data);
-		// 		});
-		// 		emit: socket.emit('outgoing-user-info', {data: ''})
-		// 	}
-		// 	party: {
-		// 		get: socket.on('incoming-user-party', function(data){
-		// 			console.log(data);
-		// 		});
-		// 		emit: socket.emit('outgoing-user-party', {data: ''})
-		// 	}
-		// 	pokemon: {
-		// 		get: socket.on('incoming-user-pokemon', function(data){
-		// 			console.log(data);
-		// 		});
-		// 		emit: socket.emit('outgoing-user-pokemon', {data: ''})
-		// 	}
-		// }
 
 		return io;
 };
