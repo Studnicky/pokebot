@@ -9,7 +9,7 @@ var postgres = require('./sequelize');
 var db = require ('./db');				//	Database wrapper
 
 postgres.sequelize.sync({force: true}, function(err){
-	if(err){	//	No database? No app.
+	if(err){	//	No database? No server.
 		console.error(err);
 		return process.exit(1);
 	}
@@ -27,14 +27,14 @@ postgres.sequelize.sync({force: true}, function(err){
 		});
 	});
 
-	var app = require('http').createServer(fileServer);	//	File server
-	var io = require('./socket').listen(app);			//	Socket server
+	var server = require('http').createServer(fileServer);	//	File server
+	var io = require('./socket').listen(server);			//	Socket server
 
 	//	slackHandler responds to slack events
 	var slack = require('./slack');
 	slack.initialize();
 
-	app.listen(process.env.PORT, function(){
+	server.listen(process.env.PORT, function(){
 		console.log('Webserver listening on: ' + process.env.PORT );
 	});
 
