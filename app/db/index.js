@@ -49,6 +49,7 @@ var db = {
 			});
 
 		},
+
 		get_userid_by_name: function(username, callback){
 			User.findOne({
 				where: { slack_name: username },
@@ -59,6 +60,7 @@ var db = {
 				}
 			});
 		},
+
 		list: {
 			get: function(callback){
 				var users = null;
@@ -73,6 +75,7 @@ var db = {
 				});
 
 			},
+			
 			set: function(data){
 
 				var userlist = null;
@@ -245,7 +248,7 @@ var db = {
 					catch_rate: {$gte: (255-rarity)},
 				},
 				order: [
-				Sequelize.fn('RANDOM')
+					Sequelize.fn('RANDOM')
 				]
 			}).then(function(this_pokemon){
 
