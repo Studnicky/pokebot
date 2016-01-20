@@ -27,12 +27,10 @@ postgres.sequelize.sync({force: true}, function(err){
 		});
 	});
 
+	var slack = require('./slack');							//	Slack handler
+
 	var server = require('http').createServer(fileServer);	//	File server
 	var io = require('./socket').listen(server);			//	Socket server
-
-	//	slackHandler responds to slack events
-	var slack = require('./slack');
-	slack.initialize();
 
 	server.listen(process.env.PORT, function(){
 		console.log('Webserver listening on: ' + process.env.PORT );
