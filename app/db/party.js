@@ -12,10 +12,13 @@ var party = {
 		count: function(userid, callback){
 			Pokemon_Instance.count({
 				where: {
-					owner_id: String(userid)
+					owner_id: userid
 				}
 			}).then(function(count){
-				if(count){
+
+				console.log(count);
+
+				if(typeof(count)=='number'){
 					if (typeof(callback) == 'function'){
 						callback(count);
 					}
@@ -49,7 +52,7 @@ var party = {
 					}
 				});
 				if(typeof(callback) == 'function'){
-					callback(open_positions);
+					callback(open_positions[0]);
 				}
 			});
 		},

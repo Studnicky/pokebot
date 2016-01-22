@@ -16,27 +16,40 @@ var pokemon = {
 		});
 
 		//	Get user party
-		bot.hears(['starter pick (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		bot.hears(['starter(s)? pick (.*)'],['direct_message'],function(bot,message) {
 			bot.startTyping;
+			var	this_pokemon = null;
 
-			db.party.count(function(count){
+			db.party.count(message.user, function(count){
 				if(count > 0){
-					bot.reply(message, "You already have a Pokemon!")
+					return bot.reply(message, "You already have a Pokemon!");
 				} else {
-					
+					db.party.find_open_position('U09EUDR7G', function(position){
+						if(position.length < 1){
+							return bot.reply(message, "You cannot store any more Pokemon!");
+						} else {
+							db.pokemon.starter_list(function(starters){
+								starters.map(function(o){
+									if(message.match[2] == o.name){this_pokemon = o;}
+								});
+								if(this_pokemon == null){
+									return bot.reply(message, message.match[2] + " is not available as a starter!");
+								} else {
+									db.pokemon.build_instance(this_pokemon, function(this_instance){
+										db.pokemon.capture('U09EUDR7G', this_instance, position, function(saved_at){
+											return bot.reply(message, saved_at);
+										});
+									});
+								}
+							});
+						}
+					});
 				}
 			});
-
-			console.log(message);
-
-			message.match.map(function(e,i,a){
-				bot.reply(message, "Message match: " + i + " = " + e);
-			}.bind(message));
-
 		});
 
 		//	Get user party
-		bot.hears(['starter(s)? (get|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		bot.hears(['starter(s)? (get|list)'],['direct_message'],function(bot,message) {
 			bot.startTyping;
 
 			db.pokemon.starter_list(function(list){

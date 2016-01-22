@@ -59,20 +59,16 @@ var pokemon = {
 		},
 
 		capture: function(userid, pokemon_instance, position, callback){
-			console.log(pokemon_instance.get());
-			console.log('==================== before ====================');
 
 			pokemon_instance.owner_id = userid;
 			pokemon_instance.caught_by = userid;
 			pokemon_instance.party_position = position;
 
-			console.log(pokemon_instance.get());
-			console.log('==================== after ====================');
-
 			pokemon_instance.save().then(function(){
-				callback('Stored at: ' + open_positions[0]);
+				callback('Stored at: ' + position);
 			}).catch(function(err){
 				console.log('Failed to save');
+				console.log(err);
 			});
 
 		},
@@ -119,7 +115,7 @@ var pokemon = {
 
 		starter_list: function(callback){
 			Pokemon.findAll({
-				attributes: ['name', 'gen'],
+				attributes: ['name', 'gen', 'national_id'],
 				order: [['name', 'ASC']],
 				where:{
 					is_starter: true

@@ -70,25 +70,25 @@ postgres.sequelize.sync({force: true}, function(err){
 	// 	});
 	// }, 10000);
 
-	setTimeout(function(){
-		db.pokemon.find('1', function(this_pokemon){
-			console.log(this_pokemon.get());
-			console.log('==================== pokemon ====================');
+	// setTimeout(function(){
+	// 	db.pokemon.find('1', function(this_pokemon){
+	// 		console.log(this_pokemon.get());
+	// 		console.log('==================== pokemon ====================');
 			
-			db.pokemon.build_instance(this_pokemon, function(this_instance){
-				console.log(this_instance.get());
-				console.log('==================== instance ====================');
+	// 		db.pokemon.build_instance(this_pokemon, function(this_instance){
+	// 			console.log(this_instance.get());
+	// 			console.log('==================== instance ====================');
 
-				db.party.find_open_position('U09EUDR7G', function(positions){
-					console.log(positions[0]);
-				console.log('==================== position ====================');
-					db.pokemon.capture('U09EUDR7G', this_instance, positions[0], function(saved_at){
-						console.log(saved_at);
-					});
-				});
-			});
-		});
-	}, 3000);
+	// 			db.party.find_open_position('U09EUDR7G', function(position){
+	// 				console.log(position);
+	// 			console.log('==================== position ====================');
+	// 				db.pokemon.capture('U09EUDR7G', this_instance, position, function(saved_at){
+	// 					console.log(saved_at);
+	// 				});
+	// 			});
+	// 		});
+	// 	});
+	// }, 5000);
 });
 
 //	Instantiate webserver
