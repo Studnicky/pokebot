@@ -1,4 +1,3 @@
-
 var db = require(__dirname +'/../db');
 
 var token = process.env.REALTIME_SLACK_TOKEN;

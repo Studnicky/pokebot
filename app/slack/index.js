@@ -18,8 +18,6 @@ fs.readdirSync(__dirname).filter(function(file){
 	bot[handler.name](bot);
 });
 
-console.log(bot);
-
 slack.startRTM(function(err,bot,payload) {
 	if (err) {throw new Error('Could not connect bot to slack')}
 });
