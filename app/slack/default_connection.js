@@ -8,7 +8,6 @@ var default_connection = {
 
 		bot.on('rtm_close', function(bot, data){
 			console.log('Slack connection lost!');
-			console.log(data);
 		});
 
 	}

@@ -8,10 +8,11 @@ var users = {
 
 		//	Find all users
 		bot.hears(['users (all|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.startTyping;
 			bot.api.users.list({token: token},function(err,data) {
-				if(!err){
 
-					user_list = {Admins: [], Users: [], Bots: [], Guests: []};
+				if(!err){
+					user_list = {Admins: [], Users: [], Guests: [], Bots: []};
 
 					data.members.map(function(o){
 						switch(true){
@@ -31,7 +32,7 @@ var users = {
 								user_list.Guests.push(o);
 								break;
 							case (o.is_ultra_restricted == true):
-								user_list.Guests.push(o)
+								user_list.Guests.push(o);
 								break;
 							default:
 								user_list.Users.push(o);
@@ -61,6 +62,7 @@ var users = {
 
 		//	List present users
 		bot.hears(['users (here|present|active|awake)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.startTyping;
 			bot.api.users.list({token: token, presence: 1},function(err,data) {
 				if(!err){
 					var active_users = [];

@@ -39,7 +39,7 @@ postgres.sequelize.sync({force: true}, function(err){
 	//	Test DB methods to make sure they work
 
 	// setInterval(function(){
-	// 	db.user.pokemon.save('U09EUDR7G', '0');
+	// 	db.user.pokemon.catch('U09EUDR7G', '0');
 	// }, 2000);
 
 	// setTimeout(function(){
@@ -62,15 +62,33 @@ postgres.sequelize.sync({force: true}, function(err){
 	// 		});
 	// 		console.log(replyMessage);
 	// 	});
-
 	// }, 5000);
 
-	// setInterval(function(){
+	// setTimeout(function(){
 	// 	db.pokemon.spawn('255', function(this_pokemon){
 	// 		console.log(this_pokemon.get());
 	// 	});
-	// }, 15000);
+	// }, 10000);
 
+	setTimeout(function(){
+		db.pokemon.find('1', function(this_pokemon){
+			console.log(this_pokemon.get());
+			console.log('==================== pokemon ====================');
+			
+			db.pokemon.build_instance(this_pokemon, function(this_instance){
+				console.log(this_instance.get());
+				console.log('==================== instance ====================');
+
+				db.party.find_open_position('U09EUDR7G', function(positions){
+					console.log(positions[0]);
+				console.log('==================== position ====================');
+					db.pokemon.capture('U09EUDR7G', this_instance, positions[0], function(saved_at){
+						console.log(saved_at);
+					});
+				});
+			});
+		});
+	}, 3000);
 });
 
 //	Instantiate webserver

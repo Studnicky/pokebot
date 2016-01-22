@@ -9,7 +9,10 @@ fs.readdirSync(__dirname).filter(function(file){
 }).map(function(file){
 	var handler = require(path.join(__dirname, file));
 	db[handler.name] = handler.methods;
+	db[handler.name].db = db;
 });
+
+console.log('** db methods:');
 console.log(db);
 
 module.exports = db;

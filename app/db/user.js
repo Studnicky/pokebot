@@ -9,34 +9,6 @@ var user = {
 	name: 'user',
 	methods: {
 
-		find_open_position: function(userid, callback){
-			User.findOne({
-				where: { slack_id: userid },
-				attributes: ['position_cap'],
-				include: [{
-					model: Pokemon_Instance,
-					attributes: ['party_position'],
-					order: [['party_position', 'ASC']]
-				}]
-			}).then(function(this_user){
-
-				var open_positions = [], count = 1;
-				while(count <= this_user.position_cap){
-					open_positions.push(count++);
-				};
-
-				this_user.Pokemon_Instances.map(function(o){
-					if(open_positions.indexOf(o.party_position) != -1){
-						open_positions.splice(open_positions.indexOf(o.party_position), 1);
-					}
-				});
-
-				if(typeof(callback) == 'function'){
-					callback(open_positions);
-				}
-			});
-		},
-
 		get_name_by_userid: function(userid, callback){
 			User.findOne({
 				where: { slack_id: userid },
@@ -79,50 +51,46 @@ var user = {
 			set: function(data){
 
 				data.members.map(function(o){
-
-					var permission_level = 0;
-					//	Permissions level
 					switch(true){
 						case (o.is_primary_owner == true):
-						permission_level = 6;
+						o.permission_level = 6;
 						break;
 						case (o.is_owner == true):
-						permission_level = 5;
+						o.permission_level = 5;
 						break;
 						case (o.is_bot == true):
-						permission_level = 4;
+						o.permission_level = 4;
 						break;
 						case (o.is_admin == true):
-						permission_level = 3;
+						o.permission_level = 3;
 						break;
 						case (o.is_restricted == true):
-						permission_level = 1;
+						o.permission_level = 1;
 						break;
 						case (o.is_ultra_restricted == true):
-						permission_level = 0;
+						o.permission_level = 0;
 						break;
 						default:
-						permission_level = 2;
+						o.permission_level = 2;
 						break;
 					}
 
-						//	Instantiate a new user
-						User.upsert({
-							slack_id: o.id,
-							slack_name: o.name,
-							tz_offset: o.tz_offset,	//	Force this in as a string for now
-							permissions_level: permission_level,
-							position_cap: 15 * permission_level,
-							credits: 0
-						})
-						.then(function(){
-							// console.log("Saved:\t" + o.id + " as " + o.name);
-						})
-						.catch(function(error){
-							// console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
-						});
-
+					//	Instantiate a new user
+					User.upsert({
+						slack_id: o.id,
+						slack_name: o.name,
+						tz_offset: o.tz_offset,	//	Force this in as a string for now
+						permissions_level: o.permission_level,
+						position_cap: 15 * o.permission_level,
+						credits: 0
+					})
+					.then(function(){
+						// console.log("Saved:\t" + o.id + " as " + o.name);
+					})
+					.catch(function(error){
+						// console.log("Failed to save user " + o.id + " as " + o.name + "\n" + error);
 					});
+				});
 			}
 		}
 
