@@ -75,10 +75,8 @@ var db = {
 				});
 
 			},
-			
-			set: function(data){
 
-				var userlist = null;
+			set: function(data){
 
 				data.members.map(function(o){
 

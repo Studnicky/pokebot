@@ -9,7 +9,7 @@ var token = process.env.REALTIME_SLACK_TOKEN;
 var bot = BotKit.slackbot({debug: false, log: true});
 var slack = bot.spawn({token: token});
 
-//	Read and initialize modules
+//	Read and initialize slack modules
 fs.readdirSync(__dirname).filter(function(file){
 	return (file.indexOf(".") !== 0) && (file !== "index.js");
 }).map(function(file){
@@ -18,8 +18,10 @@ fs.readdirSync(__dirname).filter(function(file){
 	bot[handler.name](bot);
 });
 
+console.log(bot);
+
 slack.startRTM(function(err,bot,payload) {
-	if (err) {throw new Error('Could not connect to bot')}
+	if (err) {throw new Error('Could not connect bot to slack')}
 });
 
 //	Fetch and store user list on initialization
