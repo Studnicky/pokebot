@@ -58,9 +58,9 @@ var user = {
 
 			},
 
-			set: function(data){
+			set: function(users){
 
-				data.members.map(function(o){
+				users.map(function(o){
 					switch(true){
 						case (o.is_primary_owner == true):
 						o.permissions_level = 6;

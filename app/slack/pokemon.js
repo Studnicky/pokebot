@@ -79,7 +79,7 @@ var pokemon = {
 							break;
 					}
 
-				var count = 0;
+				var count = -1;
 				do {
 					var shake = (Math.random()*255)+(10*count)-target.pokemon.catch_rate;
 					var pass = catch_chance > shake ? true : false;

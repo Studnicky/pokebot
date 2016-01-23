@@ -13,7 +13,6 @@ var token = process.env.REALTIME_SLACK_TOKEN;
 var controller = BotKit.slackbot({debug: false, log: true});
 var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) {
 	if (!err) {
-
 		//	Read and initialize slack modules
 		fs.readdirSync(__dirname).filter(function(file){
 			return (file.indexOf(".") !== 0) && (file !== "index.js");
@@ -23,15 +22,15 @@ var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) 
 			controller[handler.name](controller, bot);
 		});
 
-		// bot.say({text: '<@' + bot.identity.id + '>' + " running on " + os.hostname(), channel: "C09EUKXHT"});	//	Get channel ID?
-		//	Fetch and store user list on initialization
-		bot.api.users.list({token: token},function(err,response) {
-			if(!err){
-				db.user.list.set(response);
-			} else {
-				console.log('Unable to retrieve user list');
-			}
-		});
+		bot.say({text: 'Online! <@' + bot.identity.id + '>' + " running on " + os.hostname(), channel: "C09EUKXHT"});	//	Get channel ID?
+
+		for (var key in payload){
+			console.log('Payload contains: ' + key);
+		}
+
+		//	Payload includes user list, store it in db
+		db.user.list.set(payload.users);
+
 	} else {
 		throw new Error('Could not connect bot to slack')
 	}

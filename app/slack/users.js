@@ -7,7 +7,7 @@ var users = {
 	events: function(controller, bot){
 
 		//	Find all users
-		controller.hears(['users (all|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['users (get|all|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
 			bot.api.users.list({token: token},function(err,data) {
 
@@ -52,7 +52,7 @@ var users = {
 					}
 
 					bot.reply(message, replyMessage);
-					db.user.list.set(data);	//	Store the list because why not
+					db.user.list.set(data.members);	//	Store the list because why not
 
 				} else {
 					console.log(err);
@@ -78,7 +78,7 @@ var users = {
 					} else {
 						bot.reply(message, "You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
 					}
-					db.user.list.set(data);	//	Store the list because why not
+					db.user.list.set(data.members);	//	Store the list because why not
 				} else {
 					console.log(err);
 				}
