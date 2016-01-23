@@ -103,7 +103,7 @@ var pokemon = {
 					emoji + ' *' + target.pokemon.name + '* broke free from <@' + message.user + '>\'s ball!',
 					'<@' + message.user + '> was so close to catching ' + emoji + '  *' + target.pokemon.name + '*!',
 					'<@' + message.user + '> just barely missed that ' + emoji + '  *' + target.pokemon.name + '*!',
-					'Gotcha! <@' + message.user + '> caught  *' + target.pokemon.name + '*!'
+					'Gotcha! <@' + message.user + '> caught  ' + emoji + '  *' + target.pokemon.name + '*!'
 				]
 
 				if(count < 4 || !(wildInstances[message.item.ts])){
