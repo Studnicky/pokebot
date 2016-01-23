@@ -18,7 +18,6 @@ var user = {
 					callback(this_user.slack_name);
 				}
 			});
-
 		},
 
 		get_userid_by_name: function(username, callback){
@@ -31,6 +30,17 @@ var user = {
 				}
 			});
 		},
+
+		get_info: function(userid, callback){
+			User.findOne({
+				where: { slack_id: userid }
+			}).then(function(this_user){
+				if(this_user && typeof(callback) == 'function'){
+					callback(this_user);
+				}
+			});
+		},
+
 
 		list: {
 
@@ -53,25 +63,25 @@ var user = {
 				data.members.map(function(o){
 					switch(true){
 						case (o.is_primary_owner == true):
-						o.permission_level = 6;
+						o.permissions_level = 6;
 						break;
 						case (o.is_owner == true):
-						o.permission_level = 5;
+						o.permissions_level = 5;
 						break;
 						case (o.is_bot == true):
-						o.permission_level = 4;
+						o.permissions_level = 4;
 						break;
 						case (o.is_admin == true):
-						o.permission_level = 3;
+						o.permissions_level = 3;
 						break;
 						case (o.is_restricted == true):
-						o.permission_level = 1;
+						o.permissions_level = 1;
 						break;
 						case (o.is_ultra_restricted == true):
-						o.permission_level = 0;
+						o.permissions_level = 0;
 						break;
 						default:
-						o.permission_level = 2;
+						o.permissions_level = 2;
 						break;
 					}
 
@@ -80,8 +90,8 @@ var user = {
 						slack_id: o.id,
 						slack_name: o.name,
 						tz_offset: o.tz_offset,	//	Force this in as a string for now
-						permissions_level: o.permission_level,
-						position_cap: 15 * o.permission_level,
+						permissions_level: o.permissions_level,
+						position_cap: 15 * o.permissions_level,
 						credits: 0
 					})
 					.then(function(){

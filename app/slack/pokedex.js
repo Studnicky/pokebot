@@ -2,10 +2,10 @@ var db = require(__dirname +'/../db');
 
 var pokedex = {
 	name: 'pokedex',
-	events: function(bot){
+	events: function(controller, bot){
 		
 		//	Get user party
-		bot.hears(['pokedex (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['pokedex (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 
 			console.log(message);
 

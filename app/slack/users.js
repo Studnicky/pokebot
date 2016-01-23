@@ -4,10 +4,10 @@ var token = process.env.REALTIME_SLACK_TOKEN;
 
 var users = {
 	name: 'users',
-	events: function(bot){
+	events: function(controller, bot){
 
 		//	Find all users
-		bot.hears(['users (all|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['users (all|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
 			bot.api.users.list({token: token},function(err,data) {
 
@@ -61,7 +61,7 @@ var users = {
 		});
 
 		//	List present users
-		bot.hears(['users (here|present|active|awake)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['users (here|present|active|awake)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
 			bot.api.users.list({token: token, presence: 1},function(err,data) {
 				if(!err){

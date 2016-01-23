@@ -1,12 +1,12 @@
 var default_connection = {
 	name: 'default_connection',
-	events: function(bot){
+	events: function(controller, bot){
 
-		bot.on('rtm_open', function(bot){
+		controller.on('rtm_open', function(bot){
 			console.log('Slack connection opened!');
 		});
 
-		bot.on('rtm_close', function(bot, data){
+		controller.on('rtm_close', function(bot, data){
 			console.log('Slack connection lost!');
 		});
 

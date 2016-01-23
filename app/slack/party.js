@@ -2,10 +2,10 @@ var db = require(__dirname +'/../db');
 
 var party = {
 	name: 'party',
-	events: function(bot){
+	events: function(controller, bot){
 
 		//	Get user party
-		bot.hears(['party (get|list|members|roster) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['party (get|list|members|roster) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 
 			console.log(message);
 
@@ -16,7 +16,7 @@ var party = {
 		});
 		
 		//	Get user party
-		bot.hears(['party (swap|switch) (.*) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['party (swap|switch) (.*) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 
 			console.log(message);
 
@@ -27,7 +27,7 @@ var party = {
 		});
 
 		//	Get user party
-		bot.hears(['party (member|number) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['party (member|number) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 
 			console.log(message);
 
@@ -38,7 +38,7 @@ var party = {
 		});
 
 		//	Get user storage box
-		bot.hears(['(box|pc|storage) (list|get) (.*) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['(box|pc|storage) (list|get) (.*) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 
 			console.log(message);
 
