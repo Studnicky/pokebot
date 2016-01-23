@@ -9,7 +9,7 @@ var postgres = require('./sequelize');
 var db = require ('./db');				//	Database wrapper
 
 postgres.sequelize.sync({force: true}, function(err){
-	if(err){	//	No database? No app.
+	if(err){	//	No database? No server.
 		console.error(err);
 		return process.exit(1);
 	}
@@ -27,21 +27,19 @@ postgres.sequelize.sync({force: true}, function(err){
 		});
 	});
 
-	var app = require('http').createServer(fileServer);	//	File server
-	var io = require('./socket').listen(app);			//	Socket server
+	var slack = require('./slack');							//	Slack handler
 
-	//	slackHandler responds to slack events
-	var slack = require('./slack');
-	slack.initialize();
+	var server = require('http').createServer(fileServer);	//	File server
+	var io = require('./socket').listen(server);			//	Socket server
 
-	app.listen(process.env.PORT, function(){
+	server.listen(process.env.PORT, function(){
 		console.log('Webserver listening on: ' + process.env.PORT );
 	});
 
 	//	Test DB methods to make sure they work
 
 	// setInterval(function(){
-	// 	db.user.pokemon.save('U09EUDR7G', '0');
+	// 	db.user.pokemon.catch('U09EUDR7G', '0');
 	// }, 2000);
 
 	// setTimeout(function(){
@@ -64,15 +62,33 @@ postgres.sequelize.sync({force: true}, function(err){
 	// 		});
 	// 		console.log(replyMessage);
 	// 	});
-
 	// }, 5000);
 
-	// setInterval(function(){
+	// setTimeout(function(){
 	// 	db.pokemon.spawn('255', function(this_pokemon){
 	// 		console.log(this_pokemon.get());
 	// 	});
-	// }, 15000);
+	// }, 10000);
 
+	// setTimeout(function(){
+	// 	db.pokemon.find('1', function(this_pokemon){
+	// 		console.log(this_pokemon.get());
+	// 		console.log('==================== pokemon ====================');
+			
+	// 		db.pokemon.build_instance(this_pokemon, function(this_instance){
+	// 			console.log(this_instance.get());
+	// 			console.log('==================== instance ====================');
+
+	// 			db.party.find_open_position('U09EUDR7G', function(position){
+	// 				console.log(position);
+	// 			console.log('==================== position ====================');
+	// 				db.pokemon.capture('U09EUDR7G', this_instance, position, function(saved_at){
+	// 					console.log(saved_at);
+	// 				});
+	// 			});
+	// 		});
+	// 	});
+	// }, 5000);
 });
 
 //	Instantiate webserver

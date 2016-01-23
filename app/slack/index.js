@@ -1,88 +1,40 @@
-//	Module imports
-var Slack = require('slack-client'),
-	request = require('request'),
-	db = require(__dirname + '/../db');
+var BotKit = require('botkit');
+var path = require('path');
+var fs = require('fs');
+var os = require('os');
 
-//	Slack config vars
-var autoMark = true,
-	autoReconnect = true,
-	slackToken = process.env.REALTIME_SLACK_TOKEN,
-	slackEndpoint = 'https://slack.com/api/';
+var db = require(__dirname +'/../db');
+var utility = require(__dirname +'/../utility');
 
-slack = new Slack(slackToken, autoReconnect, autoMark);
 
-//	Global ref for slack handler
-slackHandler = {
-	Slack: Slack,
-	slack: slack,
-	initialize: function(){
-		console.log('Slack Adapter initialize...');
-		slack.login();
-		this.events();
-		this.web.user.list.get();
-	},
-	events: function(){
+var token = process.env.REALTIME_SLACK_TOKEN;
 
-		slack.on('open', function(){
-			return console.log("Slack connected to " + slack.team.name + " as @" + slack.self.name + "!");
+//	Instantiate bot, spawn controller
+var controller = BotKit.slackbot({debug: false, log: true});
+var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) {
+	if (!err) {
+
+		//	Read and initialize slack modules
+		fs.readdirSync(__dirname).filter(function(file){
+			return (file.indexOf(".") !== 0) && (file !== "index.js");
+		}).map(function(file){
+			var handler = require(path.join(__dirname, file));
+			controller[handler.name] = handler.events;
+			controller[handler.name](controller, bot);
 		});
 
-		slack.on('message', function(message) {
-			//	Dispatch events from here
-			console.log("Message event: " + message.type + " heard at " + message.ts);
-			console.log("User: " + message.user + " on " + message.team + " in channel " + message.channel);
-			console.log(message.text);
-
-		}, function(err){
-			console.log('Slack message error: ' + err);
-		});
-		// Event listener: Error
-		slack.on('error', function(err) {
-			return console.error("Slack Connection Error: ", err);
-		});
-	},
-	web: {
-		user: {
-			list: {
-				get: function(callback){
-					request.get(slackEndpoint + 'users.list', {
-						json: true,
-						qs: {token: slackToken}
-					}, function(error, response, data) {
-						// If we fetched the list, might as well update it
-						db.user.list.set(data);
-
-						if(typeof(callback) == 'function'){
-							callback(data.members);
-						}
-
-					});
-				},
-				presence: function(callback){
-					request.get(slackEndpoint + 'users.list', {
-						json: true,
-						qs: {token: slackToken, presence: 1}
-					}, function(error, response, data) {
-
-						if (data.ok !== true){
-							console.log('Failed to retrieve users list from slack API\n' + error);
-						} else {
-							var active_users = [];
-
-							if(typeof(callback) == 'function'){
-								callback(data.members);
-							}
-
-						}
-					});
-				}	
+		// bot.say({text: '<@' + bot.identity.id + '>' + " running on " + os.hostname(), channel: "C09EUKXHT"});	//	Get channel ID?
+		//	Fetch and store user list on initialization
+		bot.api.users.list({token: token},function(err,response) {
+			if(!err){
+				db.user.list.set(response);
+			} else {
+				console.log('Unable to retrieve user list');
 			}
-		}
-	},
-	rtm: {
-
+		});
+	} else {
+		throw new Error('Could not connect bot to slack')
 	}
+});
 
-};
-
-module.exports = slackHandler;
+module.exports = slack;
