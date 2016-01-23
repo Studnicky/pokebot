@@ -129,10 +129,6 @@ module.exports = function(sequelize, Sequelize) {
 			}
 		},
 		instanceMethods: {
-			//	Set stats for a new pokemon instance
-			initialize_new: function() {},
-			//	Aggregate IV and nature stats with base stats
-			battle_stats: function() {}
 		},
 		tableName: 'pokemon_instance',
 		deletedAt: 'deleted_at',

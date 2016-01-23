@@ -36,59 +36,6 @@ postgres.sequelize.sync({force: true}, function(err){
 		console.log('Webserver listening on: ' + process.env.PORT );
 	});
 
-	//	Test DB methods to make sure they work
-
-	// setInterval(function(){
-	// 	db.user.pokemon.catch('U09EUDR7G', '0');
-	// }, 2000);
-
-	// setTimeout(function(){
-	// 	db.user.pokemon.get('U09EUDR7G', '1', function(this_pokemon){
-	// 		console.log(this_pokemon.party_position + ': ' + this_pokemon.Pokemon.name);
-	// 	});
-	// }, 5000);
-
-	// setInterval(function(){
-	// 	db.user.pokemon.release('U09EUDR7G', Math.ceil(Math.random()*20), function(this_pokemon){
-	// 		console.log(this_pokemon.party_position + ': ' + this_pokemon.Pokemon.name);
-	// 	});
-	// }, 10000);
-
-	// setTimeout(function(){
-	// 	db.user.party.get('U09EUDR7G', '1', function(party_members){
-	// 		var replyMessage = "Your current party members are: \n";
-	// 		party_members.map(function(member){
-	// 			replyMessage += member.party_position+ ":\t:" + member.Pokemon.name;
-	// 		});
-	// 		console.log(replyMessage);
-	// 	});
-	// }, 5000);
-
-	// setTimeout(function(){
-	// 	db.pokemon.spawn('255', function(this_pokemon){
-	// 		console.log(this_pokemon.get());
-	// 	});
-	// }, 10000);
-
-	// setTimeout(function(){
-	// 	db.pokemon.find('1', function(this_pokemon){
-	// 		console.log(this_pokemon.get());
-	// 		console.log('==================== pokemon ====================');
-			
-	// 		db.pokemon.build_instance(this_pokemon, function(this_instance){
-	// 			console.log(this_instance.get());
-	// 			console.log('==================== instance ====================');
-
-	// 			db.party.find_open_position('U09EUDR7G', function(position){
-	// 				console.log(position);
-	// 			console.log('==================== position ====================');
-	// 				db.pokemon.capture('U09EUDR7G', this_instance, position, function(saved_at){
-	// 					console.log(saved_at);
-	// 				});
-	// 			});
-	// 		});
-	// 	});
-	// }, 5000);
 });
 
 //	Instantiate webserver

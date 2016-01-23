@@ -55,7 +55,6 @@ module.exports = function(sequelize, Sequelize) {
 			}
 		},
 		instanceMethods: {
-			//	TODO: Method to find open party positions, reads from pokemon_instance table
 		}
 	});
 

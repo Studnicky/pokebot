@@ -67,7 +67,6 @@ var pokemon = {
 			pokemon_instance.save().then(function(){
 				callback('Stored at: ' + position);
 			}).catch(function(err){
-				console.log('Failed to save');
 				console.log(err);
 			});
 

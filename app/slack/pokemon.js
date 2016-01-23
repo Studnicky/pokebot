@@ -44,12 +44,6 @@ var pokemon = {
 										text: "Too slow!  " + ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ':' + "  *" + pokemon.name + "* got away!"
 									}
 									bot.say(post);
-									//	Have to do oAuth to get scope for editing/deleting messages and not feeling it
-									// var update = {token: token,	ts: timestamp, channel: "C09EUKXHT", text: "Too slow!"};
-									// bot.api.chat.update(update, function(err, data){
-									// 	if(!err){ console.log(data); }
-									// 	else { console.log(err); }
-									// });	
 								}
 							}.bind(timestamp), wildInstances[timestamp].escapeTimer);
 						} else {
@@ -82,17 +76,13 @@ var pokemon = {
 						case ('great'):
 							catch_chance = catch_chance*1.5;
 						default:
-							console.log(catch_chance);
 							break;
 					}
 
 				var count = 0;
 				do {
 					var shake = (Math.random()*255)+(10*count)-target.pokemon.catch_rate;
-					console.log('Count ' + count + ' Shake ' + shake);
-					console.log('Catch_rate ' + target.pokemon.catch_rate + ' catch_chance ' + catch_chance);
 					var pass = catch_chance > shake ? true : false;
-					console.log(pass); 
 					count++;
 				} while (count < 4 && pass);
 
@@ -200,10 +190,8 @@ var pokemon = {
 
 				for (var key in starter_list){
 					if(starter_list[key].length > 0){
-						console.log(key);
 						replyMessage += utility.numeral_suffix(key) + ' Generation Starters:\n'
 						starter_list[key].map(function(o){
-							console.log(o);
 							replyMessage += "•\t:" + o.name.toLowerCase() + ": " + o.name + " \n";
 						});
 					}

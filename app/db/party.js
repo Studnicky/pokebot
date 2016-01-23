@@ -15,9 +15,6 @@ var party = {
 					owner_id: userid
 				}
 			}).then(function(count){
-
-				console.log(count);
-
 				if(typeof(count)=='number'){
 					if (typeof(callback) == 'function'){
 						callback(count);
