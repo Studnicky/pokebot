@@ -18,8 +18,18 @@ module.exports = {
 	},
 
 	//	Helper function to capitalize first letter of a proper name
-	proper_capitalize: function(name) {
-		return name.charAt(0).toUpperCase() + name.slice(1);
+	proper_capitalize: function(string) {
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	},
+
+	pokemon_emoji: function(pokemon, instance){
+		return ' :' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ': *' + pokemon.name + '*';
+	},
+	get_box: function(position){
+		return parseInt(Math.floor((position+30-7)/30));
+	},
+	get_box_position: function(position){
+		return parseInt(((position-6)%30) == 0 ? 30 : ((position-6)%30));
 	},
 
 }

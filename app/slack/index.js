@@ -28,6 +28,8 @@ var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) 
 			console.log('Payload contains: ' + key);
 		}
 
+		console.log(payload.channels);
+
 		//	Payload includes user list, store it in db
 		db.user.list.set(payload.users);
 

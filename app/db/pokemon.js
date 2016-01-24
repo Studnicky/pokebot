@@ -65,7 +65,7 @@ var pokemon = {
 			pokemon_instance.party_position = position;
 
 			pokemon_instance.save().then(function(){
-				callback('Stored at: ' + position);
+				callback(position);
 			}).catch(function(err){
 				console.log(err);
 			});

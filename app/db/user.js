@@ -91,7 +91,7 @@ var user = {
 						slack_name: o.name,
 						tz_offset: o.tz_offset,	//	Force this in as a string for now
 						permissions_level: o.permissions_level,
-						position_cap: 15 * o.permissions_level,
+						position_cap: 30 * o.permissions_level + 6,
 						credits: 0
 					})
 					.then(function(){

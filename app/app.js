@@ -35,7 +35,6 @@ postgres.sequelize.sync({force: true}, function(err){
 	server.listen(process.env.PORT, function(){
 		console.log('Webserver listening on: ' + process.env.PORT );
 	});
-
 });
 
 //	Instantiate webserver

@@ -5,13 +5,16 @@ var token = process.env.REALTIME_SLACK_TOKEN;
 var pokemon = {
 	name: 'pokemon',
 	events: function(controller, bot){
-		var wild = true;
+		var wild = false;
+		var timerBase = 180000;	//	3 minutes
+		var timerRand = 120000;	//	2 minutes
 		var wildInstances = {};
+
 		var setRarity = function(){
 			return Math.floor(Math.random()*254)+1;
 		}
 		var spawnTimer = function(){
-			return Math.floor(Math.random()*120000)+180000;
+			return Math.floor(Math.random()*timerRand)+timerBase;
 		}
 		var escapeTimer = function(pokemon){
 			return Math.floor(Math.random()*15000+15000-55*pokemon.speed);
@@ -41,7 +44,7 @@ var pokemon = {
 									var post = {
 										toke: token,
 										channel: "C09EUKXHT",
-										text: "Too slow!  " + ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ':' + "  *" + pokemon.name + "* got away!"
+										text: "Too slow!  " + utility.pokemon_emoji(pokemon, instance) + " got away!"
 									}
 									bot.say(post);
 								}
@@ -75,6 +78,8 @@ var pokemon = {
 							catch_chance = catch_chance*2;
 						case ('great'):
 							catch_chance = catch_chance*1.5;
+					//	Extend this logic to include ball-specific multipliers...
+						case (''):
 						default:
 							break;
 					}
@@ -86,27 +91,31 @@ var pokemon = {
 					count++;
 				} while (count < 4 && pass);
 
-				var emoji = ':' + target.pokemon.name.toLowerCase() + (target.instance.is_shiny ? '-shiny' : '') + ':';
-
-				var messages = [
-					'<@' + message.user + '> missed ' + emoji + '  *' + target.pokemon.name + '* completely!',
-					emoji + ' *' + target.pokemon.name + '* broke free from <@' + message.user + '>\'s ball!',
-					'<@' + message.user + '> was so close to catching ' + emoji + '  *' + target.pokemon.name + '*!',
-					'<@' + message.user + '> just barely missed that ' + emoji + '  *' + target.pokemon.name + '*!',
-					'Gotcha! <@' + message.user + '> caught  ' + emoji + '  *' + target.pokemon.name + '*!'
+				var responses = [
+					'<@' + message.user + '> missed ' + utility.pokemon_emoji(target.pokemon, target.instance) +  ' completely!',
+					utility.pokemon_emoji(target.pokemon, target.instance) + ' broke free from <@' + message.user + '>\'s ball!',
+					'<@' + message.user + '> was so close to catching ' + utility.pokemon_emoji(target.pokemon, target.instance) + '!',
+					'<@' + message.user + '> just barely missed that ' + utility.pokemon_emoji(target.pokemon, target.instance) + '!',
+					'Gotcha! <@' + message.user + '> caught ' + utility.pokemon_emoji(target.pokemon, target.instance) + '!'
 				]
 
 				if(count < 4 || !(wildInstances[message.item.ts])){
-					bot.reply(message.item, messages[count]);
+					bot.reply(message.item, responses[count]);
 				} else {
 					delete wildInstances[message.item.ts];
-					bot.reply(message.item, messages[4]);
+					bot.reply(message.item, responses[4]);
 					db.party.find_open_position(message.user, function(position){
 						if(position.length < 1){
 							return bot.reply(message.item, "You cannot store any more Pokemon!");
 						} else {
-							db.pokemon.capture(message.user, target.instance, position, function(saved_at){
-								return bot.reply(message.item, saved_at);
+							db.pokemon.capture(message.user, target.instance, position[0], function(saved_at){
+								if(saved_at < 7){
+									response = utility.pokemon_emoji(target.pokemon, target.instance) + " added to party at position " + saved_at + ".";
+									return bot.reply(message.item, response);
+								} else {
+									response = utility.pokemon_emoji(target.pokemon, target.instance) + " sent to storage box " + utility.get_box(saved_at) + " at position " + utility.get_box_position(saved_at) + ".";
+									return bot.reply(message.item, response);
+								}
 							});
 						}
 					});
@@ -114,33 +123,26 @@ var pokemon = {
 			}
 		});
 
-		//	Get user party
-		controller.hears(['spawn (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			var rarity = parseInt(message.match[1]);
-			var rarity = (typeof(rarity) == 'number' && rarity >= 0 && rarity <= 255) ? rarity : 0;
+		//	Spawn a wild pokemon on command (optional rarity force arg)
+		controller.hears(['spawn\s*(.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			var rarity = typeof(message.match[1]) == 'undefined' ? parseInt(message.match[1]) : setRarity();
+				rarity = (rarity >= 0 && rarity <= 255) ? rarity : 0;
 			wildPokemon(rarity);
 		});
 
-		controller.hears(['Spawning (true|false)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			db.user.get_info(message.user, function(this_user){
-				if(this_user.permissions_level >= 3){
+		controller.hears(['spawning (true|false)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			db.user.get_info(message.user, function(user){
+				if(user.permissions_level >= 3){
 					wild = message.match[1];
 					return bot.reply(message, "Wild pokemon spawning is now: " + wild);
 				} else {
-				return bot.reply(message, "Insufficient user permissions");
+					return bot.reply(message, "Insufficient user permissions");
 				}
 			});
 		});
 
-		//	Get user party
-		controller.hears(['spawn (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			var rarity = parseInt(message.match[1]);
-			var rarity = (typeof(rarity) == 'number' && rarity >= 0 && rarity <= 255) ? rarity : 0;
-			wildPokemon(rarity);
-		});
-
-		//	Get user party
-		controller.hears(['starter(s)? pick (.*)'],['direct_message'],function(bot,message) {
+		//	Pick a starter
+		controller.hears(['starter(s)? pick (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
 			var	pokemon = null;
 
@@ -154,14 +156,15 @@ var pokemon = {
 						} else {
 							db.pokemon.starter_list(function(starters){
 								starters.map(function(o){
-									if(message.match[2] == o.name){pokemon = o;}
+									if(utility.proper_capitalize(message.match[2]) == o.name){pokemon = o;}
 								});
 								if(pokemon == null){
 									return bot.reply(message, message.match[2] + " is not available as a starter!");
 								} else {
-									db.pokemon.build_instance(pokemon, function(this_instance){
-										db.pokemon.capture(message.user, this_instance, position, function(saved_at){
-											return bot.reply(message, saved_at);
+									db.pokemon.build_instance(pokemon, function(instance){
+										db.pokemon.capture(message.user, instance, position[0], function(saved_at){
+											var response = "You've selected  " + utility.pokemon_emoji(pokemon, instance) + '! Good choice, <@' + message.user + '>!';
+											return bot.reply(message, response);
 										});
 									});
 								}
@@ -172,57 +175,28 @@ var pokemon = {
 			});
 		});
 
-		//	Get user party
-		controller.hears(['starter(s)? (get|list)'],['direct_message'],function(bot,message) {
+		//	List all available starters
+		controller.hears(['starter(s)? (get|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
-
 			db.pokemon.starter_list(function(list){
 				starter_list = {};
-
 				list.map(function(o){
 					if(!starter_list[o.gen]){
 						starter_list[o.gen] = [];
 					};
 					starter_list[o.gen].push(o);
 				});
-
-				var replyMessage = "Available Starters List:\n";
-
+				var response = "Available Starters List:\n";
 				for (var key in starter_list){
 					if(starter_list[key].length > 0){
-						replyMessage += utility.numeral_suffix(key) + ' Generation Starters:\n'
+						response += utility.numeral_suffix(key) + ' Generation Starters:\n'
 						starter_list[key].map(function(o){
-							replyMessage += "•\t:" + o.name.toLowerCase() + ": " + o.name + " \n";
+							response += "•\t:" + o.name.toLowerCase() + ": " + o.name + " \n";
 						});
 					}
 				}
-
-				bot.reply(message, replyMessage);
-
+				return bot.reply(message, response);
 			});
-
-		});
-
-		//	Get user party
-		controller.hears(['pokemon (release|delete) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-
-			console.log(message);
-
-			message.match.map(function(e,i,a){
-				bot.reply(message, "Message match: " + i + " = " + e);
-			}.bind(message));
-
-		});
-
-
-		//	Get user party
-		controller.hears(['pokemon (get|info) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-
-			console.log(message);
-
-			message.match.map(function(e,i,a){
-				bot.reply(message, "Message match: " + i + " = " + e);
-			}.bind(message));
 
 		});
 
