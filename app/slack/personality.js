@@ -4,10 +4,10 @@ var personality = {
 	name: 'personality',
 	events: function(controller, bot){
 		
-		var timer = true;
+		var praiseHelix = true;
 
 		controller.on('reaction_added', function(bot, message){
-			if(message.reaction.split('-')[0] == "helix" && timer == true){
+			if(message.reaction == "helix-fossil" && praiseHelix == true){
 				var post = {
 					token: token,
 					channel: message.item.channel,
@@ -16,9 +16,9 @@ var personality = {
 					text: "_*Praise be unto him!*_"
 				};
 				bot.say(post);
+				praiseHelix = false;
 			}
-			timer = false;
-			setTimeout(function(){ return timer = true; }, 300000);
+			setTimeout(function(){ return praiseHelix = true; }, 300000);
 		});
 
 	}

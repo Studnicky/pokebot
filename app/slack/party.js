@@ -6,46 +6,67 @@ var party = {
 	events: function(controller, bot){
 
 		//	Get user party
-		controller.hears(['party (get|list|members|roster)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			db.party.get(message.user, function(party){
-				var response = '';
-
-				if(party.length > 0){
-					response += "Your current party members are: \n";
-					party.map(function(instance){
-						response += utility.numeral_suffix(instance.party_position) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance)+ "\n";
-					});
+		controller.hears(['(list) party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			db.party.get_party(message.user, function(err, response){
+				if(err){
+					return bot.reply(message, err);
 				} else {
-					response = "You don't have any pokemon in your party!";
+					var replymessage = 'Your current party members are: \n';
+					response.party_members.map(function(instance){
+						replymessage += utility.numeral_suffix(instance.party_position) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance)+ '\n';
+					});
+					return bot.reply(message, replymessage);
 				}
-				bot.reply(message, response);
 			});
 		});
 
 		//	Get user storage box
-		controller.hears(['(box|pc|storage) (list|get) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['(list) (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var box = typeof(parseInt(message.match[3])) == 'number' ? parseInt(message.match[3]) : 1;
-			db.party.box_get(message.user, box, function(party){
-
-				var response = '';
-
-				if(party.length > 0){
-					response += "Pokemon in " + utility.numeral_suffix(box) + " box are: \n";
-					party.map(function(instance){
-						var numeral = utility.numeral_suffix(instance.party_position-(box-1)*30-6);
-						response += numeral + ': ' + utility.pokemon_emoji(instance.Pokemon, instance)+ "\n";
-					});
+			db.party.get_box(message.user, box, function(err, response){
+				if(err){
+					return bot.reply(message, err);
 				} else {
-					res.send("You don't have any pokemon in your party!");
+					var replymessage = '';
+					response.box_members.map(function(instance){
+						replymessage += utility.numeral_suffix(instance.party_position-(box-1)*30-6) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance)+ '\n';
+					});
+					return bot.reply(message, replymessage);
 				}
 				bot.reply(message, response);
 			});
 		});
 
-		//	Get user party
+		//	Get specific member of user party
+		controller.hears(['(find|get|member|position) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
+			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
+			if(box == 0){
+				return bot.reply(message, 'There is no box zero!');
+			} else if (position == 0){
+				return bot.reply(message, 'Box positions are numebered 1 to 30!');
+			}
+			db.party.get_member(message.user, position, function(err, response){
+				if(err){
+					return bot.reply(message, err);
+				} else {
+					var replymessage = '';
+					var instance = response.instance;
+
+					if(instance.party_position <= 6){
+						replymessage += 'Your ' + utility.numeral_suffix(instance.party_position) + ' party member is: ' + utility.pokemon_emoji(instance.Pokemon, instance) + '.\n';
+					} else {
+						replymessage += 'Box #' + box + ' ' + utility.numeral_suffix(utility.get_box_position(instance.party_position)) + ' position contains ' + utility.pokemon_emoji(instance.Pokemon, instance) + '\n';
+					}
+					return bot.reply(message, replymessage);
+				}
+			});
+		});
+
+		//	Swap places of two pokemon in user party or boxes
 		controller.hears(['(swap|switch) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9]) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			if(message.match[7] == 0 || message.match[13] == 0){
-				return bot.reply(message, "Position cannot be zero!");
+				return bot.reply(message, 'Position cannot be zero!');
 			}
 
 			var box_1 = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
@@ -54,40 +75,89 @@ var party = {
 			var position_2 = (box_2)*30-30+6+parseInt(message.match[13]) || parseInt(message.match[13]);
 			
 			//	If either position is empty, DB will be mad when we attempt to transact
-			db.party.swap(message.user, position_1, position_2, function(response){
-				bot.reply(message, response);
+			db.party.swap(message.user, position_1, position_2, function(err, response){
+				if(err){
+					return bot.reply(message, err);
+				} else {
+					var replymessage = '';
+
+					response.instances.map(function(instance){
+						if(instance.new_position <= 6){
+							replymessage += utility.pokemon_emoji(instance.pokemon, instance.instance) + ' moved to party at position ' + instance.new_position + '.\n';
+						} else {
+							replymessage += utility.pokemon_emoji(instance.pokemon, instance.instance) + ' sent to storage box ' + utility.get_box(instance.new_position) + ' at position ' + utility.get_box_position(instance.new_position) + '.\n';
+						}
+					});
+					return bot.reply(message, replymessage);
+				}					
 			});
-
-		});
-
-		//	Get user party
-		controller.hears(['party (member|number) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-
-			var matchreply = '';
-			message.match.map(function(e,i,a){
-				matchreply += "Message match: " + i + " = " + e + "\n";
-			}.bind(message));
-			bot.reply(message, matchreply);
-
-			console.log(message);
-
 		});
 
 
-				//	Get user party
-		controller.hears(['party (release|delete) (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		//	Release target pokemon from user party or box
+		controller.hears(['(delete|release|remove) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
+			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
+			if(box == 0){
+				return bot.reply(message, 'There is no box zero!');
+			} else if (position == 0){
+				return bot.reply(message, 'Box positions are numebered 1 to 30!');
+			}
 
-			var matchreply = '';
-			message.match.map(function(e,i,a){
-				matchreply += "Message match: " + i + " = " + e + "\n";
-			}.bind(message));
-			bot.reply(message, matchreply);
+			db.party.get_member(message.user, position, function(err, response){
+				if(err){
+					return bot.reply(message, err);
+				} else {
+					var replymessage = '';
+					var instance = response.instance;
 
-			console.log(message);
-
+					if(response.instance.party_position <= 6){
+						replymessage += 'Your ' + utility.numeral_suffix(instance.party_position) + ' party member is: ' + utility.pokemon_emoji(instance.Pokemon, instance) + '.\n';
+					} else {
+						replymessage += 'Box #' + box + ' ' + utility.numeral_suffix(utility.get_box_position(instance.party_position)) + ' position contains ' + utility.pokemon_emoji(instance.Pokemon, instance) + '\n';
+					}
+					replymessage += 'Do you really want to release ' + utility.pokemon_emoji(instance.Pokemon, instance) + '?';
+					return bot.startConversation(message, function(err, convo){
+						convo.ask(replymessage, //	Array of objects that contain pattern matchers and callbacks
+						[{
+							pattern: '(y|yes)',
+							callback: function(response, convo){
+								db.party.release(message.user, instance.party_position, function(err, response){
+									if(err){
+										return convo.say(err);
+									} else {
+										var replymessage = '';
+										if(instance.party_position <= 6){
+											replymessage += utility.numeral_suffix(instance.party_position) + ' party position is now empty.\n';
+										} else {
+											replymessage += 'Box #' + box + ' ' + utility.numeral_suffix(utility.get_box_position(instance.party_position)) + ' position is now empty.\n';
+										}
+										replymessage += utility.pokemon_emoji(instance.Pokemon, instance) + " waves goodbye as he disappears into the bushes!"
+										convo.say(replymessage);
+									}
+								});
+								convo.next();	//	Advance to the next convo ask (or terminate)
+							}
+						},
+						{
+							pattern: '(n|no)',
+							callback: function(response, convo){
+								convo.say("Ooh, ok. Glad you changed your mind.");
+								convo.next();	//	Advance to the next convo ask (or terminate)
+							}
+						},
+						{
+							default: true,
+							callback: function(response, convo){
+								convo.say("Sorry, I didn't understand.");
+								convo.repeat();	//	Repeat the question (moves convo index back one)
+								convo.next();	//	Advance to the next convo ask (or terminate)
+							}
+						}])
+					});
+				}
+			});
 		});
-
-
 	}
 }
 
