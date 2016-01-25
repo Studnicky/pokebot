@@ -1,3 +1,4 @@
+"use strict";
 //	Need sequelize ref and data models
 var Sequelize = require('sequelize'),
 	Models = require(__dirname + '/../sequelize'),
@@ -8,26 +9,19 @@ var Sequelize = require('sequelize'),
 var utility = require(__dirname +'/../utility');
 
 var party = {
-	name: 'party',
-	methods: {
-		
 		count: function(userid, callback){
 			var err = null, response = {};
-
 			Pokemon_Instance.count({
 				where: {
 					owner_id: userid
 				}
 			}).then(function(count){
-				if(typeof(count)=='number'){
-					if (typeof(callback) == 'function'){
-						callback(count);
-					}
+				if(count){
+					response = {'count': count};
 				} else {
-					console.log('Count failed');
+					err = 'Nothing to count!';
 				}
-			}).catch(function(err){
-				console.log(error);
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			});
 		},
 
@@ -54,8 +48,8 @@ var party = {
 						open_positions.splice(open_positions.indexOf(o.party_position), 1);
 					}
 				});
-				if(typeof(callback) == 'function'){
-					callback(open_positions);
+				if (typeof(callback) == 'function'){
+					return callback(open_positions);
 				}
 			});
 		},
@@ -85,7 +79,7 @@ var party = {
 				} else {
 					err = 'No open storage!';
 				}
-				(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			});
 		},
 
@@ -106,9 +100,9 @@ var party = {
 				if(box_members.length > 0){
 					response = {'box_members': box_members};
 				} else {
-					err = 'This box is empty!';
+					err = 'Storage box #' + box + ' is empty!';
 				}
-				(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			})
 		},
 
@@ -131,7 +125,7 @@ var party = {
 					err = 'Nothing found at that position!'
 					response = {'instance': null};
 				}
-				(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			});
 		},
 		
@@ -153,13 +147,12 @@ var party = {
 				} else {
 					err = 'No party members located!';
 				}
-				(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			});
 		},
 
 		put_position: function(userid, instance, position, callback){
 			var err = null, response = {};
-
 			Pokemon_Instance.update(
 				{party_position: position},
 				{where: {party_position: instance.party_position}}
@@ -167,9 +160,10 @@ var party = {
 				if(affectedRows == 1){
 					response = {instances: [{'instance': instance, 'pokemon': instance.Pokemon, 'new_position': position}]};
 				} else {
+					console.log('rows: 0');
 					err = 'Failed to put pokemon into new position.';
 				}
-				(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			});
 		},
 
@@ -186,22 +180,25 @@ var party = {
 				} else {
 					err = 'No pokemon to found at that position!'
 				}
-				(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			});
 		},
 
 		store: function(userid, position, callback){
 			var err = null, response = {};
+
 			//	Passthrough method to get instances
-			this.get_member(userid, position, function(err, response){
+			this.api.party.get_member(userid, position, function(err, response){
 				if(response.instance != null){
+					console.log('got-instance');
+					console.log(response.instance);
 					var instance = response.instance;
-					this.find_open_storage(userid, 7, function(err, response){						
-						this.put_position(userid, instance, response.position, callback);
-					}.bind(this));		
+					this.api.party.find_open_storage(userid, 7, function(err, response){
+						this.api.party.put_position(userid, instance, response.position, callback);
+					}.bind(this));
 				} else {
 					err = 'Nothing in position to move!';
-					(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+					return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 				}
 			}.bind(this));
 		},
@@ -209,20 +206,20 @@ var party = {
 		retrieve: function(userid, position, callback){
 			var err = null, response = {};
 			//	Passthrough method to get instances
-			this.get_member(userid, position, function(err, response){
+			this.api.party.get_member(userid, position, function(err, response){
 				if(response.instance != null){
 					var instance = response.instance;
-					this.find_open_storage(userid, 1, function(err, response){
+					this.api.party.find_open_storage(userid, 1, function(err, response){
 						if(response.position <= 6){
-							this.put_position(userid, instance, response.position, callback);
+							this.api.party.put_position(userid, instance, response.position, callback);
 						} else {
 							err = 'No open space in party!';
-							(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+							return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 						}
 					}.bind(this));		
 				} else {
 					err = 'Nothing in position to move!';
-					(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+					return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 				}
 			}.bind(this));
 		},
@@ -231,18 +228,18 @@ var party = {
 			var err = null, response = {};
 
 			//	Passthrough method to get instances
-			this.get_member(userid, position_1, function(err, response_1){	//	null is valid reponse
-				this.get_member(userid, position_2, function(err, response_2){	//	null is valid response
+			this.api.party.get_member(userid, position_1, function(err, response_1){	//	null is valid reponse
+				this.api.party.get_member(userid, position_2, function(err, response_2){	//	null is valid response
 					
 					if(response_1.instance != null && response_2.instance != null){
-						this.switch_positions(userid, response_1.instance, response_2.instance, callback);
+						this.api.party.switch_positions(userid, response_1.instance, response_2.instance, callback);
 					} else if(response_1.instance == null && response_2.instance != null){
-						this.put_position(userid, response_2.instance, position_1, callback);
+						this.api.party.put_position(userid, response_2.instance, position_1, callback);
 					} else if(response_1.instance != null && response_2.instance == null){
-						this.put_position(userid, response_1.instance, position_2, callback);
+						this.api.party.put_position(userid, response_1.instance, position_2, callback);
 					} else if(response_1.instance == null && response_2.instance == null){
 						err = 'Both positions cannot be empty!';
-						(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+						return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 					}
 
 				}.bind(this));
@@ -275,16 +272,16 @@ var party = {
 								} else {
 									err = 'Operation failed at: Set instance 1 position ' + position_2
 								}
-								(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+								return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 							});
 						} else {
 							err = 'Operation failed at: Set instance 2 position ' + position_1;
-							(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+							return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 						}
 					});
 				} else {
 					err = 'Operation failed at: Set instance 1 position 0';
-					(typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));	
+					return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));	
 				}
 			});	
 
@@ -292,7 +289,6 @@ var party = {
 		// trade: function(userid_1, position_1, userid_2, position_2){
 
 		// }
-	}
 }
 
 module.exports = party;

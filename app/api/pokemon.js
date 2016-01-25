@@ -6,11 +6,8 @@ var Sequelize = require('sequelize'),
 	Pokemon_Instance = Models.Pokemon_Instance;
 
 var pokemon = {
-	name: 'pokemon',
-	methods: {
 
 		build_instance: function(pokemon, callback){
-
 			var pokemon_instance = Pokemon_Instance.build({
 				caught_by: null,
 				current_form: {},
@@ -55,8 +52,9 @@ var pokemon = {
 			} else {
 				console.log('Failed to build instance');
 			}
-
 		},
+
+
 
 		capture: function(userid, pokemon_instance, position, callback){
 
@@ -95,7 +93,6 @@ var pokemon = {
 			Pokemon.findOne({
 				where:{
 					is_wild: true,
-					//	Invert for UX clarity (rarity as ascending numbers instead of descending)
 					catch_rate: {$gte: (255-rarity)},
 				},
 				order: [Sequelize.fn('RANDOM')]
@@ -129,9 +126,6 @@ var pokemon = {
 				console.log(error);
 			});;
 		},
-
-
-	}
 }
 
 module.exports = pokemon;

@@ -1,4 +1,4 @@
-var db = require(__dirname +'/../db');
+var api = require(__dirname +'/../api');
 var utility = require(__dirname +'/../utility');
 
 var pokemon = {
@@ -20,10 +20,10 @@ var pokemon = {
 		}
 		var wildPokemon = function(rarity){
 			bot.startTyping;
-			db.pokemon.spawn(rarity, function(pokemon){
-				db.pokemon.build_instance(pokemon, function(instance){
+			api.pokemon.spawn(rarity, function(pokemon){
+				api.pokemon.build_instance(pokemon, function(instance){
 					var post = {
-						channel: "C09EUKXHT",
+						channel: bot.general,
 						username: ' ',
 						icon_emoji: ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ':',
 						text: "A wild  " + ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ':' + "  *" + pokemon.name + "* has appeared!"
@@ -40,7 +40,7 @@ var pokemon = {
 								if(wildInstances[timestamp]){	
 									delete wildInstances[timestamp];
 									var post = {
-										channel: "C09EUKXHT",
+										channel: bot.general,
 										text: "Too slow!  " + utility.pokemon_emoji(pokemon, instance) + " got away!"
 									}
 									bot.say(post);
@@ -101,11 +101,11 @@ var pokemon = {
 				} else {
 					delete wildInstances[message.item.ts];
 					bot.reply(message.item, responses[4]);
-					db.party.find_open_position(message.user, function(position){
+					api.party.find_open_position(message.user, function(position){
 						if(position.length < 1){
 							return bot.reply(message.item, "You cannot store any more Pokemon!");
 						} else {
-							db.pokemon.capture(message.user, target.instance, position[0], function(saved_at){
+							api.pokemon.capture(message.user, target.instance, position[0], function(saved_at){
 								if(saved_at < 7){
 									response = utility.pokemon_emoji(target.pokemon, target.instance) + " added to party at position " + saved_at + ".";
 									return bot.reply(message.item, response);
@@ -128,7 +128,7 @@ var pokemon = {
 		});
 
 		controller.hears(['spawning (true|false)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			db.user.get_info(message.user, function(user){
+			api.user.get_info(message.user, function(user){
 				if(user.permissions_level >= 3){
 					wild = message.match[1];
 					return bot.reply(message, "Wild pokemon spawning is now: " + wild);
@@ -143,23 +143,23 @@ var pokemon = {
 			bot.startTyping;
 			var	pokemon = null;
 
-			db.party.count(message.user, function(count){
-				if(count > 0){
+			api.party.count(message.user, function(err, response){
+				if(response.count > 0){
 					return bot.reply(message, "You already have a Pokemon!");
 				} else {
-					db.party.find_open_position(message.user, function(position){
+					api.party.find_open_position(message.user, function(position){
 						if(position.length < 1){
 							return bot.reply(message, "You cannot store any more Pokemon!");
 						} else {
-							db.pokemon.starter_list(function(starters){
+							api.pokemon.starter_list(function(starters){
 								starters.map(function(o){
 									if(utility.proper_capitalize(message.match[2]) == o.name){pokemon = o;}
 								});
 								if(pokemon == null){
 									return bot.reply(message, message.match[2] + " is not available as a starter!");
 								} else {
-									db.pokemon.build_instance(pokemon, function(instance){
-										db.pokemon.capture(message.user, instance, position[0], function(saved_at){
+									api.pokemon.build_instance(pokemon, function(instance){
+										api.pokemon.capture(message.user, instance, position[0], function(saved_at){
 											var response = "You've selected  " + utility.pokemon_emoji(pokemon, instance) + '! Good choice, <@' + message.user + '>!';
 											return bot.reply(message, response);
 										});
@@ -175,7 +175,7 @@ var pokemon = {
 		//	List all available starters
 		controller.hears(['starter(s)? (get|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
-			db.pokemon.starter_list(function(list){
+			api.pokemon.starter_list(function(list){
 				starter_list = {};
 				list.map(function(o){
 					if(!starter_list[o.gen]){

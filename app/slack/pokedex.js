@@ -1,4 +1,4 @@
-var db = require(__dirname +'/../db');
+var api = require(__dirname +'/../api');
 
 var pokedex = {
 	name: 'pokedex',

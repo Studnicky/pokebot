@@ -6,7 +6,7 @@ if(!process.env.DATABASE_URL){
 
 //	Initialize connection to database...
 var postgres = require('./sequelize');
-var db = require ('./db');				//	Database wrapper
+var api = require ('./api');				//	Database wrapper
 
 postgres.sequelize.sync({force: true}, function(err){
 	if(err){	//	No database? No server.

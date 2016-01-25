@@ -1,4 +1,4 @@
-var db = require(__dirname +'/../db');
+var api = require(__dirname +'/../api');
 
 var token = process.env.REALTIME_SLACK_TOKEN;
 
@@ -45,9 +45,7 @@ var users = {
 
 				if(!err){
 					user_list = getUserRole(data.members);
-
 					var replyMessage = "Full user list:\n";
-
 					for (var key in user_list){
 						if(user_list[key].length > 0){
 							replyMessage += key + ':\n'
@@ -56,10 +54,8 @@ var users = {
 							});
 						}
 					}
-
 					bot.reply(message, replyMessage);
-					db.user.list.set(data.members);	//	Store the list because why not
-
+					api.user.list.set(data.members);	//	Store the list because why not
 				} else {
 					console.log(err);
 				}
@@ -71,19 +67,13 @@ var users = {
 			bot.startTyping;
 			bot.api.users.list({token: token, presence: 1},function(err,data) {
 				if(!err){
-
 					var active_users = data.members.filter(function(user){
 						console.log(user.name + ' is ' + user.presence);
 						return (user.presence != "away") && (user.presence != "undefined");
 					});
-
-					console.log(active_users);
-
 					if (active_users.length > 1){
 						var replyMessage = "The following users are currently active:\n";		
-						
 						active_users = getUserRole(active_users);
-						
 						for (var key in active_users){
 							if(active_users[key].length > 0){
 								replyMessage += key + ':\n'
@@ -92,22 +82,16 @@ var users = {
 								});
 							}
 						}
-						
 						bot.reply(message, replyMessage);
-					
 					} else {
 						bot.reply(message, "You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
 					}
-
-
-					db.user.list.set(data.members);	//	Store the list because why not
+					api.user.list.set(data.members);	//	Store the list because why not
 				} else {
 					console.log(err);
 				}
 			});
 		});
-
-
 	}
 }
 

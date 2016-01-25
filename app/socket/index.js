@@ -1,5 +1,5 @@
 var socketio = require('socket.io');
-var db = require(__dirname + '/../db');
+var api = require(__dirname + '/../api');
 var slack = require(__dirname + '/../slack');
 
 //	Global ref for socket handler
@@ -29,7 +29,7 @@ module.exports.listen = function(app){
 
 		user_socket.on('get-list', function(){
 			console.log('Get user list');
-			db.user.list.get(function(users){
+			api.user.list.get(function(users){
 				//	Any preprocessing of data...
 				user_socket.emit('user-list', {data: users});
 			});

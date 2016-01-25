@@ -3,15 +3,12 @@ var path = require('path');
 var fs = require('fs');
 var os = require('os');
 
-var db = require(__dirname +'/../db');
+var api = require(__dirname +'/../api');
 var utility = require(__dirname +'/../utility');
 
-
 var token = process.env.REALTIME_SLACK_TOKEN;
-
-//	Instantiate bot, spawn controller
-var controller = BotKit.slackbot({debug: false, log: true});
-var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) {
+var controller = BotKit.slackbot({debug: false, log: true});						//	Construct botkit controller
+var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) {	//	Instantiate bot
 	if (!err) {
 		//	Read and initialize slack modules
 		fs.readdirSync(__dirname).filter(function(file){
@@ -22,17 +19,17 @@ var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) 
 			controller[handler.name](controller, bot);
 		});
 
-		bot.say({text: 'Online! <@' + bot.identity.id + '>' + " running on " + os.hostname(), channel: "C09EUKXHT"});	//	Get channel ID?
-
-		for (var key in payload){
-			console.log('Payload contains: ' + key);
+		//	Payload includes user list, send to api to store
+		if(payload.users){ api.user.list.set(payload.users); }
+		
+		//	Payload includes channels, set into memory cache
+		if(payload.channels){
+			payload.channels.map(function(channel){
+				bot[channel.name] = channel.id;
+			});
 		}
 
-		console.log(payload.channels);
-
-		//	Payload includes user list, store it in db
-		db.user.list.set(payload.users);
-
+		bot.say({text: 'Online! <@' + bot.identity.id + '>' + " running on " + os.hostname(), channel: bot.general});
 	} else {
 		throw new Error('Could not connect bot to slack')
 	}

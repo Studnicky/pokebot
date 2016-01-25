@@ -6,11 +6,9 @@ var Sequelize = require('sequelize'),
 	Pokemon_Instance = Models.Pokemon_Instance;
 
 var pokedex = {
-	name: 'pokedex',
-	methods: {
+
 		get: function(data){
 
 		}
-	}
 }
 module.exports = pokedex;

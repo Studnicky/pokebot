@@ -6,8 +6,6 @@ var Sequelize = require('sequelize'),
 	Pokemon_Instance = Models.Pokemon_Instance;
 
 var user = {
-	name: 'user',
-	methods: {
 
 		get_name_by_userid: function(userid, callback){
 			User.findOne({
@@ -103,8 +101,6 @@ var user = {
 				});
 			}
 		}
-
-	}
 }
 
 module.exports = user;

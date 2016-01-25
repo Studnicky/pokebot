@@ -1,4 +1,4 @@
-var db = require(__dirname +'/../db');
+var api = require(__dirname +'/../api');
 var utility = require(__dirname +'/../utility');
 
 var party = {
@@ -7,7 +7,7 @@ var party = {
 
 		//	Get user party
 		controller.hears(['(list) party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			db.party.get_party(message.user, function(err, response){
+			api.party.get_party(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -23,7 +23,7 @@ var party = {
 		//	Get user storage box
 		controller.hears(['(list) (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var box = typeof(parseInt(message.match[3])) == 'number' ? parseInt(message.match[3]) : 1;
-			db.party.get_box(message.user, box, function(err, response){
+			api.party.get_box(message.user, box, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -46,7 +46,7 @@ var party = {
 			} else if (position == 0){
 				return bot.reply(message, 'Box positions are numbered 1 to 30!');
 			}
-			db.party.get_member(message.user, position, function(err, response){
+			api.party.get_member(message.user, position, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -73,8 +73,8 @@ var party = {
 			var position_1 = (box_1)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
 			var position_2 = (box_2)*30-30+6+parseInt(message.match[13]) || parseInt(message.match[13]);
 			
-			//	If either position is empty, DB will be mad when we attempt to transact
-			db.party.swap(message.user, position_1, position_2, function(err, response){
+			//	If either position is empty, api will be mad when we attempt to transact
+			api.party.swap(message.user, position_1, position_2, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -98,7 +98,7 @@ var party = {
 				return bot.reply(message, 'Position cannot be zero!');
 			}
 			var position = parseInt(message.match[2]);
-			db.party.store(message.user, position, function(err, response){
+			api.party.store(message.user, position, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -118,7 +118,7 @@ var party = {
 			} else if (position == 0){
 				return bot.reply(message, 'Box positions are numbered 1 to 30!');
 			}
-			db.party.retrieve(message.user, position, function(err, response){
+			api.party.retrieve(message.user, position, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -140,7 +140,7 @@ var party = {
 				return bot.reply(message, 'Box positions are numbered 1 to 30!');
 			}
 
-			db.party.get_member(message.user, position, function(err, response){
+			api.party.get_member(message.user, position, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -158,7 +158,7 @@ var party = {
 						[{
 							pattern: '(y|yes)',
 							callback: function(response, convo){
-								db.party.release(message.user, instance.party_position, function(err, response){
+								api.party.release(message.user, instance.party_position, function(err, response){
 									if(err){
 										return convo.say(err);
 									} else {
