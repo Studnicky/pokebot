@@ -1,6 +1,5 @@
 var db = require(__dirname +'/../db');
 var utility = require(__dirname +'/../utility');
-var token = process.env.REALTIME_SLACK_TOKEN;
 
 var pokemon = {
 	name: 'pokemon',
@@ -24,7 +23,6 @@ var pokemon = {
 			db.pokemon.spawn(rarity, function(pokemon){
 				db.pokemon.build_instance(pokemon, function(instance){
 					var post = {
-						token: token,
 						channel: "C09EUKXHT",
 						username: ' ',
 						icon_emoji: ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ':',
@@ -42,7 +40,6 @@ var pokemon = {
 								if(wildInstances[timestamp]){	
 									delete wildInstances[timestamp];
 									var post = {
-										toke: token,
 										channel: "C09EUKXHT",
 										text: "Too slow!  " + utility.pokemon_emoji(pokemon, instance) + " got away!"
 									}

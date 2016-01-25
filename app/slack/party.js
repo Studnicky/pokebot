@@ -44,7 +44,7 @@ var party = {
 			if(box == 0){
 				return bot.reply(message, 'There is no box zero!');
 			} else if (position == 0){
-				return bot.reply(message, 'Box positions are numebered 1 to 30!');
+				return bot.reply(message, 'Box positions are numbered 1 to 30!');
 			}
 			db.party.get_member(message.user, position, function(err, response){
 				if(err){
@@ -64,11 +64,10 @@ var party = {
 		});
 
 		//	Swap places of two pokemon in user party or boxes
-		controller.hears(['(swap|switch) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9]) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['(move|send|swap|switch) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9]) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			if(message.match[7] == 0 || message.match[13] == 0){
 				return bot.reply(message, 'Position cannot be zero!');
 			}
-
 			var box_1 = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
 			var box_2 = (typeof(message.match[12]) == 'undefined') ? undefined : parseInt(message.match[12]);
 			var position_1 = (box_1)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
@@ -93,6 +92,43 @@ var party = {
 			});
 		});
 
+		//	Swap places of two pokemon in user party or boxes
+		controller.hears(['(deposit|store) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			if(message.match[2] == 0){
+				return bot.reply(message, 'Position cannot be zero!');
+			}
+			var position = parseInt(message.match[2]);
+			db.party.store(message.user, position, function(err, response){
+				if(err){
+					return bot.reply(message, err);
+				} else {
+					var instance = response.instances[0];	//	Should only be 1 object
+					var replymessage = utility.pokemon_emoji(instance.pokemon, instance.instance) + ' sent to storage box ' + utility.get_box(instance.new_position) + ' at position ' + utility.get_box_position(instance.new_position) + '.\n';
+					return bot.reply(message, replymessage);
+				}					
+			});
+		});
+
+		//	Swap places of two pokemon in user party or boxes
+		controller.hears(['(fetch|retrieve|withdraw) (box|pc|storage) ([1-6]) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			var box = (typeof(message.match[3]) == 'undefined') ? undefined : parseInt(message.match[3]);
+			var position = (box)*30-30+6+parseInt(message.match[4]) || parseInt(message.match[4]);
+			if(box == 0){
+				return bot.reply(message, 'There is no box zero!');
+			} else if (position == 0){
+				return bot.reply(message, 'Box positions are numbered 1 to 30!');
+			}
+			db.party.retrieve(message.user, position, function(err, response){
+				if(err){
+					return bot.reply(message, err);
+				} else {
+					console.log(response);
+					var instance = response.instances[0];	//	Should only be 1 object
+					var replymessage = utility.pokemon_emoji(instance.pokemon, instance.instance) + ' added as to party as ' + utility.numeral_suffix(instance.new_position) + ' member.\n';
+					return bot.reply(message, replymessage);
+				}
+			});
+		});
 
 		//	Release target pokemon from user party or box
 		controller.hears(['(delete|release|remove) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
@@ -101,7 +137,7 @@ var party = {
 			if(box == 0){
 				return bot.reply(message, 'There is no box zero!');
 			} else if (position == 0){
-				return bot.reply(message, 'Box positions are numebered 1 to 30!');
+				return bot.reply(message, 'Box positions are numbered 1 to 30!');
 			}
 
 			db.party.get_member(message.user, position, function(err, response){
