@@ -7,6 +7,7 @@ var party = {
 
 		//	Get user party
 		controller.hears(['(list|show) party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 			api.party.get_party(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -22,6 +23,7 @@ var party = {
 
 		//	Get user storage box
 		controller.hears(['(list|show) (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 			var box = typeof(parseInt(message.match[3])) == 'number' ? parseInt(message.match[3]) : 1;
 			api.party.get_box(message.user, box, function(err, response){
 				if(err){
@@ -37,7 +39,8 @@ var party = {
 		});
 
 		//	Get specific member of user party
-		controller.hears(['(find|get|member|position) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['(find|get) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
 			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
 			if(box == 0){
@@ -64,6 +67,7 @@ var party = {
 
 		//	Swap places of two pokemon in user party or boxes
 		controller.hears(['(move|send|swap|switch) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9]) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 			if(message.match[7] == 0 || message.match[13] == 0){
 				return bot.reply(message, 'Position cannot be zero!');
 			}
@@ -93,6 +97,7 @@ var party = {
 
 		//	Swap places of two pokemon in user party or boxes
 		controller.hears(['(deposit|store) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 			if(message.match[2] == 0){
 				return bot.reply(message, 'Position cannot be zero!');
 			}
@@ -104,12 +109,13 @@ var party = {
 					var instance = response.instances[0];	//	Should only be 1 object
 					var replymessage = utility.pokemon_emoji(instance.pokemon, instance.instance) + ' sent to storage box ' + utility.get_box(instance.new_position) + ' at position ' + utility.get_box_position(instance.new_position) + '.\n';
 					return bot.reply(message, replymessage);
-				}					
+				}
 			});
 		});
 
 		//	Swap places of two pokemon in user party or boxes
 		controller.hears(['(fetch|retrieve|withdraw) (box|pc|storage) ([1-6]) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 			var box = (typeof(message.match[3]) == 'undefined') ? undefined : parseInt(message.match[3]);
 			var position = (box)*30-30+6+parseInt(message.match[4]) || parseInt(message.match[4]);
 			if(box == 0){
@@ -130,6 +136,7 @@ var party = {
 
 		//	Release target pokemon from user party or box
 		controller.hears(['(delete|release|remove) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
 			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
 			if(box == 0){

@@ -20,7 +20,7 @@ var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) 
 		});
 
 		//	Payload includes user list, send to api to store
-		if(payload.users){ api.user.list.set(payload.users); }
+		if(payload.users){ api.users.list.set(payload.users); }
 		
 		//	Payload includes channels, set into memory cache
 		if(payload.channels){
