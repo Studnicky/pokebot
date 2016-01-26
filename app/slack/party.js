@@ -6,7 +6,7 @@ var party = {
 	events: function(controller, bot){
 
 		//	Get user party
-		controller.hears(['(list) party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['(list|show) party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			api.party.get_party(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -21,7 +21,7 @@ var party = {
 		});
 
 		//	Get user storage box
-		controller.hears(['(list) (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['(list|show) (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var box = typeof(parseInt(message.match[3])) == 'number' ? parseInt(message.match[3]) : 1;
 			api.party.get_box(message.user, box, function(err, response){
 				if(err){
@@ -29,11 +29,10 @@ var party = {
 				} else {
 					var replymessage = '';
 					response.box_members.map(function(instance){
-						replymessage += utility.numeral_suffix(instance.party_position-(box-1)*30-6) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance)+ '\n';
+						replymessage += utility.numeral_suffix(instance.party_position-(box-1)*30-6) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance) + '\n';
 					});
-					return bot.reply(message, replymessage);
 				}
-				bot.reply(message, response);
+					return bot.reply(message, replymessage);
 			});
 		});
 
@@ -122,7 +121,6 @@ var party = {
 				if(err){
 					return bot.reply(message, err);
 				} else {
-					console.log(response);
 					var instance = response.instances[0];	//	Should only be 1 object
 					var replymessage = utility.pokemon_emoji(instance.pokemon, instance.instance) + ' added as to party as ' + utility.numeral_suffix(instance.new_position) + ' member.\n';
 					return bot.reply(message, replymessage);

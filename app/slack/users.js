@@ -1,5 +1,3 @@
-var api = require(__dirname +'/../api');
-
 var token = process.env.REALTIME_SLACK_TOKEN;
 
 var users = {
@@ -8,7 +6,6 @@ var users = {
 
 		getUserRole = function(users){
 			var user_list = {Admins: [], Users: [], Guests: [], Bots: []};
-
 			users.map(function(o){
 				switch(true){
 					case (o.is_primary_owner == true):
@@ -34,7 +31,6 @@ var users = {
 						break;
 				}
 			});
-
 			return user_list;
 		}
 
@@ -42,8 +38,9 @@ var users = {
 		controller.hears(['users (get|all|list)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
 			bot.api.users.list({token: token},function(err,data) {
-
-				if(!err){
+				if(err){
+					return bot.reply(message, err);
+				} else {
 					user_list = getUserRole(data.members);
 					var replyMessage = "Full user list:\n";
 					for (var key in user_list){
@@ -54,10 +51,8 @@ var users = {
 							});
 						}
 					}
-					bot.reply(message, replyMessage);
-					api.user.list.set(data.members);	//	Store the list because why not
-				} else {
-					console.log(err);
+					api.user.list.set(data.members);
+					return bot.reply(message, replyMessage);
 				}
 			});
 		});
@@ -66,9 +61,10 @@ var users = {
 		controller.hears(['users (here|present|active|awake)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.startTyping;
 			bot.api.users.list({token: token, presence: 1},function(err,data) {
-				if(!err){
+				if(err){
+					return bot.reply(message, err);
+				} else {
 					var active_users = data.members.filter(function(user){
-						console.log(user.name + ' is ' + user.presence);
 						return (user.presence != "away") && (user.presence != "undefined");
 					});
 					if (active_users.length > 1){
@@ -82,13 +78,11 @@ var users = {
 								});
 							}
 						}
-						bot.reply(message, replyMessage);
 					} else {
-						bot.reply(message, "You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png");
+						replymessage = "You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png";
 					}
-					api.user.list.set(data.members);	//	Store the list because why not
-				} else {
-					console.log(err);
+					api.user.list.set(data.members);
+					return bot.reply(message, replyMessage);
 				}
 			});
 		});

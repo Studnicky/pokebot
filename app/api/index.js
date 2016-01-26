@@ -13,17 +13,6 @@ fs.readdirSync(__dirname).filter(function(file){
 	api[file.split('.')[0]].api = api;
 });
 
-//	Make circular references for handlers to call each other
-
-console.log('==============================');
-for (var handler in api){
-	console.log(handler);
-	console.log('------------------------------');
-	console.log(api[handler]);
-	console.log('------------------------------');
-console.log('==============================');
-}
-
 console.log('** API methods:');
 console.log(api);
 
