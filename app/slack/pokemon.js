@@ -10,14 +10,8 @@ var pokemon = {
 		var timerRand = 18000;	//	3 minutes
 		var wildInstances = {};
 
-		function spawnTimer(){
-			var timer = Math.floor(Math.random()*timerRand)+timerBase;
-			console.log('settimer: ' + timer);
-			return timer;
-		}
-		
-		var escapeTimer = function(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
-		
+		function spawnTimer(){ return Math.floor(Math.random()*timerRand)+timerBase; }
+		function escapeTimer(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
 		function wildPokemon(){
 			var rarity = Math.floor(Math.random()*254)+1;
 			api.pokemon.spawn(rarity, function(err, response){
