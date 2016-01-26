@@ -224,33 +224,33 @@ function switch_positions(userid, instance_1, instance_2, callback){
 		{party_position: 0},
 		{where: {party_position: position_1}}
 	).then(function(affectedRows){
-		if(affectedRows == 1){
+		if(affectedRows < 1){
+			err = 'Operation failed at: Set instance 1 position 0';	
+			return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+		} else {
 			Pokemon_Instance.update(
 				{party_position: position_1},
 				{where: {party_position: position_2}}
 			).then(function(affectedRows){
-				if(affectedRows == 1){
+				if(affectedRows < 1){
+					err = 'Operation failed at: Set instance 2 position ' + position_1;
+					return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+				} else {
 					Pokemon_Instance.update(
 						{party_position: position_2},
 						{where: {party_position: 0}}
 					).then(function(affectedRows){
-						if(affectedRows == 1){
+						if(affectedRows < 1){
+							err = 'Operation failed at: Set instance 1 position ' + position_2
+						} else {
 							response = {instances: [{'instance': instance_1, 'pokemon': instance_1.Pokemon,  'new_position': position_2},
 							{'instance': instance_2, 'pokemon': instance_2.Pokemon,  'new_position': position_1}]};
-						} else {
-							err = 'Operation failed at: Set instance 1 position ' + position_2
 						}
 						return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 					});
-				} else {
-					err = 'Operation failed at: Set instance 2 position ' + position_1;
 				}
-				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 			});
-		} else {
-			err = 'Operation failed at: Set instance 1 position 0';	
 		}
-		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 	});
 }
 

@@ -1,4 +1,3 @@
-"use strict";
 var api = require(__dirname +'/../api');
 var utility = require(__dirname +'/../utility');
 
@@ -7,15 +6,14 @@ var pokemon = {
 	events: function(controller, bot){
 
 		var wild = false;
-		var timerBase = 180000;	//	3 minutes
-		var timerRand = 120000;	//	2 minutes
+		var timerBase = 12000;	//	2 minutes
+		var timerRand = 18000;	//	3 minutes
 		var wildInstances = {};
 
-		function setRarity (){ return Math.floor(Math.random()*254)+1; }
-		function spawnTimer (){ return Math.floor(Math.random()*timerRand)+timerBase; }
-		function escapeTimer (pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
-		function wildPokemon (rarity){
-			bot.startTyping;
+		var spawnTimer = function(){ return Math.floor(Math.random()*timerRand)+timerBase; }
+		var escapeTimer = function(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
+		var wildPokemon = function(){
+			var rarity = Math.floor(Math.random()*254)+1;
 			api.pokemon.spawn(rarity, function(err, response){
 				if(err){ 
 					return bot.reply(message, err);
@@ -34,15 +32,14 @@ var pokemon = {
 							console.log(err);
 						} else {
 							var timestamp = response.ts;
-							wildInstances[timestamp] = {'pokemon':pokemon, 'instance': instance};
-							wildInstances[timestamp].escapeTimer = escapeTimer(pokemon);
+							wildInstances[timestamp] = {'pokemon':pokemon, 'instance': instance, 'escapeTimer': Math.floor(Math.random()*15000+15000-55*pokemon.speed)};
 
 							setTimeout(function escape(){
 								if(wildInstances[timestamp]){
 									var post = {
 										channel: bot.general,
 										text: "Too slow!  " + utility.pokemon_emoji(wildInstances[timestamp].pokemon, wildInstances[timestamp].instance) + " got away!"
-									}
+									};
 									delete wildInstances[timestamp];
 									bot.say(post);	//	@TODO:: This should have an engage counter and possible clearTimeout
 								}
@@ -53,14 +50,21 @@ var pokemon = {
 			});
 		}
 
-		(function spawnLoop(){
-			setTimeout(function spawnWild(){
-				if(wild == true){ wildPokemon(setRarity()); }
-				spawnLoop();
-			}, spawnTimer());
-		})();
+		// (function loop(){
+		// 	if(wild){
+		// 		console.log('wild');
+		// 		// wildPokemon();
+		// 	}
+		// }, spawnTimer());
+
+		// 	setTimeout(function(){
+		// 		immediateStart();
+		// 	}, spawnTimer());		
+		// })();
+
 
 		controller.on('reaction_added', function(bot, message){
+			bot.reply(message, {"type": "typing"});
 			if(message.reaction.split('-')[0] == "pokeball" && wildInstances[message.item.ts]){
 				var target = wildInstances[message.item.ts];
 				var catch_chance = 100;
@@ -99,28 +103,22 @@ var pokemon = {
 					delete wildInstances[message.item.ts];
 					bot.reply(message.item, replies[4]);
 
-					api.pokemon.capture(message.user, target.instance, position[0], function(err, response){
+					api.pokemon.capture(message.user, target.instance, function(err, response){
 						if(saved_at < 7){
 							replymessage = utility.pokemon_emoji(target.pokemon, target.instance) + " added to party at position " + saved_at + ".";
 						} else {
 							replymessage = utility.pokemon_emoji(target.pokemon, target.instance) + " sent to storage box " + utility.get_box(saved_at) + " at position " + utility.get_box_position(saved_at) + ".";
 						}
 						return bot.reply(message.item, replymessage);
-
 					});
 				}
 			}
 		});
 
-		//	Spawn a wild pokemon on command (optional rarity force arg)
-		controller.hears(['(spawn)\s*(.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			var rarity = typeof(message.match[1]) == 'undefined' ? parseInt(message.match[1]) : setRarity();
-				rarity = (rarity >= 0 && rarity <= 255) ? rarity : 0;
-			wildPokemon(rarity);
-		});
-
+		//	Admin toggle for wild pokemon spawning
 		controller.hears(['set wild (true|false)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			api.user.get(message.user, function(err, response){
+			bot.reply(message, {"type": "typing"});;
+			api.users.get(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
@@ -134,11 +132,16 @@ var pokemon = {
 			});
 		});
 
+		//	Spawn a wild pokemon on command (optional rarity force arg)
+		controller.hears(['(spawn)\s*(.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
+			wildPokemon();
+		});
+
 		//	Pick a starter
 		controller.hears(['(choose|pick|select) starter(s)? (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.startTyping;
-			var	starter = message.match[2];
-
+			bot.reply(message, {"type": "typing"});
+			var	starter = message.match[3];
 			api.pokemon.starter_pick(message.user, starter, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -152,7 +155,7 @@ var pokemon = {
 
 		//	List all available starters
 		controller.hears(['(list|show) starter(s)?'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.startTyping;
+			bot.reply(message, {"type": "typing"});
 			api.pokemon.starter_list(function(err, response){
 				if(err){
 					return bot.reply(message, err);

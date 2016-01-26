@@ -6,6 +6,7 @@ var pokedex = {
 		
 		//	Get user party
 		controller.hears(['pokedex (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			bot.reply(message, {"type": "typing"});
 
 			console.log(message);
 

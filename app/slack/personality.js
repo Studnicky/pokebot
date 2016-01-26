@@ -1,5 +1,3 @@
-var token = process.env.REALTIME_SLACK_TOKEN;
-
 var personality = {
 	name: 'personality',
 	events: function(controller, bot){
@@ -8,8 +6,8 @@ var personality = {
 
 		controller.on('reaction_added', function(bot, message){
 			if(message.reaction == "helix-fossil" && praiseHelix == true){
+				bot.reply(message, {"type": "typing"});
 				var post = {
-					token: token,
 					channel: message.item.channel,
 					username: ' ',
 					icon_emoji: ':helix-fossil:',
