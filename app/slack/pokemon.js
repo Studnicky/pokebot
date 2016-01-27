@@ -6,8 +6,8 @@ var pokemon = {
 	events: function(controller, bot){
 
 		var wild = false;
-		var timerBase = 12000;	//	2 minutes
-		var timerRand = 18000;	//	3 minutes
+		var timerBase = 120000;	//	2 minutes
+		var timerRand = 180000;	//	3 minutes
 		var wildInstances = {};
 
 		function spawnTimer(){ return Math.floor(Math.random()*timerRand)+timerBase; }
