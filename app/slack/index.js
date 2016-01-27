@@ -29,7 +29,7 @@ var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) 
 			});
 		}
 
-		bot.say({ text: 'Online! <@' + bot.identity.id + '> running on ' + os.hostname()  + '!', channel: bot.general });
+		bot.say({text: 'Online! <@' + bot.identity.id + '> running on ' + os.hostname()  + '!', channel: bot.general});
 	} else {
 		throw new Error('Could not connect bot to slack')
 	}
