@@ -35,3 +35,4 @@ node_modules
 
 # Local ENV file
 .env
+pokebot_db

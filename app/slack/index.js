@@ -12,7 +12,7 @@ var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) 
 	if (!err) {
 		//	Read and initialize slack modules
 		fs.readdirSync(__dirname).filter(function(file){
-			return (file.indexOf(".") !== 0) && (file !== "index.js");
+			return (file.indexOf('.') !== 0) && (file !== 'index.js');
 		}).map(function(file){
 			var handler = require(path.join(__dirname, file));
 			controller[handler.name] = handler.events;
@@ -29,7 +29,7 @@ var slack = controller.spawn({token: token}).startRTM(function(err,bot,payload) 
 			});
 		}
 
-		bot.say({text: 'Online! <@' + bot.identity.id + '>' + " running on " + os.hostname(), channel: bot.general});
+		bot.say({ text: 'Online! <@' + bot.identity.id + '> running on ' + os.hostname()  + '!', channel: bot.general });
 	} else {
 		throw new Error('Could not connect bot to slack')
 	}

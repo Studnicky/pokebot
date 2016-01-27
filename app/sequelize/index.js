@@ -3,13 +3,14 @@ var fs = require('fs');
 
 var postgres = {};
 
-console.log('Sequelize initialize...');
+console.log('** Sequelize initialize...');
 
 postgres.Sequelize = require('sequelize');
 postgres.sequelize = new postgres.Sequelize(process.env.DATABASE_URL, {
 	dialect:  'postgres',
 	protocol: 'postgres',
-	logging: false
+	logging: false,
+	force: false	//	Drop all tables on creation (use when migrations have occurred)
 });
 
 //	Get all the non-system files in this directory...

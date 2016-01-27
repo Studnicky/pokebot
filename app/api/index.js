@@ -10,10 +10,9 @@ fs.readdirSync(__dirname).filter(function(file){
 	return (file.indexOf(".") !== 0) && (file !== "index.js");
 }).map(function(file){
 	api[file.split('.')[0]] = require(path.join(__dirname, file));
-	api[file.split('.')[0]].api = api;
 });
 
-console.log('** API methods:');
-console.log(api);
+// console.log('** API methods:');
+// console.log(api);
 
 module.exports = api;

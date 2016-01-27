@@ -59,7 +59,6 @@ var pokemon = {
 			}, spawnTimer());
 		})();
 
-
 		controller.on('reaction_added', function(bot, message){
 			bot.reply(message, {"type": "typing"});
 			if(message.reaction.split('-')[0] == "pokeball" && wildInstances[message.item.ts]){
@@ -101,12 +100,17 @@ var pokemon = {
 					bot.reply(message.item, replies[4]);
 
 					api.pokemon.capture(message.user, target.instance, function(err, response){
-						if(saved_at < 7){
-							replymessage = utility.pokemon_emoji(target.pokemon, target.instance) + " added to party at position " + saved_at + ".";
+						if(err){
+							return bot.reply(message, err);
 						} else {
-							replymessage = utility.pokemon_emoji(target.pokemon, target.instance) + " sent to storage box " + utility.get_box(saved_at) + " at position " + utility.get_box_position(saved_at) + ".";
+							var reply = '';
+							if(response.position < 7){
+								reply += utility.pokemon_emoji(target.pokemon, target.instance) + " added to party at position " + response.position + ".";
+							} else {
+								reply += utility.pokemon_emoji(target.pokemon, target.instance) + " sent to storage box " + utility.get_box(response.position) + " at position " + utility.get_box_position(response.position) + ".";
+							}
 						}
-						return bot.reply(message.item, replymessage);
+						return bot.reply(message.item, reply);
 					});
 				}
 			}
@@ -143,8 +147,8 @@ var pokemon = {
 				if(err){
 					return bot.reply(message, err);
 				} else {
-					var replymessage = "You've selected  " + utility.pokemon_emoji(response.pokemon, response.instance) + '! Good choice, <@' + message.user + '>!';
-					return bot.reply(message, replymessage);
+					var reply = "You've selected  " + utility.pokemon_emoji(response.pokemon, response.instance) + '! Good choice, <@' + message.user + '>!';
+					return bot.reply(message, reply);
 				}
 			});
 
@@ -164,16 +168,16 @@ var pokemon = {
 						};
 						starter_list[o.gen].push(o);
 					});
-					var replymessage = "Available Starters List:\n";
+					var reply = "Available Starters List:\n";
 					for (var key in starter_list){
 						if(starter_list[key].length > 0){
-							replymessage += utility.numeral_suffix(key) + ' Generation Starters:\n'
+							reply += utility.numeral_suffix(key) + ' Generation Starters:\n'
 							starter_list[key].map(function(o){
-								replymessage += "•\t:" + o.name.toLowerCase() + ": *" + o.name + "* \n";
+								reply += "•\t:" + o.name.toLowerCase() + ": *" + o.name + "* \n";
 							});
 						}
 					}
-					return bot.reply(message, replymessage);
+					return bot.reply(message, reply);
 				}
 			});
 		});

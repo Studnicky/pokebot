@@ -6,7 +6,7 @@ var slack = require(__dirname + '/../slack');
 module.exports.listen = function(app){
 	io = socketio.listen(app);
 
-	console.log('Socket Handler initialize...');
+	console.log('** Socket Handler initialize...');
 	io.on('connection', function(socket){
 		console.log('Socket connected!');
 	});
