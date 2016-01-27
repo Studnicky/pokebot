@@ -6,13 +6,13 @@ var pokemon = {
 	events: function(controller, bot){
 
 		var wild = false;
-		var timerBase = 12000;	//	2 minutes
-		var timerRand = 18000;	//	3 minutes
+		var timerBase = 120000;	//	2 minutes
+		var timerRand = 180000;	//	3 minutes
 		var wildInstances = {};
 
-		var spawnTimer = function(){ return Math.floor(Math.random()*timerRand)+timerBase; }
-		var escapeTimer = function(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
-		var wildPokemon = function(){
+		function spawnTimer(){ return Math.floor(Math.random()*timerRand)+timerBase; }
+		function escapeTimer(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
+		function wildPokemon(){
 			var rarity = Math.floor(Math.random()*254)+1;
 			api.pokemon.spawn(rarity, function(err, response){
 				if(err){ 
@@ -50,17 +50,14 @@ var pokemon = {
 			});
 		}
 
-		// (function loop(){
-		// 	if(wild){
-		// 		console.log('wild');
-		// 		// wildPokemon();
-		// 	}
-		// }, spawnTimer());
-
-		// 	setTimeout(function(){
-		// 		immediateStart();
-		// 	}, spawnTimer());		
-		// })();
+		(function spawnLoop(){
+			setTimeout(function(){
+				if(wild === true){
+					wildPokemon();
+				}
+				spawnLoop();
+			}, spawnTimer());
+		})();
 
 
 		controller.on('reaction_added', function(bot, message){
@@ -122,8 +119,8 @@ var pokemon = {
 				if(err){
 					return bot.reply(message, err);
 				} else {
-					if(response.user.permissions_level >=3){
-						wild = message.match[1];
+					if(response.user.permissions_level >= 3){
+						wild = (message.match[1] == 'true') ? true : false;
 						return bot.reply(message, 'Wild Pokemon spawning is now: ' + wild + '!');
 					} else {
 						return bot.reply(message, "Only admins can toggle app settings!");
