@@ -1,0 +1,91 @@
+SELECT
+	pokemon.identifier AS name
+,	pokemon.base_experience as battle_exp
+,	pokemon_species.capture_rate
+,	json_array_elements(json_agg(evolution.into)) AS "evolutions"
+,	pokemon_species.forms_switchable AS has_forms
+,	pokemon.height AS height
+,	pokemon_species.generation_id AS generation
+,	pokemon_species.gender_rate
+,	growth_rates.identifier AS growth_rate
+,	pokemon_species.base_happiness AS happiness
+,	pokemon_species.hatch_counter
+,	pokemon_species.has_gender_differences AS has_gender
+,	pokemon.identifier AS name
+,	pokemon.id AS national_id
+,	json_array_elements(json_agg(stat.stat)) AS "stats"
+,	json_array_elements(json_agg(ev_yield.ev_yield)) AS "ev_yields"
+,	json_array_elements(json_agg(ability.ability)) AS "abilities"
+,	json_array_elements(json_agg(type.type)) AS "types"
+,	pokemon.weight AS weight
+FROM
+	pokemon
+	LEFT JOIN "pokemon_species" ON pokemon.species_id = pokemon_species.id
+	LEFT JOIN "growth_rates" ON pokemon_species.growth_rate_id = growth_rates.id
+	
+	LEFT JOIN (
+		SELECT pokemon.id as pokemon_id,
+			json_agg(json_build_object('type', types.identifier)) as "type"
+		FROM pokemon
+		LEFT JOIN "pokemon_types" ON pokemon_types.pokemon_id = pokemon.id
+		LEFT JOIN "types" ON types.id = pokemon_types.type_id
+		GROUP BY pokemon.id
+		ORDER BY pokemon.id ASC
+	) AS "type" ON type.pokemon_id = pokemon.id
+	LEFT JOIN (
+		SELECT	pokemon.id as pokemon_id,
+			json_agg(json_build_object(stats.identifier, pokemon_stats.base_stat)) as "stat"
+		FROM pokemon
+		LEFT JOIN "pokemon_stats" ON pokemon_stats.pokemon_id = pokemon.id
+		LEFT JOIN "stats" ON stats.id = pokemon_stats.stat_id
+		GROUP BY pokemon.id
+		ORDER BY pokemon.id ASC
+	) AS "stat" ON stat.pokemon_id = pokemon.id
+	LEFT JOIN (
+		SELECT	pokemon.id as pokemon_id,
+			json_agg(json_build_object(stats.identifier, pokemon_stats.effort)) as "ev_yield"
+		FROM pokemon
+		LEFT JOIN "pokemon_stats" ON pokemon_stats.pokemon_id = pokemon.id
+		LEFT JOIN "stats" ON stats.id = pokemon_stats.stat_id
+		GROUP BY pokemon.id
+		ORDER BY pokemon.id ASC
+	) AS "ev_yield" ON ev_yield.pokemon_id = pokemon.id
+	LEFT JOIN (
+		SELECT	pokemon.id as pokemon_id,
+			json_agg(json_build_object('ability', abilities.identifier)) as "ability"
+		FROM pokemon
+		LEFT JOIN "pokemon_abilities" ON pokemon_abilities.pokemon_id = pokemon.id
+		LEFT JOIN "abilities" ON abilities.id = pokemon_abilities.ability_id
+		GROUP BY pokemon.id
+		ORDER BY pokemon.id ASC
+	) AS "ability" ON ability.pokemon_id = pokemon.id
+	LEFT JOIN (
+	SELECT	pokemon.id as pokemon_id,
+		json_agg(json_build_object(
+			'national_id', pokemon_species.id,
+			'name', pokemon_species.identifier,
+			'trigger', COALESCE(evolution_triggers.identifier, 'null'),
+			'trigger-value', COALESCE(CAST(pokemon_evolution.minimum_level AS character varying), items.identifier)
+			
+			)) as "into"
+	FROM pokemon
+	LEFT JOIN "pokemon_species" ON pokemon_species.evolves_from_species_id = pokemon.id
+	LEFT JOIN "pokemon_evolution" ON pokemon_evolution.evolved_species_id = pokemon_species.id
+	LEFT JOIN "evolution_triggers" ON pokemon_evolution.evolution_trigger_id = evolution_triggers.id
+	LEFT JOIN "items" ON pokemon_evolution.trigger_item_id = items.id
+	GROUP BY pokemon.id
+	ORDER BY pokemon.id ASC
+) AS "evolution" ON evolution.pokemon_id = pokemon.id
+GROUP BY
+	pokemon.id
+,	pokemon.identifier
+,	pokemon_species.generation_id
+,	pokemon_species.gender_rate
+,	pokemon_species.capture_rate
+,	pokemon_species.base_happiness
+,	pokemon_species.hatch_counter
+,	pokemon_species.has_gender_differences
+,	pokemon_species.forms_switchable
+,	growth_rates.identifier
+ORDER BY
+	pokemon.id

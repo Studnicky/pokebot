@@ -37,11 +37,11 @@ var users = {
 		//	Find all users
 		controller.hears(['(list|show) users'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.reply(message, {"type": "typing"});
-			bot.api.users.list({token: bot.token},function(err,data) {
+			bot.api.users.list({token: bot.token},function(err,response) {
 				if(err){
 					return bot.reply(message, err);
 				} else {
-					user_list = getUserRole(data.members);
+					user_list = getUserRole(response.members);
 					var reply = "Full user list:\n";
 					for (var key in user_list){
 						if(user_list[key].length > 0){
@@ -51,7 +51,7 @@ var users = {
 							});
 						}
 					}
-					api.users.list.set(data.members);
+					api.users.list.set(response.members);
 					return bot.reply(message, reply);
 				}
 			});
@@ -60,11 +60,11 @@ var users = {
 		//	List present users
 		controller.hears(['(find|get) users (active|awake|here|online|present)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			bot.reply(message, {"type": "typing"});
-			bot.api.users.list({token: bot.token, presence: 1},function(err,data) {
+			bot.api.users.list({token: bot.token, presence: 1},function(err,response) {
 				if(err){
 					return bot.reply(message, err);
 				} else {
-					var active_users = data.members.filter(function(user){
+					var active_users = response.members.filter(function(user){
 						return (user.presence != "away") && (user.presence != "undefined") && (user.is_bot == "false");
 					});
 					if (active_users.length > 1){
@@ -81,7 +81,7 @@ var users = {
 					} else {
 						reply = "You are currently the only active user.\nhttp://i.imgur.com/i4Gyi2O.png";
 					}
-					api.users.list.set(data.members);
+					api.users.list.set(response.members);
 					return bot.reply(message, reply);
 				}
 			});

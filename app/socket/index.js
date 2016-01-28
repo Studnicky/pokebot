@@ -1,6 +1,5 @@
 var socketio = require('socket.io');
 var api = require(__dirname + '/../api');
-var slack = require(__dirname + '/../slack');
 
 //	Global ref for socket handler
 module.exports.listen = function(app){
@@ -16,26 +15,21 @@ module.exports.listen = function(app){
 	pokemon = io.of('/pokemon');
 	pokedex = io.of('/pokedex');
 
-	user.on('connection', function(user_socket){
-		console.log('User connected!');
+	// user.on('connection', function(socket){
+	// 	console.log('User connected!');
 
-		user_socket.on('get-presence', function(){
-			console.log('Get user presence');
-			slack.web.user.list.presence(function(users){
-				//	Any preprocessing of data...
-				user_socket.emit('user-presence', {data: users});
-			});
-		});
+	// 	socket.on('list_users', function(){
+	// 		console.log('Get user list');
+	// 		api.user.list.get(function(err, response){
 
-		user_socket.on('get-list', function(){
-			console.log('Get user list');
-			api.user.list.get(function(users){
-				//	Any preprocessing of data...
-				user_socket.emit('user-list', {data: users});
-			});
-		});
 
-	});
+	// 			socket.emit('user-list', {data: users});
+			
+
+	// 		});
+	// 	});
+
+	// });
 
 	return io;
-};
+}

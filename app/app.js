@@ -16,27 +16,29 @@ postgres.sequelize.sync(function(err){
 	}
 }).then(function(){
 
-	var http = require("http");								//	HTTP lib for keepalive
+	var http = require('http');
 	var slack = require('./slack');							//	Slack handler
-	var server = require('http').createServer(fileServer);	//	File server
+	var server = http.createServer(fileServer);	//	File server
 	var io = require('./socket').listen(server);			//	Socket server
 
 	//	Temporary seeding...
+	//	This will fail silently if pokemon exists.
+	//	Remove once full DB import is in place
 	var seeds = require(__dirname + '/../seed.json');
 	seeds.map(function(o){
-		postgres.Pokemon.upsert(o)
+		postgres.Pokemon.upsert(o);
 	});
 
-	//	Start web server
+	//	Start web server for front-end...
 	server.listen(process.env.PORT, function(){
 		console.log('** Webserver listening on: ' + process.env.PORT );
 	});
 
-	//	Keep Heroku process alive
+	//	Keep Heroku process alive by pinging it every 10 minutes (600000ms)
 	setInterval(function herokukeepalive(){
 		console.log('** Keepalive ping');
 		http.get(process.env.KEEPALIVE_ENDPOINT);
-	}, 600000); // Every 10 minutes (600000ms)
+	}, 600000);
 
 });
 
@@ -51,8 +53,9 @@ function fileServer (request, response) {
 		if (err) {
 			response.writeHead(500);
 			return response.end('Unable to load ' + url);
+		} else {
+			response.writeHead(200);
+			return response.end(data);
 		}
-		response.writeHead(200);
-		response.end(data);
 	});
 }

@@ -2,7 +2,6 @@
 //	Need sequelize ref and data models
 var Sequelize = require('sequelize'),
 	Models = require(__dirname + '/../sequelize'),
-	User = Models.User,
 	Pokemon = Models.Pokemon,
 	Pokemon_Instance = Models.Pokemon_Instance;
 
@@ -38,7 +37,7 @@ function build_instance(pokemon, callback){
 		is_shiny: (Math.floor(Math.random()*8192) == 1) ? true : false,
 		nature: {},
 		national_id: pokemon.national_id,
-		nickname: null,
+		nickname: pokemon.name,
 		owner_id: null,
 		party_position: 0,
 		for_trade: 0,

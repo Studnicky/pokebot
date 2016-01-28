@@ -21,7 +21,7 @@ var pokemon = {
 					var pokemon = response.pokemon;
 					var instance = response.instance;
 					var post = {
-						channel: bot.general,
+						channel: bot.rooms.general,
 						username: ' ',
 						icon_emoji: ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ':',
 						text: "A wild  " + utility.pokemon_emoji(pokemon, instance) + " has appeared!"
@@ -37,7 +37,7 @@ var pokemon = {
 							setTimeout(function escape(){
 								if(wildInstances[timestamp]){
 									var post = {
-										channel: bot.general,
+										channel: bot.rooms.general,
 										text: "Too slow!  " + utility.pokemon_emoji(wildInstances[timestamp].pokemon, wildInstances[timestamp].instance) + " got away!"
 									};
 									delete wildInstances[timestamp];

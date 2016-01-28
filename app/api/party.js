@@ -1,10 +1,10 @@
 "use strict";
 //	Need sequelize ref and data models
 var Sequelize = require('sequelize'),
-Models = require(__dirname + '/../sequelize'),
-User = Models.User,
-Pokemon = Models.Pokemon,
-Pokemon_Instance = Models.Pokemon_Instance;
+	Models = require(__dirname + '/../sequelize'),
+	User = Models.User,
+	Pokemon = Models.Pokemon,
+	Pokemon_Instance = Models.Pokemon_Instance;
 
 var utility = require(__dirname +'/../utility');
 

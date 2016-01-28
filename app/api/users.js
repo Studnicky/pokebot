@@ -1,9 +1,8 @@
+"use strict";
 //	Need sequelize ref and data models
 var Sequelize = require('sequelize'),
 	Models = require(__dirname + '/../sequelize'),
-	User = Models.User,
-	Pokemon = Models.Pokemon,
-	Pokemon_Instance = Models.Pokemon_Instance;
+	User = Models.User;
 
 function get_name_by_userid (userid, callback){
 	var err = null, response = {};

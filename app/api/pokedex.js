@@ -1,3 +1,4 @@
+"use strict";
 //	Need sequelize ref and data models
 var Sequelize = require('sequelize'),
 	Models = require(__dirname + '/../sequelize'),
