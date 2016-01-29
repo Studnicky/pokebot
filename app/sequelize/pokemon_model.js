@@ -2,60 +2,80 @@ module.exports = function(sequelize, Sequelize) {
 
 	var Pokemon;
 	Pokemon = sequelize.define('Pokemon', {
-		abilities: {
-			type: Sequelize.JSON,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Abilities as JSON object"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "abilties_json" }
-		},
-		attack: {
+		national_id: {
 			type: Sequelize.INTEGER,
+			primaryKey: true,
 			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Attack rating"}
+			unique: true,
+			hasComment: {type: Sequelize.STRING, field: "Unique Pokedex ID (National index)"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "national_id" }
 		},
-		catch_rate: {
-			type: Sequelize.INTEGER,
+		name: {
+			type: Sequelize.STRING,
 			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Special Attack Rating"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "catch_rate" }
+			unique: true,
+			hasComment: {type: Sequelize.STRING, field: "Pokemon name"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "name" }
 		},
-		defense: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Defense Rating"}
-		},
-		evolutions: {
-			type: Sequelize.JSON,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Possible evolutions as JSON object"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "evolutions_json" }
-		},
-		ev_yield: {
-			type: Sequelize.JSON,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Effort values yield when defeated"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "ev_yield" }
-		},
-		gen: {
+		generation: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
 			hasComment: {type: Sequelize.STRING, field: "Pokemon Generation"}
 		},
-		growth_rate: {
-			type: Sequelize.JSON,
+		height: {
+			type: Sequelize.INTEGER,
 			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Pokemon growth rate formula"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "growth_rate" }
+			hasComment: {type: Sequelize.STRING, field: "Pokemon average height"}
+		},
+		weight: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Pokemon average weight"}
+		},
+		capture_rate: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Pokemon capture difficulty"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "capture_rate" }
 		},
 		happiness: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
 			hasComment: {type: Sequelize.STRING, field: "Pokemon base happiness rating"},
 		},
-		hp: {
+		growth_rate: {
+			type: Sequelize.STRING(20),
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Pokemon growth rate formula"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "growth_rate" }
+		},
+		battle_exp: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Health Points"}
+			hasComment: {type: Sequelize.STRING, field: "Experience gained on defeating this Pokemon"}
+		},
+		hatch_counter: {
+			type: Sequelize.INTEGER,
+			allowNull: true,
+			hasComment: {type: Sequelize.STRING, field: "Duration of Pokemon egg form"},
+		},
+		has_forms: {
+			type: Sequelize.BOOLEAN,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Can this Pokemon change forms?"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "has_forms" }
+		},
+		has_gender: {
+			type: Sequelize.BOOLEAN,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Does this Pokemon have a gender?"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "has_gender" }
+		},
+		gender_rate: {
+			type: Sequelize.REAL,
+			allowNull: true,
+			hasComment: {type: Sequelize.STRING, field: "Male to Female ratio as (1/value)"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "gender_rate" }
 		},
 		is_legendary: {
 			type: Sequelize.BOOLEAN,
@@ -81,56 +101,41 @@ module.exports = function(sequelize, Sequelize) {
 			hasComment: {type: Sequelize.STRING, field: "Is this pokemon seen in the wild?"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "is_wild" }
 		},
-		male_female_ratio: {
-			type: Sequelize.REAL,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Male to Female ratio"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "m_to_f" }
-		},
-		movelist: {
+		abilities: {
 			type: Sequelize.JSON,
 			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Movelist as JSON object"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "moves_json" }
+			hasComment: {type: Sequelize.STRING, field: "Abilities as JSON object"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "abilities" }
 		},
-		name: {
-			type: Sequelize.STRING,
+		stats: {
+			type: Sequelize.JSON,
 			allowNull: false,
-			unique: true,
-			hasComment: {type: Sequelize.STRING, field: "Pokemon name"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "display_name" }
-		},
-		national_id: {
-			type: Sequelize.INTEGER,
-			primaryKey: true,
-			allowNull: false,
-			unique: true,
-			hasComment: {type: Sequelize.STRING, field: "Unique Pokedex ID (National index)"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "national_id" }
-		},
-		sp_atk: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Special Attack Rating"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "sp_atk" }
-		},
-		sp_def: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Special Defense Rating"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "sp_def" }
-		},
-		speed: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			hasComment: {type: Sequelize.STRING, field: "Speed Rating"},
-			fieldWithUnderscores: { type: Sequelize.STRING, field: "speed" }
+			hasComment: {type: Sequelize.STRING, field: "Abilities as JSON object"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "stats" }
 		},
 		types: {
 			type: Sequelize.JSON,
 			allowNull: false,
 			hasComment: {type: Sequelize.STRING, field: "Types as JSON object"},
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "types_json" }
+		},
+		ev_yields: {
+			type: Sequelize.JSON,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Effort values yield when defeated"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "ev_yields" }
+		},
+		evolutions: {
+			type: Sequelize.JSON,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Possible evolutions as JSON object"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "evolutions" }
+		},
+		movelist: {
+			type: Sequelize.JSON,
+			allowNull: false,
+			hasComment: {type: Sequelize.STRING, field: "Movelist as JSON object"},
+			fieldWithUnderscores: { type: Sequelize.STRING, field: "moves_json" }
 		}
 	},{
 		tableName: 'pokemon',

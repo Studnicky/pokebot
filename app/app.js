@@ -18,16 +18,8 @@ postgres.sequelize.sync(function(err){
 
 	var http = require('http');
 	var slack = require('./slack');							//	Slack handler
-	var server = http.createServer(fileServer);	//	File server
+	var server = http.createServer(fileServer);				//	File server
 	var io = require('./socket').listen(server);			//	Socket server
-
-	//	Temporary seeding...
-	//	This will fail silently if pokemon exists.
-	//	Remove once full DB import is in place
-	var seeds = require(__dirname + '/../seed.json');
-	seeds.map(function(o){
-		postgres.Pokemon.upsert(o);
-	});
 
 	//	Start web server for front-end...
 	server.listen(process.env.PORT, function(){
