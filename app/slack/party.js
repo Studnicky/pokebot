@@ -7,14 +7,13 @@ var party = {
 
 		//	Get user party
 		controller.hears(['(list|show) party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			api.party.get_party(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
 				} else {
 					var replymessage = 'Your current party members are: \n';
 					response.party_members.map(function(instance){
-						replymessage += utility.numeral_suffix(instance.party_position) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance)+ '\n';
+						replymessage += (utility.numeral_suffix(instance.party_position) + ': ' + utility.pokemon_emoji(instance.Pokemon.get(), instance)+ '\n');
 					});
 					return bot.reply(message, replymessage);
 				}
@@ -23,7 +22,6 @@ var party = {
 
 		//	Get user storage box
 		controller.hears(['(list|show) (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			var box = typeof(parseInt(message.match[3])) == 'number' ? parseInt(message.match[3]) : 1;
 			api.party.get_box(message.user, box, function(err, response){
 				if(err){
@@ -40,7 +38,6 @@ var party = {
 
 		//	Get specific member of user party
 		controller.hears(['(find|get) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
 			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
 			if(box == 0){
@@ -67,7 +64,6 @@ var party = {
 
 		//	Swap places of two pokemon in user party or boxes
 		controller.hears(['(move|send|swap|switch) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9]) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			if(message.match[7] == 0 || message.match[13] == 0){
 				return bot.reply(message, 'Position cannot be zero!');
 			}
@@ -82,7 +78,6 @@ var party = {
 					return bot.reply(message, err);
 				} else {
 					var replymessage = '';
-
 					response.instances.map(function(instance){
 						if(instance.new_position <= 6){
 							replymessage += utility.pokemon_emoji(instance.pokemon, instance.instance) + ' moved to party at position ' + instance.new_position + '.\n';
@@ -97,7 +92,6 @@ var party = {
 
 		//	Swap places of two pokemon in user party or boxes
 		controller.hears(['(deposit|store) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			if(message.match[2] == 0){
 				return bot.reply(message, 'Position cannot be zero!');
 			}
@@ -115,7 +109,6 @@ var party = {
 
 		//	Swap places of two pokemon in user party or boxes
 		controller.hears(['(fetch|retrieve|withdraw) (box|pc|storage) ([1-6]) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			var box = (typeof(message.match[3]) == 'undefined') ? undefined : parseInt(message.match[3]);
 			var position = (box)*30-30+6+parseInt(message.match[4]) || parseInt(message.match[4]);
 			if(box == 0){
@@ -136,7 +129,6 @@ var party = {
 
 		//	Release target pokemon from user party or box
 		controller.hears(['(delete|release|remove) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
 			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
 			if(box == 0){
@@ -144,7 +136,6 @@ var party = {
 			} else if (position == 0){
 				return bot.reply(message, 'Box positions are numbered 1 to 30!');
 			}
-
 			api.party.get_member(message.user, position, function(err, response){
 				if(err){
 					return bot.reply(message, err);

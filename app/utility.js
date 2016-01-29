@@ -1,35 +1,40 @@
-module.exports = {
+function numeral_suffix (num) {	//Add suffixes to number
+	var dec = num % 10,
+	cent = num % 100;
 
-	//	Helper function to suffix display numbers
-	numeral_suffix: function(num) {
-		var dec = num % 10,
-			cent = num % 100;
-
-		switch(true){
-			case (dec == 1 && cent != 11):
-				return num + "st";
-			case (dec == 2 && cent != 12):
-				return num + "nd";
-			case (dec == 3 && cent != 13):
-				return num + "rd";
-			default:
-				return num + "th";
-		}
-	},
-
-	//	Helper function to capitalize first letter of a proper name
-	proper_capitalize: function(string) {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	},
-
-	pokemon_emoji: function(pokemon, instance){
-		return ' :' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ': *' + pokemon.name + '*';
-	},
-	get_box: function(position){
-		return parseInt(Math.floor((position+30-7)/30));
-	},
-	get_box_position: function(position){
-		return parseInt(((position-6)%30) == 0 ? 30 : ((position-6)%30));
-	},
-
+	switch(true){
+		case (dec == 1 && cent != 11):
+		return num + "st";
+		case (dec == 2 && cent != 12):
+		return num + "nd";
+		case (dec == 3 && cent != 13):
+		return num + "rd";
+		default:
+		return num + "th";
+	}
 }
+
+function proper_capitalize (string) {	//	Captialize first letter of a string
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function pokemon_emoji (pokemon, instance){	//	Make slack emoji
+	return ' :' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ': *' + proper_capitalize(pokemon.name) + '*';
+}
+function get_box (position){	//	Find box from position
+	return parseInt(Math.floor((position+30-7)/30));
+}
+function get_box_position (position){	//	Find position inside box from position
+	return parseInt(((position-6)%30) == 0 ? 30 : ((position-6)%30));
+}
+
+
+var utility = {
+	numeral_suffix:numeral_suffix,
+	proper_capitalize:proper_capitalize,
+	pokemon_emoji:pokemon_emoji,
+	get_box:get_box,
+	get_box_position:get_box_position
+}
+
+module.exports = utility;

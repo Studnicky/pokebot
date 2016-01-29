@@ -11,7 +11,7 @@ module.exports = function(sequelize, Sequelize) {
 			fieldWithUnderscores: { type: Sequelize.STRING, field: "national_id" }
 		},
 		name: {
-			type: Sequelize.STRING,
+			type: Sequelize.STRING(30),
 			allowNull: false,
 			unique: true,
 			hasComment: {type: Sequelize.STRING, field: "Pokemon name"},

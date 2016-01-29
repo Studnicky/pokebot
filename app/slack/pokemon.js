@@ -5,7 +5,7 @@ var pokemon = {
 	name: 'pokemon',
 	events: function(controller, bot){
 
-		var wild = false;
+		var wild = true;
 		var timerBase = 120000;	//	2 minutes
 		var timerRand = 180000;	//	3 minutes
 		var wildInstances = {};
@@ -32,7 +32,7 @@ var pokemon = {
 							console.log(err);
 						} else {
 							var timestamp = response.ts;
-							wildInstances[timestamp] = {'pokemon':pokemon, 'instance': instance, 'escapeTimer': Math.floor(Math.random()*15000+15000-55*pokemon.speed)};
+							wildInstances[timestamp] = {'pokemon':pokemon, 'instance': instance, 'escapeTimer': Math.floor(Math.random()*15000+15000-55*pokemon.stats.speed)};
 
 							setTimeout(function escape(){
 								if(wildInstances[timestamp]){
@@ -88,7 +88,7 @@ var pokemon = {
 				}
 
 				do {
-					var shake = (Math.random()*255)+(10*count)-target.pokemon.catch_rate;
+					var shake = (Math.random()*255)+(10*count)-target.pokemon.capture_rate;
 					var pass = catch_chance > shake ? true : false;
 					count++;
 				} while (count < 4 && pass);
@@ -163,17 +163,17 @@ var pokemon = {
 				} else {
 					var starter_list = {};
 					response.starters.map(function(o){
-						if(!starter_list[o.gen]){
-							starter_list[o.gen] = [];
+						if(!starter_list[o.generation]){
+							starter_list[o.generation] = [];
 						};
-						starter_list[o.gen].push(o);
+						starter_list[o.generation].push(o);
 					});
 					var reply = "Available Starters List:\n";
 					for (var key in starter_list){
 						if(starter_list[key].length > 0){
 							reply += utility.numeral_suffix(key) + ' Generation Starters:\n'
 							starter_list[key].map(function(o){
-								reply += "•\t:" + o.name.toLowerCase() + ": *" + o.name + "* \n";
+								reply += "•\t:" + o.name.toLowerCase() + ": *" + utility.proper_capitalize(o.name) + "* \n";
 							});
 						}
 					}

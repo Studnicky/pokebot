@@ -54,14 +54,6 @@ function connect(){
 
 			bot.say({text: 'Online! <@' + bot.identity.id + '> running on ' + os.hostname()  + '!', channel: bot.rooms.general});
 
-			controller.on('rtm_open', function(bot){
-				console.log('** Slack connection opened!');
-			});
-
-			controller.on('rtm_close', function(bot, data){
-				console.log('** ' + bot.identity.id + ' lost connection to slack.');
-				setTimeout(connect(), 5000);		
-			});
 		}
 	});
 

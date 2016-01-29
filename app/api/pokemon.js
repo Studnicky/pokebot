@@ -12,28 +12,28 @@ function build_instance(pokemon, callback){
 	var instance = Pokemon_Instance.build({
 		caught_by: null,
 		current_form: {},
-		current_level: 5,
+		current_level: Math.ceil(Math.random()*10+5),
 		current_happiness: Math.floor(Math.random()*50+50),
-		effort_values: [
-			{name: 'attack',	value: 0},
-			{name: 'defense',	value: 0},
-			{name: 'hp',		value: 0},
-			{name: 'sp_atk',	value: 0},
-			{name: 'sp_def',	value: 0},
-			{name: 'speed',		value: 0}
-		],
+		effort_values: {
+			"hp":				0,
+			"attack":			0,
+			"defense":			0,
+			"special-attack":	0,
+			"special-defense":	0,
+			"speed":			0
+		},
 		exp: 100,
-		gender: 1,
+		gender: (pokemon.has_gender) ? (Math.random()*8-pokemon.gender_rate > 0 ? 1 : 2) : 0,
 		has_pokerus: (Math.floor(Math.random()*21845) == 1) ? true : false,
 		holds_item: {},
-		individual_values: [
-			{name: 'attack',	value: Math.ceil(Math.random()*31)},
-			{name: 'defense',	value: Math.ceil(Math.random()*31)},
-			{name: 'hp',		value: Math.ceil(Math.random()*31)},
-			{name: 'sp_atk',	value: Math.ceil(Math.random()*31)},
-			{name: 'sp_def',	value: Math.ceil(Math.random()*31)},
-			{name: 'speed',		value: Math.ceil(Math.random()*31)}
-		],
+		individual_values: {
+			"hp":				Math.ceil(Math.random()*31),
+			"attack":			Math.ceil(Math.random()*31),
+			"defense":			Math.ceil(Math.random()*31),
+			"special-attack":	Math.ceil(Math.random()*31),
+			"special-defense":	Math.ceil(Math.random()*31),
+			"speed":			Math.ceil(Math.random()*31)
+		},
 		is_shiny: (Math.floor(Math.random()*8192) == 1) ? true : false,
 		nature: {},
 		national_id: pokemon.national_id,
@@ -78,16 +78,19 @@ function find_by_rarity(rarity, callback){
 	Pokemon.findOne({
 		where:{
 			is_wild: true,
-			catch_rate: {$gte: (255-rarity)},
+			capture_rate: {$gte: (255-rarity)},
 		},
 		order: [Sequelize.fn('RANDOM')]
 	}).then(function(pokemon){
+		console.log(pokemon);
 		if(pokemon){
 			response = {'pokemon': pokemon};
 		} else {
 			err = 'No Pokemon found!';
 		}
 		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+	}).catch(function(err){
+		console.log(err);
 	});
 }
 
@@ -114,7 +117,7 @@ function spawn(rarity, callback){
 function starter_list(callback){
 	var err = null, response = {};
 	Pokemon.findAll({
-		attributes: ['name', 'gen', 'national_id'],
+		attributes: ['name', 'generation', 'national_id'],
 		order: [['name', 'ASC']],
 		where:{
 			is_starter: true
