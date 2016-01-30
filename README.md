@@ -41,11 +41,11 @@ list party
 ```
 *	List all Pokemon in the storage box (number)
 ```
+list box (number)
+```
 *	List all Pokemon in another user's current party
 ```
 list party (@user)
-```
-list box (number)
 ```
 *	Find which Pokemon is at party position (number) or box (number) position (number)
 ```
