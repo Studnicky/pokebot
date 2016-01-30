@@ -132,7 +132,7 @@ function starter_list(callback){
 	});
 }
 
-function starter_pick(userid, pick, callback){
+function starter_pick(userid, pick, callback){	//	This is why I need to read up on the async library... not all these actions should be blocking.
 	var party = require(__dirname + '/party');
 	var err = null, response = {};
 	party.count(userid, function(err, response){	//	Get party count...

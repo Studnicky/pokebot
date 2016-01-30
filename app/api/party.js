@@ -131,9 +131,12 @@ function move_position (userid, instance, position, callback){
 	var err = null, response = {};
 	Pokemon_Instance.update(
 		{party_position: position},
-		{where: {party_position: instance.party_position}}
+		{where: {
+			party_position: instance.party_position,
+			owner_id: userid
+		}}
 	).then(function(affectedRows){
-		if(affectedRows == 1){
+		if(affectedRows != 0){
 			response = {instances: [{'instance': instance, 'pokemon': instance.Pokemon, 'new_position': position}]};
 		} else {
 			err = 'Failed to put pokemon into new position.';
@@ -221,7 +224,11 @@ function switch_positions(userid, instance_1, instance_2, callback){
 	// This should *really* be a transact...
 	Pokemon_Instance.update(
 		{party_position: 0},
-		{where: {party_position: position_1}}
+		{where: {
+			owner_id:userid,
+			party_position: position_1
+			}
+		}
 	).then(function(affectedRows){
 		if(affectedRows < 1){
 			err = 'Operation failed at: Set instance 1 position 0';	

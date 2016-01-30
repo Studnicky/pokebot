@@ -98,7 +98,6 @@ var pokemon = {
 				} else {
 					delete wildInstances[message.item.ts];
 					bot.reply(message.item, replies[4]);
-
 					api.pokemon.capture(message.user, target.instance, function(err, response){
 						if(err){
 							return bot.reply(message, err);
@@ -118,7 +117,6 @@ var pokemon = {
 
 		//	Admin toggle for wild pokemon spawning
 		controller.hears(['set wild (true|false)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});;
 			api.users.get(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -141,7 +139,6 @@ var pokemon = {
 
 		//	Pick a starter
 		controller.hears(['(choose|pick|select) starter(s)? (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			var	starter = message.match[3];
 			api.pokemon.starter_pick(message.user, starter, function(err, response){
 				if(err){
@@ -156,7 +153,6 @@ var pokemon = {
 
 		//	List all available starters
 		controller.hears(['(list|show) starter(s)?'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			api.pokemon.starter_list(function(err, response){
 				if(err){
 					return bot.reply(message, err);
