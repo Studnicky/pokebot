@@ -23,9 +23,6 @@ var party = {
 
 		//	Get list of Pokemon in user party
 		controller.hears(['list party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-
-			console.log(message);
-
 			api.party.get_party(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -41,7 +38,7 @@ var party = {
 
 		//	Get list of Pokemon in user storage box
 		controller.hears(['list (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			var box = typeof(parseInt(message.match[3])) == 'number' ? parseInt(message.match[3]) : 1;
+			var box = typeof(parseInt(message.match[2])) == 'number' ? parseInt(message.match[2]) : 1;
 			api.party.get_box(message.user, box, function(err, response){
 				if(err){
 					return bot.reply(message, err);
