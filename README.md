@@ -41,6 +41,10 @@ list party
 ```
 *	List all Pokemon in the storage box (number)
 ```
+*	List all Pokemon in another user's current party
+```
+list party (@user)
+```
 list box (number)
 ```
 *	Find which Pokemon is at party position (number) or box (number) position (number)
@@ -51,7 +55,7 @@ find box (number) (number)
 ```
 *	Deposit Pokemon at party position (number) into the first available storage box positon
 ```
-store (number)
+store party (number)
 ```
 *	Withdraw Pokemon at box (number) position (number) into the first available party positon
 ```
@@ -92,11 +96,11 @@ release box (number) (number)
 
 ☑	User Party API
 
-☐	Front-end web Interface
-
-☐	Full [Pokeapi](https://github.com/phalt/pokeapi) database import
+☑	Full [Pokedex](https://github.com/veekun/pokedex) Pokemon database
 
 ☐	Create full API endpoints
+
+☐	Front-end web Interface
 
 ☐	Unit-testing
 
@@ -112,7 +116,7 @@ release box (number) (number)
 
 ☐	Pokemon Nature
 
-☐	Pokemon Gender
+☐	Pokemon Gender Differences
 
 ☐	Pokemon Evolutions
 

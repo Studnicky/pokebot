@@ -14,8 +14,7 @@ function count (userid, callback){
 		where: {
 			owner_id: userid
 		}
-	}).then(function(count){
-		//	Count has no error condition, it will return a value or 0
+	}).then(function(count){	//	Count has no error condition, it will return a value or 0
 		response = {'count': count};
 		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 	});
@@ -104,26 +103,35 @@ function get_member (userid, position, callback){
 
 function get_party (userid, callback){
 	var err = null, response = {};
-	Pokemon_Instance.findAll({
-		order: [['party_position', 'ASC']],
-		where: {
-			owner_id: userid,
-			party_position: {$between: [0, 6]}
-		},
-		include: [{
-			model: Pokemon
-		}]
-	}).then(function(party_members){
-		if(party_members){
-			if(party_members.length > 0){
-				response = {'party_members': party_members};
-			} else {
-				err = 'Your party is empty!';
-			}
+	var users = require(__dirname + '/users');
+
+	users.name_by_userid(userid, function(err, response){
+		if(err){
+			return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 		} else {
-			err = 'Member party not found!';	
+			var slack_name = response.slack_name;
+			Pokemon_Instance.findAll({
+				order: [['party_position', 'ASC']],
+				where: {
+					owner_id: userid,
+					party_position: {$between: [0, 6]}
+				},
+				include: [{
+					model: Pokemon
+				}]
+			}).then(function(party_members){
+				if(party_members){
+					if(party_members.length > 0){
+						response = {'party_members': party_members};
+					} else {
+						err = (slack_name + '\'s party is empty!');
+					}
+				} else {
+					err = 'Party not found for' + slack_name + '!';	
+				}
+				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+			});
 		}
-		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 	});
 }
 
@@ -132,8 +140,8 @@ function move_position (userid, instance, position, callback){
 	Pokemon_Instance.update(
 		{party_position: position},
 		{where: {
-			party_position: instance.party_position,
-			owner_id: userid
+			owner_id: userid,
+			party_position: instance.party_position
 		}}
 	).then(function(affectedRows){
 		if(affectedRows != 0){
@@ -164,7 +172,6 @@ function release (userid, position, callback){
 
 function store (userid, position, callback){
 	var err = null, response = {};
-	//	Passthrough method to get instances
 	get_member(userid, position, function(err, response){
 		if(response.instance != null){
 			var instance = response.instance;
@@ -200,6 +207,7 @@ function retrieve (userid, position, callback){
 
 function swap (userid, position_1, position_2, callback){
 	var err = null, response = {};
+	//	These operations should be async
 	get_member(userid, position_1, function(err, response_1){		//	ignore err, null is valid reponse
 		get_member(userid, position_2, function(err, response_2){	//	ignore err, null is valid response
 			if(response_1.instance != null && response_2.instance != null){
@@ -227,8 +235,7 @@ function switch_positions(userid, instance_1, instance_2, callback){
 		{where: {
 			owner_id:userid,
 			party_position: position_1
-			}
-		}
+		}}
 	).then(function(affectedRows){
 		if(affectedRows < 1){
 			err = 'Operation failed at: Set instance 1 position 0';	
@@ -236,7 +243,10 @@ function switch_positions(userid, instance_1, instance_2, callback){
 		} else {
 			Pokemon_Instance.update(
 				{party_position: position_1},
-				{where: {party_position: position_2}}
+				{where: {
+					owner_id:userid,
+					party_position: position_2
+				}}
 			).then(function(affectedRows){
 				if(affectedRows < 1){
 					err = 'Operation failed at: Set instance 2 position ' + position_1;
@@ -244,7 +254,10 @@ function switch_positions(userid, instance_1, instance_2, callback){
 				} else {
 					Pokemon_Instance.update(
 						{party_position: position_2},
-						{where: {party_position: 0}}
+						{where: {
+							owner_id:userid,
+							party_position: 0
+						}}
 					).then(function(affectedRows){
 						if(affectedRows < 1){
 							err = 'Operation failed at: Set instance 1 position ' + position_2
