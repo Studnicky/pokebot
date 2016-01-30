@@ -50,7 +50,7 @@ var pokedex = {
 					} else {
 						var identifier = null;
 						response.messages.map(function(message){	//	There should only be one but who knows?
-							identifier = message.text.match(/:(.*?):/)[0];
+							identifier = (message.text.match(/:(.*?):/)) ? message.text.match(/:(.*?):/)[0] : null;
 						});
 						if(identifier){
 							identifier = identifier.replace(/:/g,'');
