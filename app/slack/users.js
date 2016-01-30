@@ -65,7 +65,7 @@ var users = {
 					return bot.reply(message, err);
 				} else {
 					var active_users = response.members.filter(function(user){
-						return (user.presence != "away") && (user.presence != "undefined") && (user.is_bot == "false");
+						return (user.presence != "away") && (user.presence != "undefined") && (user.is_bot != "true");
 					});
 					if (active_users.length > 1){
 						var reply = "The following users are currently active:\n";		

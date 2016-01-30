@@ -125,7 +125,7 @@ var pokemon = {
 						wild = (message.match[1] == 'true') ? true : false;
 						return bot.reply(message, 'Wild Pokemon spawning is now: ' + wild + '!');
 					} else {
-						return bot.reply(message, "Only admins can toggle app settings!");
+						return bot.replyPrivate(message, "Only admins can toggle app settings!");
 					}
 				}
 			});
@@ -133,8 +133,17 @@ var pokemon = {
 
 		//	Spawn a wild pokemon on command (optional rarity force arg)
 		controller.hears(['(spawn)\s*(.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
-			wildPokemon();
+			api.users.get(message.user, function(err, response){
+				if(err){
+					return bot.reply(message, err);
+				} else {
+					if(response.user.permissions_level >= 3){
+						wildPokemon();
+					} else {
+						return bot.replyPrivate(message, "Only admins can force wild Pokemon spawn!");
+					}
+				}
+			});
 		});
 
 		//	Pick a starter

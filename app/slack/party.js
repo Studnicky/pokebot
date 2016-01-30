@@ -5,8 +5,24 @@ var party = {
 	name: 'party',
 	events: function(controller, bot){
 
-		//	Get user party
-		controller.hears(['(list|show) party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		//	Get list of Pokemon in user party
+		controller.hears(['show party <@(.*)>'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			var userid = message.match[1];
+			api.party.get_party(userid, function(err, response){
+				if(err){
+					return bot.reply(message, err);
+				} else {
+					var replymessage = ('<@'+userid+'>\'s current party members are: \n');
+					response.party_members.map(function(instance){
+						replymessage += (utility.numeral_suffix(instance.party_position) + ': ' + utility.pokemon_emoji(instance.Pokemon.get(), instance)+ '\n');
+					});
+					return bot.reply(message, replymessage);
+				}
+			});
+		});
+
+		//	Get list of Pokemon in user party
+		controller.hears(['list party'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			api.party.get_party(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -20,9 +36,9 @@ var party = {
 			});
 		});
 
-		//	Get user storage box
-		controller.hears(['(list|show) (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			var box = typeof(parseInt(message.match[3])) == 'number' ? parseInt(message.match[3]) : 1;
+		//	Get list of Pokemon in user storage box
+		controller.hears(['list (box|pc|storage) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			var box = typeof(parseInt(message.match[2])) == 'number' ? parseInt(message.match[2]) : 1;
 			api.party.get_box(message.user, box, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -32,7 +48,7 @@ var party = {
 						replymessage += utility.numeral_suffix(instance.party_position-(box-1)*30-6) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance) + '\n';
 					});
 				}
-					return bot.reply(message, replymessage);
+				return bot.reply(message, replymessage);
 			});
 		});
 
@@ -90,8 +106,8 @@ var party = {
 			});
 		});
 
-		//	Swap places of two pokemon in user party or boxes
-		controller.hears(['(deposit|store) ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		//	Store specified party member into first available box position
+		controller.hears(['(deposit|store) party ([1-6])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			if(message.match[2] == 0){
 				return bot.reply(message, 'Position cannot be zero!');
 			}
@@ -107,7 +123,7 @@ var party = {
 			});
 		});
 
-		//	Swap places of two pokemon in user party or boxes
+		//	Fetch pokemon from box specified into first available user party position
 		controller.hears(['(fetch|retrieve|withdraw) (box|pc|storage) ([1-6]) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var box = (typeof(message.match[3]) == 'undefined') ? undefined : parseInt(message.match[3]);
 			var position = (box)*30-30+6+parseInt(message.match[4]) || parseInt(message.match[4]);
@@ -127,7 +143,7 @@ var party = {
 			});
 		});
 
-		//	Release target pokemon from user party or box
+		//	Release target pokemon from user party or box position
 		controller.hears(['(delete|release|remove) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
 			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
@@ -152,7 +168,7 @@ var party = {
 					return bot.startConversation(message, function(err, convo){
 						convo.ask(replymessage, //	Array of objects that contain pattern matchers and callbacks
 						[{
-							pattern: '(y|yes)',
+							pattern: '(yes)',
 							callback: function(response, convo){
 								api.party.release(message.user, instance.party_position, function(err, response){
 									if(err){
@@ -172,7 +188,7 @@ var party = {
 							}
 						},
 						{
-							pattern: '(n|no)',
+							pattern: '(no)',
 							callback: function(response, convo){
 								convo.say("Ooh, ok. Glad you changed your mind.");
 								convo.next();	//	Advance to the next convo ask (or terminate)
@@ -181,7 +197,7 @@ var party = {
 						{
 							default: true,
 							callback: function(response, convo){
-								convo.say("Sorry, I didn't understand.");
+								convo.say("Sorry, I didn't understand. Please answer yes or no.");
 								convo.repeat();	//	Repeat the question (moves convo index back one)
 								convo.next();	//	Advance to the next convo ask (or terminate)
 							}
