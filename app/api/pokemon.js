@@ -82,7 +82,6 @@ function find_by_rarity(rarity, callback){
 		},
 		order: [Sequelize.fn('RANDOM')]
 	}).then(function(pokemon){
-		console.log(pokemon);
 		if(pokemon){
 			response = {'pokemon': pokemon};
 		} else {

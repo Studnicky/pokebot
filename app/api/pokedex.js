@@ -12,13 +12,13 @@ function find_by_name_or_id (national_id_or_name, callback){
 		where: where
 	}).then(function(pokemon){
 		if(pokemon){
-			response = {'pokemon': pokemon};
+			response = {'pokemon': pokemon.get()};
 		} else {
 			err = 'Failed to look up Pokemon: ' + national_id_or_name + '!';
 		}
 		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
 	}).catch(function(err){
-		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+		console.log(err);
 	});
 }
 
