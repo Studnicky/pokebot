@@ -141,6 +141,8 @@ function makeResponse(identifier, callback){
 				"value": typeString,
 				"short": false
 			});
+
+
 			var statString = '';
 			for (var key in response.pokemon.stats){
 				fields.push({
@@ -149,6 +151,8 @@ function makeResponse(identifier, callback){
 					"short": true
 				});
 			}
+
+			
 			var evolutionString = '';
 			if(response.pokemon.evolutions[0].name != null){	//	This might be DB's problem...
 				response.pokemon.evolutions.map(function(evolution){
