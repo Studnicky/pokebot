@@ -36,7 +36,7 @@ module.exports = function(sequelize, Sequelize) {
 			allowNull: false,
 			hasComment: {type: Sequelize.STRING, field: "Pokemon current experience"}
 		},
-		gender: {
+		is_female: {
 			type: Sequelize.INTEGER,
 			allowNull: true,
 			hasComment: {type: Sequelize.STRING, field: "Pokemon Gender (NULL=null 0=F 1=M)"}

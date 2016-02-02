@@ -20,6 +20,26 @@ function count (userid, callback){
 	});
 }
 
+function valid_position (userid, position, callback){
+	var err = null, response = {};
+	User.findOne({
+		where: { slack_id: userid },
+		attributes: ['position_cap'],
+		include: [{
+			model: Pokemon_Instance,
+			attributes: ['party_position'],
+			order: [['party_position', 'ASC']]
+		}]
+	}).then(function(user){
+		if(user){
+			response.valid = (position > 0 && position < user.position_cap);
+		} else {
+			err = 'User not found!';
+		}
+		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));	
+	});
+}
+
 function open_position (userid, start, callback){
 	var err = null, response = {};
 	User.findOne({
@@ -94,7 +114,7 @@ function get_member (userid, position, callback){
 		if(instance){
 			response = {'instance': instance};
 		} else {
-			err = 'Nothing found at that position!'
+			err = 'Nothing found at that position!';
 			response = {'instance': null};	//	Some methods can take null instances
 		}
 		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
@@ -104,7 +124,6 @@ function get_member (userid, position, callback){
 function get_party (userid, callback){
 	var err = null, response = {};
 	var users = require(__dirname + '/users');
-
 	users.name_by_userid(userid, function(err, response){
 		if(err){
 			return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
@@ -154,6 +173,10 @@ function move_position (userid, instance, position, callback){
 }
 
 function release (userid, position, callback){
+	if(position < 1){
+		err = 'Invalid position given!';
+		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+	}
 	var err = null, response = {};
 	Pokemon_Instance.destroy({
 		where: {
@@ -172,6 +195,10 @@ function release (userid, position, callback){
 
 function store (userid, position, callback){
 	var err = null, response = {};
+	if(position < 1){
+		err = 'Invalid position given!';
+		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+	}
 	get_member(userid, position, function(err, response){
 		if(response.instance != null){
 			var instance = response.instance;
@@ -187,6 +214,10 @@ function store (userid, position, callback){
 
 function retrieve (userid, position, callback){
 	var err = null, response = {};
+	if(position < 1){
+		err = 'Invalid position given!';
+		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+	}
 	get_member(userid, position, function(err, response){
 		if(response.instance != null){
 			var instance = response.instance;
@@ -207,6 +238,14 @@ function retrieve (userid, position, callback){
 
 function swap (userid, position_1, position_2, callback){
 	var err = null, response = {};
+	if (position_1 == position_2){
+		err = "You cannot swap a Pokemon with itself!";
+		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+	} else if (position_1 < 1 || position_2 < 1) {
+		err = "Invalid positions given!";
+		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));	
+	}
+
 	//	These operations should be async
 	get_member(userid, position_1, function(err, response_1){		//	ignore err, null is valid reponse
 		get_member(userid, position_2, function(err, response_2){	//	ignore err, null is valid response

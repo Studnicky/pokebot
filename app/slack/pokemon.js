@@ -5,7 +5,7 @@ var pokemon = {
 	name: 'pokemon',
 	events: function(controller, bot){
 
-		var wild = true;
+		var wild = false;
 		var timerBase = 120000;	//	2 minutes
 		var timerRand = 180000;	//	3 minutes
 		var wildInstances = {};
@@ -13,10 +13,24 @@ var pokemon = {
 		function spawnTimer(){ return Math.floor(Math.random()*timerRand)+timerBase; }
 		function escapeTimer(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
 		function wildPokemon(){
+			bot.api.users.list({token: bot.token, presence: 1},function(err,response) {
+			if(err){
+				return console.log(err);
+			} else {
+				var active_users = response.members.filter(function(user){
+					return (user.presence == "active") && (user.presence != "undefined") && (user.is_bot !== true);
+				});
+				if (active_users.length > 0){
+					doSpawn();
+				}
+			}
+			});
+		}
+		function doSpawn(){
 			var rarity = Math.floor(Math.random()*254)+1;
 			api.pokemon.spawn(rarity, function(err, response){
 				if(err){ 
-					return bot.reply(message, err);
+					return console.log(err);
 				} else {
 					var pokemon = response.pokemon;
 					var instance = response.instance;
@@ -132,7 +146,7 @@ var pokemon = {
 		});
 
 		//	Spawn a wild pokemon on command (optional rarity force arg)
-		controller.hears(['(spawn)\s*(.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['spawn'],['direct_message','direct_mention','mention'],function(bot,message) {
 			api.users.get(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);

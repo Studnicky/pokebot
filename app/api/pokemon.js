@@ -13,7 +13,7 @@ function build_instance(pokemon, callback){
 		caught_by: null,
 		current_form: {},
 		current_level: Math.ceil(Math.random()*10+5),
-		current_happiness: Math.floor(Math.random()*50+50),
+		current_happiness: Math.floor(Math.random()*50+30),
 		effort_values: {
 			"hp":				0,
 			"attack":			0,
@@ -23,7 +23,7 @@ function build_instance(pokemon, callback){
 			"speed":			0
 		},
 		exp: 100,
-		gender: (pokemon.has_gender) ? (Math.random()*8-pokemon.gender_rate > 0 ? 1 : 2) : 0,
+		is_female: (pokemon.has_gender) ? (pokemon.gender_rate - (Math.random()*8) > 0 ? true : false) : false,
 		has_pokerus: (Math.floor(Math.random()*21845) == 1) ? true : false,
 		holds_item: {},
 		individual_values: {
@@ -37,7 +37,7 @@ function build_instance(pokemon, callback){
 		is_shiny: (Math.floor(Math.random()*8192) == 1) ? true : false,
 		nature: {},
 		national_id: pokemon.national_id,
-		nickname: pokemon.name,
+		nickname: utility.display_name(pokemon.name),
 		owner_id: null,
 		party_position: 0,
 		for_trade: 0,

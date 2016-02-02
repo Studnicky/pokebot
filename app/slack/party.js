@@ -56,11 +56,6 @@ var party = {
 		controller.hears(['(find|get) ((party)|((box|pc|storage) ([1-6]))) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var box = (typeof(message.match[6]) == 'undefined') ? undefined : parseInt(message.match[6]);
 			var position = (box)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
-			if(box == 0){
-				return bot.reply(message, 'There is no box zero!');
-			} else if (position == 0){
-				return bot.reply(message, 'Box positions are numbered 1 to 30!');
-			}
 			api.party.get_member(message.user, position, function(err, response){
 				if(err){
 					return bot.reply(message, err);
@@ -127,11 +122,6 @@ var party = {
 		controller.hears(['(fetch|retrieve|withdraw) (box|pc|storage) ([1-6]) ([1-3]?[0-9])'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var box = (typeof(message.match[3]) == 'undefined') ? undefined : parseInt(message.match[3]);
 			var position = (box)*30-30+6+parseInt(message.match[4]) || parseInt(message.match[4]);
-			if(box == 0){
-				return bot.reply(message, 'There is no box zero!');
-			} else if (position == 0){
-				return bot.reply(message, 'Box positions are numbered 1 to 30!');
-			}
 			api.party.retrieve(message.user, position, function(err, response){
 				if(err){
 					return bot.reply(message, err);
