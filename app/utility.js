@@ -19,7 +19,16 @@ function proper_capitalize (string) {	//	Captialize first letter of a string
 }
 
 function pokemon_emoji (pokemon, instance){	//	Make slack emoji
-	return ' :' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ': *' + proper_capitalize(pokemon.name) + '*';
+	var emoji = ':' + pokemon.name.toLowerCase();
+	if(!instance){
+		// emoji += (pokemon.has_forms) ? ('-' + pokemon.forms.default) : ('');
+	} else {
+		emoji += (pokemon.has_gender && instance.is_female) ? ('-f') : ('');
+		emoji += (pokemon.has_forms) ? ('-' + instance.current_form) : ('');
+		emoji += (instance.is_shiny) ? ('-s') : ('');
+	}
+	emoji += ':';
+	return ' ' + emoji + ' *' + proper_capitalize(pokemon.name) + '*';
 }
 function get_box (position){	//	Find box from position
 	return parseInt(Math.floor((position+30-7)/30));

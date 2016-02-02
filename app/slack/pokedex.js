@@ -3,13 +3,41 @@ var utility = require(__dirname +'/../utility');
 var path = require('path');
 var fs = require('fs');
 
+var Sequelize = require('sequelize'),
+	Models = require(__dirname + '/../sequelize'),
+	Pokemon = Models.Pokemon;
+
 var pokedex = {
 	name: 'pokedex',
 	events: function(controller, bot){
 
+		//	List all emotes (!DANGEROUS)
+		controller.hears(['emotes'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+			Pokemon.findAll({
+				order: [['national_id', 'ASC']],
+			}).then(function(all_pokemon){
+				if(all_pokemon){
+					var list = '';
+					all_pokemon.map(function(pokemon){
+						list += (utility.pokemon_emoji(pokemon) + "\n");
+					});
+					var post = {
+						channel: bot.rooms.pokedex,
+						username: 'Pokedex',
+						icon_emoji: ':pokedex:',
+						text: list
+					};
+					bot.say(post);
+				} else {
+					err = 'No Pokemon found!';
+				}
+			}).catch(function(err){
+				console.log(err);
+			});
+		});
+
 		//	Get user party
 		controller.hears(['pokedex (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			bot.reply(message, {"type": "typing"});
 			var identifier = message.match[1];
 			makeResponse(identifier, function(err, response){
 				if(err){
