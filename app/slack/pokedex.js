@@ -142,7 +142,6 @@ function makeResponse(identifier, callback){
 				"short": false
 			});
 
-
 			var statString = '';
 			for (var key in response.pokemon.stats){
 				fields.push({
@@ -151,7 +150,6 @@ function makeResponse(identifier, callback){
 					"short": true
 				});
 			}
-
 			
 			var evolutionString = '';
 			if(response.pokemon.evolutions[0].name != null){	//	This might be DB's problem...
@@ -178,7 +176,7 @@ function makeResponse(identifier, callback){
 	});
 }
 
-// function makePowerBar (stat, value){				
+// function makePowerBar (stat, value){
 // 	var bar = '', count = 0;
 // 	var bar_len = value/10;
 // 	var reply = (stat.replace("-"," ").toUpperCase() + ': ' + value + '\n');
