@@ -36,4 +36,3 @@ node_modules
 # Local ENV file
 .env
 temp
-public/assets/pokemon
