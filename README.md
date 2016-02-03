@@ -162,8 +162,8 @@ Before you can run Pokebot locally, you must create an `.env` file at the root d
 * Log in to postgres as it's default superuser
 ```
 $ sudo -u postgres psql
-```
 
+```
 * Make a new user named pokebot with database creation privileges
 ```
 postgres=#	CREATE USER pokebot CREATEDB CREATEUSER PASSWORD 'oak';
@@ -193,6 +193,7 @@ postgres=# \l
 
 ```
 * If that's all set up correctly, go ahead and exit psql. Sequelize will do the rest.
+
 ```
 postgres=#	\q
 ```
