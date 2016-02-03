@@ -43,7 +43,7 @@ var party = {
 				if(err){
 					return bot.reply(message, err);
 				} else {
-					var replymessage = '';
+					var replymessage = 'Pokemon stored in box ' + box + ' are:\n';
 					response.box_members.map(function(instance){
 						replymessage += utility.numeral_suffix(instance.party_position-(box-1)*30-6) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance) + '\n';
 					});
@@ -62,7 +62,6 @@ var party = {
 				} else {
 					var replymessage = '';
 					var instance = response.instance;
-
 					if(instance.party_position <= 6){
 						replymessage += 'Your ' + utility.numeral_suffix(instance.party_position) + ' party member is: ' + utility.pokemon_emoji(instance.Pokemon, instance) + '.\n';
 					} else {
@@ -82,7 +81,6 @@ var party = {
 			var box_2 = (typeof(message.match[12]) == 'undefined') ? undefined : parseInt(message.match[12]);
 			var position_1 = (box_1)*30-30+6+parseInt(message.match[7]) || parseInt(message.match[7]);
 			var position_2 = (box_2)*30-30+6+parseInt(message.match[13]) || parseInt(message.match[13]);
-			
 			//	If either position is empty, api will be mad when we attempt to transact
 			api.party.swap(message.user, position_1, position_2, function(err, response){
 				if(err){

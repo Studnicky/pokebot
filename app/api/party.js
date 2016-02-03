@@ -245,20 +245,26 @@ function swap (userid, position_1, position_2, callback){
 		err = "Invalid positions given!";
 		return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));	
 	}
-
-	//	These operations should be async
-	get_member(userid, position_1, function(err, response_1){		//	ignore err, null is valid reponse
-		get_member(userid, position_2, function(err, response_2){	//	ignore err, null is valid response
-			if(response_1.instance != null && response_2.instance != null){
-				switch_positions(userid, response_1.instance, response_2.instance, callback);
-			} else if(response_1.instance == null && response_2.instance != null){
-				move_position(userid, response_2.instance, position_1, callback);
-			} else if(response_1.instance != null && response_2.instance == null){
-				move_position(userid, response_1.instance, position_2, callback);
-			} else if(response_1.instance == null && response_2.instance == null){
-				err = 'Both positions cannot be empty!';
-				return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
-			}
+	//	These operations could all be async...
+	valid_position(userid, position_1, function(err, valid_1){
+		valid_position(userid, position_2, function(err, valid_2){
+			get_member(userid, position_1, function(err, response_1){		//	ignore err, null is valid reponse
+				get_member(userid, position_2, function(err, response_2){	//	ignore err, null is valid response
+					if (valid_1.valid !== true || valid_2.valid !== true) {
+						err = 'Invalid positions!';
+						return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+					} else if(response_1.instance == null && response_2.instance == null){
+						err = 'Both positions cannot be empty!';
+						return (typeof(callback) == 'function') ? callback(err, response) : (err ? console.log(err) : console.log(response));
+					} else if(response_1.instance != null && response_2.instance != null){
+						switch_positions(userid, response_1.instance, response_2.instance, callback);
+					} else if(response_1.instance == null && response_2.instance != null){
+						move_position(userid, response_2.instance, position_1, callback);
+					} else if(response_1.instance != null && response_2.instance == null){
+						move_position(userid, response_1.instance, position_2, callback);
+					}
+				});
+			});
 		});
 	});
 }
