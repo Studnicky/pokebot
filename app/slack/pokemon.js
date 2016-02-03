@@ -37,7 +37,7 @@ var pokemon = {
 					var post = {
 						channel: bot.rooms.general,
 						username: ' ',
-						icon_emoji: ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-shiny' : '') + ':',
+						icon_emoji: ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-s' : '') + ':',
 						text: "A wild  " + utility.pokemon_emoji(pokemon, instance) + " has appeared!"
 					};
 

@@ -11,32 +11,32 @@ var pokedex = {
 	name: 'pokedex',
 	events: function(controller, bot){
 
-		//	List all emotes (!DANGEROUS)
-		controller.hears(['emotes'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
-			Pokemon.findAll({
-				order: [['national_id', 'ASC']],
-			}).then(function(all_pokemon){
-				if(all_pokemon){
-					var list = '';
-					all_pokemon.map(function(pokemon){
-						list += (utility.pokemon_emoji(pokemon) + "\n");
-					});
-					var post = {
-						channel: bot.rooms.pokedex,
-						username: 'Pokedex',
-						icon_emoji: ':pokedex:',
-						text: list
-					};
-					bot.say(post);
-				} else {
-					err = 'No Pokemon found!';
-				}
-			}).catch(function(err){
-				console.log(err);
-			});
-		});
+		//	List all emotes (!Debugging tool to find missing sprites)
+		// controller.hears(['emotes'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		// 	Pokemon.findAll({
+		// 		order: [['national_id', 'ASC']],
+		// 	}).then(function(all_pokemon){
+		// 		if(all_pokemon){
+		// 			var list = '';
+		// 			all_pokemon.map(function(pokemon){
+		// 				list += (utility.pokemon_emoji(pokemon) + "\n");
+		// 			});
+		// 			var post = {
+		// 				channel: bot.rooms.pokedex,
+		// 				username: 'Pokedex',
+		// 				icon_emoji: ':pokedex:',
+		// 				text: list
+		// 			};
+		// 			bot.say(post);
+		// 		} else {
+		// 			err = 'No Pokemon found!';
+		// 		}
+		// 	}).catch(function(err){
+		// 		console.log(err);
+		// 	});
+		// });
 
-		//	Get user party
+		//	Get Pokedex info from an input
 		controller.hears(['pokedex (.*)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
 			var identifier = message.match[1];
 			makeResponse(identifier, function(err, response){
@@ -61,9 +61,9 @@ var pokedex = {
 			});
 		});
 
+		//	Get pokedex info by reading a message
 		controller.on('reaction_added', function(bot, message){
 			if(message.reaction == "pokedex"){
-				//	Someone used the pokedex emote on a message...
 				var query = {
 					channel: message.item.channel,
 					latest: message.item.ts,
@@ -152,7 +152,7 @@ function makeResponse(identifier, callback){
 			}
 			
 			var evolutionString = '';
-			if(response.pokemon.evolutions[0].name != null){	//	This might be DB's problem...
+			if(response.pokemon.evolutions[0].name != null){
 				response.pokemon.evolutions.map(function(evolution){
 					evolutionString += (':' + evolution.name.toLowerCase() + ': ' + utility.proper_capitalize(evolution.name) + '  ');
 				});

@@ -21,24 +21,37 @@ function proper_capitalize (string) {	//	Captialize first letter of a string
 function pokemon_emoji (pokemon, instance){	//	Make slack emoji
 	var emoji = ':' + pokemon.name.toLowerCase();
 	if(!instance){
-		// emoji += (pokemon.has_forms) ? ('-' + pokemon.forms.default) : ('');
+		//	emoji += (pokemon.has_forms) ? ('-' + pokemon.forms.default) : ('');
 		//	We'll worry about forms later, DB && API will have to change when we do
 	} else {
 		//	emoji += (pokemon.has_gender && instance.is_female) ? ('-f') : ('');
 		//	Not all pokemon have gender specific sprites, DB update necessary
-		emoji += (pokemon.has_forms) ? ('-' + instance.current_form) : ('');
-		emoji += (instance.is_shiny) ? ('-s') : ('');
+		//	emoji += (pokemon.has_forms) ? ('-' + instance.current_form) : ('');
+		emoji += (instance.is_shiny ? '-s' : '');
 	}
 	emoji += ':';
 	return ' ' + emoji + ' *' + display_name(pokemon.name) + '*';
 }
 function display_name (name){	//	Strip data tags to leave display name
-	var formtags = new RegExp(/-normal|-fire|-water|-electric|-grass|-ice|-fighting|-poison|-ground|-flying|-psychic|-bug|-rock|-ghost|-dragon|-dark|-steel|-fairy|-red|-blue|-normal|-rainy|-snowy|-sunny|-attack|-defense|-speed|-plant|-sandy|-trash|-overcast|-sunshine|-fan|-frost|-heat|-mow|-wash|-altered|-origin|-land|-sky|-active|-zen|-spring|-summer|-autumn|-winter|-incarnate|-therian|-black|-white|-ordinary|-resolute|-aria|-pirouette|-icy|-archipelago|-continental|-elegant|-garden|-highplains|-jungle|-marine|-meadow|-modern|-monsoon|-ocean|-polar|-river|-sandstorm|-savannah|-sun|-tundra|-red|-blue|-orange|-white|-yellow|-eternal|-blade|-shield|-small|-average|-large|-super|-neutral|-active|-confined|-unbound/);
-	var spritetags = new RegExp(/-f|-m|-s|-b/);
-	name = proper_capitalize(name);	//	Always capitalize first letter before swapping string...
-	name = name.replace(/(.*)(-primal)/, 'Primal $1')	//	Primal is the same thing as mega. Really, Nintendo.
-	name = name.replace(/(.*)(-mega-x|-mega-y|-mega)/, 'Mega $1') //	-m conflicts with -mega so do this first.
+	var colortags = new RegExp(/-red|-blue|-orange|-white|-black|-yellow/);
+	var formtags = new RegExp(/-east|-west|-rainy|-snowy|-sunny|-attack|-defense|-speed|-plant|-sandy|-trash|-overcast|-sunshine|-fan|-frost|-heat|-mow|-wash|-altered|-origin|-land|-sky|-active|-zen|-spring|-summer|-autumn|-winter|-ordinary|-resolute|-aria|-pirouette|-icy|-archipelago|-continental|-elegant|-garden|-highplains|-jungle|-marine|-meadow|-modern|-monsoon|-ocean|-polar|-river|-sandstorm|-savannah|-sun|-tundra|-eternal|-blade|-shield|-neutral|-active/);
+	var typetags = new RegExp(/-normal|-fire|-water|-electric|-grass|-ice|-fighting|-poison|-ground|-flying|-psychic|-bug|-rock|-ghost|-dragon|-dark|-steel|-fairy/);
+	var sizetags = new RegExp(/-small|-average|-large|-super/);
+	var spritetags = new RegExp(/-f|-m|-s|-b|-x|-y/);
+	//	Always capitalize first letter before swapping string...
+	name = proper_capitalize(name);
+	//	Special rules for legendary and mega sprites & names...
+	name = name.replace(/(.*)(-incarnate)/, '$1 Incarnate');
+	name = name.replace(/(.*)(-therian)/, 'Therian $1');
+	name = name.replace(/(.*)(-confined)/, '$1');
+	name = name.replace(/(.*)(-unbound)/, '$1 Unbound');
+	name = name.replace(/(.*)(-primal)/, 'Primal $1');
+	name = name.replace(/(.*)(-mega)/, 'Mega $1');
+	//	None of these should show...
+	name = name.replace(colortags, '');
 	name = name.replace(formtags, '');
+	name = name.replace(typetags, '');
+	name = name.replace(sizetags, '');
 	name = name.replace(spritetags, '');
 	return name;
 }
