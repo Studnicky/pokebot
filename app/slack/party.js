@@ -45,7 +45,7 @@ var party = {
 				} else {
 					var replymessage = 'Pokemon stored in box ' + box + ' are:\n';
 					response.box_members.map(function(instance){
-						replymessage += utility.numeral_suffix(instance.party_position-(box-1)*30-6) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance) + '\n';
+						replymessage += utility.numeral_suffix(utility.get_box_position(instance.party_position)) + ': ' + utility.pokemon_emoji(instance.Pokemon, instance) + '\n';
 					});
 				}
 				return bot.reply(message, replymessage);
