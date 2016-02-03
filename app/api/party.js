@@ -76,7 +76,6 @@ function open_position (userid, start, callback){
 function get_box(userid, box, callback){
 	var err = null, response = {};
 	Pokemon_Instance.findAll({
-		attributes: ['party_position', 'Pokemon.name'],
 		order: [['party_position', 'ASC']],
 		where: {
 			owner_id: userid,
