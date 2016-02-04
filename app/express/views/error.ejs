@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Join Pokebot on Slack!</title>
+	<title>Join Pokébot on Slack!</title>
 	<link href="css/app.css" rel="stylesheet" type="text/css">
 	<link href="css/foundation.css" rel="stylesheet" type="text/css">
 	<link href="css/foundation-flex.css" rel="stylesheet" type="text/css">
@@ -11,13 +11,16 @@
 	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,900,700italic|Open+Sans:700italic,400,600,300,700,800" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<div id="wrapper">
-		<div class="main">
-			<div class="header">
-				<h1><strong><%= message %></strong></h1>
-				<h2><%= error.status || '' %></h2>
+	<body>
+		<div class="row">
+			<div class="small-12 small-centered large-6 columns">
+				<div class="alert callout text-center">
+					<p><strong><%= message %><strong></p>
+					<p><%= error.status || '' %></p>
+				</div>
 			</div>
 		</div>
-	</div>
+	</form>
+</div>
 </body>
 </html>

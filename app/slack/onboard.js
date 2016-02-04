@@ -4,7 +4,9 @@ var onboard = {
 
 		controller.on('team_join', function(bot, data){
 			console.log('A new team member has joined');
-			console.log(data);
+			bot.startPrivateConversation({user: message.user.id}, function(err,dm) {
+			    dm.say('Hello!');
+			});
 		});
 		
 		controller.on('channel_join',function(bot, data){

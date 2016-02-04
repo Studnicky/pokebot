@@ -9,6 +9,10 @@ router.get('/', function(req, res) {
 });
 
 router.post('/invite', function(req, res) {
+
+
+		console.log(req);
+
 	if (req.body.email && (!config.secret || (!!config.secret && req.body.token === config.secret))) {
 		request.post({
 			url: 'https://pokebot.slack.com/api/users.admin.invite',
@@ -23,7 +27,6 @@ router.post('/invite', function(req, res) {
 		body = JSON.parse(body);
 		if (body.ok) {
 			res.render('result', {
-				community: 'Pokebot',
 				message: 'Success! Check "'+ req.body.email +'" for an invite from Slack.',
 				isFailed: false
 			});
@@ -31,7 +34,6 @@ router.post('/invite', function(req, res) {
 			var error = body.error;
 			if (error === 'already_invited' || error === 'already_in_team') {
 				res.render('result', {
-					community: 'Pokebot',
 					message: 'Success! You were already invited.<br>Visit <a href="https://pokebot.slack.com">pokebot.slack.com</a> to complete signup!',
 					isFailed: false
 				});
@@ -43,7 +45,6 @@ router.post('/invite', function(req, res) {
 			}
 
 			res.render('result', {
-				community: 'Pokebot',
 				message: 'Failed! ' + error,
 				isFailed: true
 			});
@@ -52,21 +53,20 @@ router.post('/invite', function(req, res) {
 } else {
 	var errMsg = [];
 	if (!req.body.email) {
-		errMsg.push('your email is required');
+		errMsg.push('Email is required\n');
 	}
 
 	if (!!config.secret) {
 		if (!req.body.token) {
-			errMsg.push('valid token is required');
+			errMsg.push('Valid token is required\n');
 		}
 
 		if (req.body.token && req.body.token !== config.secret) {
-			errMsg.push('the token you entered is wrong');
+			errMsg.push('The token you entered is incorrect\n');
 		}
 	}
 
 	res.render('result', {
-		community: 'Pokebot',
 		message: 'Failed! ' + errMsg.join(' and ') + '.',
 		isFailed: true
 	});
