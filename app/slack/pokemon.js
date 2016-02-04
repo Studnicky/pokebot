@@ -130,7 +130,7 @@ var pokemon = {
 		});
 
 		//	Admin toggle for wild pokemon spawning
-		controller.hears(['set wild (true|false)'],['direct_message','direct_mention','mention', 'ambient'],function(bot,message) {
+		controller.hears(['set wild (true|false)'],['direct_message','direct_mention','mention'],function(bot,message) {
 			api.users.get(message.user, function(err, response){
 				if(err){
 					return bot.reply(message, err);

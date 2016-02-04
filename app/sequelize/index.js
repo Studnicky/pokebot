@@ -9,7 +9,7 @@ postgres.Sequelize = require('sequelize');
 postgres.sequelize = new postgres.Sequelize(process.env.DATABASE_URL, {
 	dialect:  'postgres',
 	protocol: 'postgres',
-	logging: true,
+	logging: false,
 	force: false	//	Drop all tables on creation (use when migrations have occurred)
 });
 

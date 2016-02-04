@@ -52,7 +52,7 @@ function connect(){
 				});
 			}
 
-			bot.say({text: 'Online! <@' + bot.identity.id + '> running on ' + os.hostname()  + '!', channel: bot.rooms.general});
+			bot.say({text: 'Online! <@' + bot.identity.id + '> running on ' + os.hostname()  + '!', channel: bot.rooms.testing});
 
 		}
 	});
