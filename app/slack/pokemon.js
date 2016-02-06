@@ -8,7 +8,7 @@ var pokemon = {
 		var wild = true;
 		var spawnTimer = 1000;
 		var wildInstances = {};
-	
+
 		function doSpawn(){
 			var rarity = Math.floor(Math.random()*254)+1;
 			api.pokemon.spawn(rarity, function(err, response){
@@ -48,25 +48,26 @@ var pokemon = {
 
 		(function spawn(){
 			setTimeout(function(){
-				var timerBase = 120000;	//	base 2 minutes
-				var timerRand = 180000;	//	random up to 3 minutes
-				var timer = Math.floor(Math.random()*timerRand)+timerBase;	
+				var timerBase = 900000;		//	base 15 minutes
+				var timerRand = 900000;		//	rand up to 15 minutes
+				var timer = Math.floor(Math.random()*timerRand)+timerBase;
 				//	How many users are here?
 				bot.api.users.list({token: bot.token, presence: 1},function(err,response) {
 					if(err){
 						return console.log(err);
 					} else {			
-						var active_users = response.members.filter(function(user){
+						var userCount = response.members.filter(function(user){
 							return (user.presence == "active") && (user.presence != "undefined") && (user.is_bot !== true);
-						});
-						if (active_users.length > 0){						
-							var multTimer = Math.log10(active_users.length);
-							spawnTimer = (timer/multTimer);
-							if(wild === true){
-								doSpawn();
-							}
-						} else {
-							spawnTimer = (timer);	//	If there are no users active, try again in 3-5 minutes
+						});				
+						var multTimer = Math.log2(userCount.length+1)+1;	//	2^x == users, do not allow zero or return zero
+						spawnTimer = (timer/multTimer);
+						//	EFFECTIVE TIMERS: 
+						//	userCount=0		(15-30 mins)
+						//	userCount=10	(3.5-7 mins)
+						//	userCount=100	(2-4 mins)
+						//	userCount=1000	(1.5-3 mins)
+						if(wild === true){
+							doSpawn();
 						}
 					}
 					spawn();	//	Repeat in recursion
