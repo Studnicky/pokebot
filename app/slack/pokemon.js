@@ -28,7 +28,10 @@ var pokemon = {
 							console.log(err);
 						} else {
 							var timestamp = response.ts;
-							wildInstances[timestamp] = {'pokemon':pokemon, 'instance': instance, 'escapeTimer': Math.floor(Math.random()*15000+15000-55*pokemon.stats.speed)};
+							var baseEscape = 30000;
+							var randEscape = Math.floor(Math.random()*15000);
+							var speedMult = 55*pokemon.stats.speed;
+							wildInstances[timestamp] = {'pokemon':pokemon, 'instance': instance, 'escapeTimer': (baseEscape+randEscape-speedMult)};
 
 							setTimeout(function escape(){
 								if(wildInstances[timestamp]){
