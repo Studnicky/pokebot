@@ -6,32 +6,9 @@ var pokemon = {
 	events: function(controller, bot){
 
 		var wild = true;
-		var spawnTimer = 0;
+		var spawnTimer = 1000;
 		var wildInstances = {};
-
-		function escapeTimer(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
-		function wildPokemon(){
-			var timerBase = 120000;	//	base 2 minutes
-			var timerRand = 180000;	//	base 3 minutes
-			bot.api.users.list({token: bot.token, presence: 1},function(err,response) {
-				if(err){
-					return console.log(err);
-				} else {
-					var active_users = response.members.filter(function(user){
-						return (user.presence == "active") && (user.presence != "undefined") && (user.is_bot !== true);
-					});
-					if (active_users.length > 0){		
-						var randTimer = Math.floor(Math.random()*timerRand)+timerBase;
-						var multTimer = Math.log10(active_users.length);
-						spawnTimer = (randTimer/multTimer);
-						doSpawn();
-					} else {
-						spawnTimer = (randTimer);	//	If there are no users active, try again in 3-5 minutes
-					}
-				}
-			});
-		}
-
+	
 		function doSpawn(){
 			var rarity = Math.floor(Math.random()*254)+1;
 			api.pokemon.spawn(rarity, function(err, response){
@@ -46,7 +23,6 @@ var pokemon = {
 						icon_emoji: ':' + pokemon.name.toLowerCase() + (instance.is_shiny ? '-s' : '') + ':',
 						text: "A wild  " + utility.pokemon_emoji(pokemon, instance) + " has appeared!"
 					};
-
 					bot.api.chat.postMessage(post, function(err, response) {
 						if(err){ 	//	If the message didn't post properly, don't bother creating the instance
 							console.log(err);
@@ -70,12 +46,31 @@ var pokemon = {
 			});
 		}
 
-		(function spawnLoop(){
+		(function spawn(){
 			setTimeout(function(){
-				if(wild === true){
-					wildPokemon();
-				}
-				spawnLoop();
+				var timerBase = 120000;	//	base 2 minutes
+				var timerRand = 180000;	//	random up to 3 minutes
+				var timer = Math.floor(Math.random()*timerRand)+timerBase;	
+				//	How many users are here?
+				bot.api.users.list({token: bot.token, presence: 1},function(err,response) {
+					if(err){
+						return console.log(err);
+					} else {			
+						var active_users = response.members.filter(function(user){
+							return (user.presence == "active") && (user.presence != "undefined") && (user.is_bot !== true);
+						});
+						if (active_users.length > 0){						
+							var multTimer = Math.log10(active_users.length);
+							spawnTimer = (timer/multTimer);
+							if(wild === true){
+								doSpawn();
+							}
+						} else {
+							spawnTimer = (timer);	//	If there are no users active, try again in 3-5 minutes
+						}
+					}
+					spawn();	//	Repeat in recursion
+				});
 			}, spawnTimer);
 		})();
 
