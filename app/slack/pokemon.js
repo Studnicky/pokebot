@@ -6,26 +6,32 @@ var pokemon = {
 	events: function(controller, bot){
 
 		var wild = false;
-		var timerBase = 120000;	//	2 minutes
-		var timerRand = 180000;	//	3 minutes
+		var spawnTimer = 0;
 		var wildInstances = {};
 
-		function spawnTimer(){ return Math.floor(Math.random()*timerRand)+timerBase; }
 		function escapeTimer(pokemon){ return Math.floor(Math.random()*15000+15000-55*pokemon.speed); }
 		function wildPokemon(){
+			var timerBase = 120000;	//	base 2 minutes
+			var timerRand = 180000;	//	base 3 minutes
 			bot.api.users.list({token: bot.token, presence: 1},function(err,response) {
-			if(err){
-				return console.log(err);
-			} else {
-				var active_users = response.members.filter(function(user){
-					return (user.presence == "active") && (user.presence != "undefined") && (user.is_bot !== true);
-				});
-				if (active_users.length > 0){
-					doSpawn();
+				if(err){
+					return console.log(err);
+				} else {
+					var active_users = response.members.filter(function(user){
+						return (user.presence == "active") && (user.presence != "undefined") && (user.is_bot !== true);
+					});
+					if (active_users.length > 0){		
+						var randTimer = Math.floor(Math.random()*timerRand)+timerBase;
+						var multTimer = Math.log10(active_users.length);
+						spawnTimer = (randTimer/multTimer);
+						doSpawn();
+					} else {
+						spawnTimer = (randTimer);	//	If there are no users active, try again in 3-5 minutes
+					}
 				}
-			}
 			});
 		}
+
 		function doSpawn(){
 			var rarity = Math.floor(Math.random()*254)+1;
 			api.pokemon.spawn(rarity, function(err, response){
@@ -70,7 +76,7 @@ var pokemon = {
 					wildPokemon();
 				}
 				spawnLoop();
-			}, spawnTimer());
+			}, spawnTimer);
 		})();
 
 		controller.on('reaction_added', function(bot, message){
