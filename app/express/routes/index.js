@@ -9,10 +9,6 @@ router.get('/', function(req, res) {
 });
 
 router.post('/invite', function(req, res) {
-
-
-		console.log(req);
-
 	if (req.body.email && (!config.secret || (!!config.secret && req.body.token === config.secret))) {
 		request.post({
 			url: 'https://pokebot.slack.com/api/users.admin.invite',

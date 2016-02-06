@@ -5,7 +5,7 @@ var pokemon = {
 	name: 'pokemon',
 	events: function(controller, bot){
 
-		var wild = false;
+		var wild = true;
 		var spawnTimer = 0;
 		var wildInstances = {};
 
